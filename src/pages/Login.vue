@@ -41,6 +41,8 @@ import axios from "axios";
 
 
 
+
+
 export default {
   data () {
     return {
@@ -134,6 +136,19 @@ export default {
       this.$store.dispatch("privileges");
       this.$store.dispatch("filters");
     }
+  },
+  mounted: function() {
+    var vars = {};
+    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    
+    if (vars["api"]!=undefined)
+    {  
+      this.$store.state.apiurl=vars["api"].split('#')[0];
+    }
+    
+    
   }
 }
 </script>

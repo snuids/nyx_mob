@@ -83,21 +83,6 @@ const { app, store, router } = createApp()
 
 
 
-function getUrlVars() {
-  var vars = {};
-  window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-      vars[key] = value;
-  });
-  return vars;
-}
-
-var vars=getUrlVars();
-if (vars["api"]!=undefined)
-{  
-  alert(JSON.stringify(vars))
-  store.state.apiurl=vars["api"].split('#')[0];
-}
-
 
 
 new Vue(app)
