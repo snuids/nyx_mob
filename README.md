@@ -1,1 +1,3 @@
-# nyx_mob
+# Quasar App
+
+> WIP
