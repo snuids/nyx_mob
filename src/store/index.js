@@ -19,12 +19,16 @@ export default function (/* { ssrContext } */) {
       apps: [],
       currentApps: null,
       privileges: [],
+      filteredmenus: [],
       creds: {}
     },
     getters: {
       apiurl: state => state.apiurl,
       creds: state => state.creds,
-      privileges: state => state.privileges,
+      privileges: state => state.privileges,    
+      filteredmenus: state => state.filteredmenus,
+      currentApps: state => state.currentApps,
+      menus: state => state.menus,
     },
     actions: {
       privileges({ commit, state }) {
