@@ -1,7 +1,17 @@
 <template slot="items">
   <div>
-    <h2>{{config.config.formtitle}}</h2>
-    <div style="text-align:left;width:100%">
+    <q-field
+      v-for="item in config.config.headercolumns" :key="item.field"
+      :label="item.title"
+    >
+    
+    </q-field>    
+    
+
+    {{config}}
+
+
+<!--
       <el-form>
         <el-row v-for="item in config.config.headercolumns" :key="item.field">
           <el-col :span="23">
@@ -47,7 +57,10 @@
           </el-col>
         </el-row>
       </el-form>
+
+
     </div>
+      -->
   </div>
 </template>
   
@@ -69,9 +82,16 @@ export default {
       type: Object
     }
   },
+  created: function() {
+    this.prepareData();
+  },
   methods:{
-    submit :function()
-    {
+    prepareData :function() {
+      for (var i in this.config.config.headercolumns) {
+        
+      }      
+    },
+    submit :function() {
       this.commitunderway=true;
       var newRec={"_index":this.config.config.index,"_source":{},"_id":"id_" + Math.floor((1 + Math.random()) * 0x1000000)+"_"+ Math.floor((1 + Math.random()) * 0x1000000)};
       
@@ -82,10 +102,9 @@ export default {
       }
       newRec["_source"]["@timestamp"]=moment();
       this.$getLocation({
-    enableHighAccuracy: false
-    ,timeout:5000
-})
-        .then(coordinates => {
+        enableHighAccuracy: false
+        ,timeout:5000
+      }).then(coordinates => {
           newRec._source.location=[coordinates["lng"],coordinates["lat"]];
           //alert(JSON.stringify(this.$store.getters.creds.user));
           newRec._source.user=this.$store.getters.creds.user.user;
@@ -100,8 +119,8 @@ export default {
         });
           this.commitunderway=false;       
         }).catch(error => {
-          alert(error);
-        });;
+        alert(error);
+      });;
      
          
     }

@@ -50,7 +50,11 @@
             <q-list-header>{{menu.loc_category}}</q-list-header>
             
             
-            <q-item :to="'/main/'+submenu.title" v-for="(submenu, index) in menu.submenus" :key="index">
+            <q-item 
+              :to="'/main/'+submenu.title" 
+              v-for="(submenu, index) in menu.submenus" 
+              
+              :key="index">
               <q-item-side icon="school" />
               <q-item-main :label="submenu.loc_title" :sublabel="'index-'+index" />
             </q-item>
@@ -58,6 +62,12 @@
             
         </span>
         <!--
+
+
+          @click="appClicked(subMenu)
+
+
+
         <q-list-header>Applications</q-list-header>
         <q-item to="/docs">
           <q-item-side icon="school" />
@@ -145,7 +155,20 @@ export default {
       });
       this.$router.push("/");
     },
-    
+    appClicked(e) {
+      console.log("app clicked");
+      if (e.type == "external") {
+        window.open(e.config.url);
+      } else {
+        this.maintitle = e.loc_title;
+        this.$store.commit({
+          type: "changeApps",
+          data: e
+        });
+        this.$router.push("/main/" + e.title + "/");
+        this.$globalbus.$emit("appchanged", e);
+      }
+    },
     
   },
   created: function() {

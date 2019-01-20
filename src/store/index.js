@@ -126,6 +126,14 @@ export default function (/* { ssrContext } */) {
           .catch(error => {
             console.log(error);
           });
+      },
+      changeApps(state, payload) {
+        console.log("VUEX:CURRENT APP:");
+        console.log(JSON.stringify(payload.data));
+        state.currentApps = payload.data;
+        state.maintitle = payload.data.loc_title;
+        state.maintitleicon = payload.data.icon;
+        state.timeRangeVisible = payload.data.apps[0].timeSelectorChecked;
       }
     }
   })
