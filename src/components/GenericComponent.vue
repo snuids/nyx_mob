@@ -34,9 +34,18 @@ export default {
   },
   mounted: function() {
     console.log("===============  REGISTERING APP CHANGED:");
+    this.$root.$on("appchanged", payLoad => {
+      console.log("GLOBALBUS/GENRICCOMPONENTAPPCHANEGD/");
+      console.log(
+        "============================================================================"
+      );
+
+      //this.selectedTab = "TAB-0";
+    });
   },
   destroyed: function() {
-    
+    console.log("===============  UN REGISTERING APP CHANGED:");
+    this.$root.$off("appchanged");
   },
   updated: function() {
     console.log("**********  Updated:");

@@ -53,7 +53,7 @@
             <q-item 
               :to="'/main/'+submenu.title" 
               v-for="(submenu, index) in menu.submenus" 
-              
+              @click.native="appClicked(submenu)"
               :key="index">
               <q-item-side icon="school" />
               <q-item-main :label="submenu.loc_title" :sublabel="'index-'+index" />
@@ -64,7 +64,6 @@
         <!--
 
 
-          @click="appClicked(subMenu)
 
 
 
@@ -166,7 +165,8 @@ export default {
           data: e
         });
         this.$router.push("/main/" + e.title + "/");
-        this.$globalbus.$emit("appchanged", e);
+        //this.$globalbus.$emit("appchanged", e);
+        this.$root.$emit("appchanged", e);
       }
     },
     

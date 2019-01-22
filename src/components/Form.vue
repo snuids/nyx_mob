@@ -1,66 +1,64 @@
 <template slot="items">
-  <div>
+  <div class="form-container">
     <q-field
       v-for="item in config.config.headercolumns" :key="item.field"
       :label="item.title"
     >
-    
-    </q-field>    
-    
 
-    {{config}}
+      <q-input 
+        v-if="item.type=='string'" 
+        v-model="item.value" 
+        :type="item.subtype" 
+        :color="item.color"
+        :inverted="item.inverted" 
+        :clearable="item.clearable"/>
+      <q-input 
+        v-if="item.type=='number'" 
+        v-model="item.value" 
+        :type="item.type" 
+        :color="item.color"
+        :inverted="item.inverted"
+        :clearable="item.clearable"/>
+      <q-datetime 
+        v-if="item.type=='datetime'" 
+        v-model="item.value" 
+        :color="item.color"
+        :inverted="item.inverted"
+        :type="item.subtype" />
+      <q-uploader 
+        v-if="item.type=='uploader'" 
+        :color="item.color"
+        :inverted="item.inverted"
+        :url="item.value" />
+      <q-chips-input 
+        v-if="item.type=='chips'" 
+        :color="item.color"
+        :inverted="item.inverted"
+        v-model="item.value"/>
+      <q-toggle 
+        v-if="item.type=='boolean'" 
+        :color="item.color"
+        :inverted="item.inverted"
+        v-model="item.value" />
+      <q-rating
+        v-if="item.type=='rating'"
+        v-model="item.value"
+        :color="item.color"
+        :inverted="item.inverted"
+        :max="item.maxRating"/>
+       <q-select
+          v-if="item.type=='selecter'"
+          v-model="item.value"
+          :options="item.selectOptions"
+          :color="item.color"
+          :inverted="item.inverted"
+          :multiple="item.multiple"/>
+
+      
+
+    </q-field> 
 
 
-<!--
-      <el-form>
-        <el-row v-for="item in config.config.headercolumns" :key="item.field">
-          <el-col :span="23">
-            <el-form-item
-              :label="item.title"
-              :label-width="formLabelWidth"
-              v-if="item.type =='number'"
-            >
-              <el-input-number v-model="item.value" autocomplete="off"></el-input-number>
-            </el-form-item>
-            <el-form-item
-              :label="item.title"
-              :label-width="formLabelWidth"
-              v-else-if="item.type =='date'"
-            >
-              <el-date-picker size="mini" v-model="item.value" type="date" placeholder="Pick a day"></el-date-picker>
-            </el-form-item>
-            <el-form-item
-              :label="item.title"
-              :label-width="formLabelWidth"
-              v-else-if="item.type =='datetime'"
-            >
-              <el-date-picker
-                size="mini"
-                v-model="item.value"
-                type="datetime"
-                placeholder="Pick a date and a time"
-              ></el-date-picker>
-            </el-form-item>
-
-            <el-form-item :label="item.title" :label-width="formLabelWidth" v-else>
-              <el-input v-model="item.value" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row >
-          <el-col :span="11">
-            &nbsp;
-          </el-col>
-          <el-col :span="13">
-            <el-button type="primary"  @click="submit()" :disabled="commitunderway">{{this.$t("buttons.submit")}}</el-button>            
-            <span v-if="commitunderway">&nbsp;&nbsp;<v-icon name="spinner" scale="1" spin/></span>
-          </el-col>
-        </el-row>
-      </el-form>
-
-
-    </div>
-      -->
   </div>
 </template>
   
@@ -75,7 +73,10 @@ export default {
   name: "Form",
   data: () => ({
     formLabelWidth: "120px",
-    commitunderway:false
+    commitunderway:false,
+    chips: ['abc'],    
+    formModel: null,
+    inverted: true
   }),
   props: {
     config: {
@@ -84,12 +85,77 @@ export default {
   },
   created: function() {
     this.prepareData();
+
+    /* 
+    this.$getLocation({
+      enableHighAccuracy: false
+        
+    }).then(coordinates => {
+      this.$alert(coordinates["lng"]+''+coordinates["lat"], 'Message', {
+        confirmButtonText: 'OK',
+
+    });
+        
+    }).catch(error => {
+      alert(error);
+    });;
+*/
+
   },
   methods:{
     prepareData :function() {
+      this.formModel = {}
+      console.log('prepare data')
+      console.log(JSON.stringify(this.config.config.headercolumns))
       for (var i in this.config.config.headercolumns) {
+        var field = this.config.config.headercolumns[i]
+
+        if(field.type == 'chips')
+          field.value=[]
+        else if(field.type == 'uploader')
+          field.value=''
+        else if(field.type == 'string')
+          field.value=''
+        else if(field.type == 'boolean')
+          field.value=false
+        else if(field.type == 'number')
+          field.value=0
+        else if(field.type == 'rating')
+          field.value=0
+        else if(field.type == 'datetime') {
+          field.subType = 'datetime'
+          field.value=moment.now()
+        }
+        else if(field.type == 'selecter') {
+          
+          for(var i in field.selectOptions) {
+            var obj = {
+              'label': field.selectOptions[i],
+              'value': field.selectOptions[i]
+            }
+            field.selectOptions[i] = obj
+          }
+
+          if(field.multiple)
+            field.value = []
+          else
+            field.value = ''
+
+        }
+        else
+          field.value=null
         
-      }      
+        if(field.color == null)
+          field.color = 'faded'
+        if(field.inverted == null)
+          field.inverted = true
+
+      }
+      console.log(JSON.stringify(this.formModel))
+
+      var tmp = JSON.parse(JSON.stringify(this.config.config.headercolumns))
+      this.config.config.headercolumns = {}
+      this.config.config.headercolumns = tmp
     },
     submit :function() {
       this.commitunderway=true;
@@ -124,10 +190,12 @@ export default {
      
          
     }
-  },
-  created: function() {}
+  }
 };
 </script>
 
 <style>
+.form-container {
+  margin: 0px 10px;
+}
 </style>
