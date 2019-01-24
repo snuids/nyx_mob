@@ -11,7 +11,7 @@
 
         <q-toolbar-title>
           {{title}}
-          <span slot="subtitle">{{appTitle}}</span>
+          <span slot="subtitle">{{maintitle}}</span>
         </q-toolbar-title>
 
       </q-toolbar>
@@ -55,11 +55,11 @@
               v-for="(submenu, index) in menu.submenus" 
               @click.native="appClicked(submenu)"
               :key="index">
-              <q-item-side icon="school" />
-              <q-item-main :label="submenu.loc_title" :sublabel="'index-'+index" />
+              <q-item-side v-if="submenu.apps[0].type=='form'" icon="insert_drive_file" />
+              <q-item-side v-else icon="school" />
+              <!--<q-item-main :label="submenu.loc_title" :sublabel="'index-'+index" />-->
+              <q-item-main :label="submenu.loc_title"/>
             </q-item>
-
-            
         </span>
         <!--
 
@@ -108,7 +108,6 @@ export default {
   
   data: () => ({
     title: 'NYX Mobile',
-    appTitle: 'subtitle',
     showLeft: false
   }),
   computed: {
@@ -116,6 +115,7 @@ export default {
     creds() { return this.$store.getters.creds },
     //privileges() { return this.$store.getters.privileges }
     menus() { return this.$store.getters.menus },
+    maintitle() { return this.$store.getters.maintitle },
     filteredmenus() { return this.$store.getters.filteredmenus; },
   },
   methods: {
@@ -159,7 +159,7 @@ export default {
       if (e.type == "external") {
         window.open(e.config.url);
       } else {
-        this.maintitle = e.loc_title;
+        this.$store.state.maintitle = e.loc_title;
         this.$store.commit({
           type: "changeApps",
           data: e

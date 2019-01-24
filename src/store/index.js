@@ -14,13 +14,14 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     state: {
-      apiurl: "api/v1/",
+      apiurl: "../api/v1/",
       menus: [],
       apps: [],
       currentApps: null,
       privileges: [],
       filteredmenus: [],
-      creds: {}
+      creds: {},
+      maintitle: '',
     },
     getters: {
       apiurl: state => state.apiurl,
@@ -29,6 +30,7 @@ export default function (/* { ssrContext } */) {
       filteredmenus: state => state.filteredmenus,
       currentApps: state => state.currentApps,
       menus: state => state.menus,
+      maintitle: state => state.maintitle,
     },
     actions: {
       privileges({ commit, state }) {
@@ -99,9 +101,30 @@ export default function (/* { ssrContext } */) {
   
         state.filteredmenus = []
         var cmenus = state.menus;
-        for (var i in cmenus)
-          if (cmenus[i].category != "apps")
-            state.filteredmenus.push(cmenus[i]);
+        for (var i in cmenus) {
+          if (cmenus[i].category != "apps") {
+            var subMenus = []
+            for(var j in cmenus[i].submenus) {
+              var apps = []
+              for(var k in cmenus[i].submenus[j].apps) {    
+                var type = cmenus[i].submenus[j].apps[k].type
+                if(type=='form' || type=='free-text')
+                  apps.push(cmenus[i].submenus[j].apps[k])
+              }
+
+              if(apps.length > 0) {
+                cmenus[i].submenus[j].apps = JSON.parse(JSON.stringify(apps))
+                subMenus.push(JSON.parse(JSON.stringify(cmenus[i].submenus[j])))
+              }
+            }
+            
+            if(subMenus.length > 0) {
+              cmenus[i].submenus = JSON.parse(JSON.stringify(subMenus))
+              state.filteredmenus.push(cmenus[i]);
+            }
+          }
+        }
+
         state.currentApps = state.filteredmenus[0].submenus[0];
         state.maintitle = state.filteredmenus[0].submenus[0].loc_title;
         state.maintitleicon = state.filteredmenus[0].submenus[0].icon;

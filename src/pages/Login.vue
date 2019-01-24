@@ -47,9 +47,8 @@ export default {
   data () {
     return {
       form: {
-        //login: 'amarchand@icloud.com',
-        login: 'v@a',
-        password: 'bagstage01'
+        login: '',
+        password: ''
       },
       loading: false
     }
