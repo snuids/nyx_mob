@@ -46,10 +46,9 @@ import axios from "axios";
 export default {
   data () {
     return {
-      form: {
-        //login: 'amarchand@icloud.com',
-        login: 'v@a',
-        password: 'bagstage01'
+      form: {        
+        login: '',
+        password: ''
       },
       loading: false
     }
