@@ -37,7 +37,7 @@ module.exports = function (ctx) {
     },
     devServer: {
       // https: true,
-      // port: 8080,
+      port: 8888,
       open: true // opens browser window automatically
     },
     //framework: 'all' --- includes everything; for dev only!
@@ -58,7 +58,15 @@ module.exports = function (ctx) {
         'QListHeader',
         'QItem',
         'QItemMain',
-        'QItemSide'
+        'QField',
+        'QItemSide',
+        'QUploader',
+        'QChipsInput',
+        'QSelect',
+        'QRating',
+        'QToggle',
+        'QDatetime',
+        'QDatetimePicker'
       ],
       directives: [
         'Ripple'

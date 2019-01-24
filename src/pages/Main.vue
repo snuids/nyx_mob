@@ -46,6 +46,27 @@
       </div>
       
       <q-list no-border link inset-separator>
+        <span v-for="(menu, index) in filteredmenus" :key="index">
+            <q-list-header>{{menu.loc_category}}</q-list-header>
+            
+            
+            <q-item 
+              :to="'/main/'+submenu.title" 
+              v-for="(submenu, index) in menu.submenus" 
+              @click.native="appClicked(submenu)"
+              :key="index">
+              <q-item-side icon="school" />
+              <q-item-main :label="submenu.loc_title" :sublabel="'index-'+index" />
+            </q-item>
+
+            
+        </span>
+        <!--
+
+
+
+
+
         <q-list-header>Applications</q-list-header>
         <q-item to="/docs">
           <q-item-side icon="school" />
@@ -63,11 +84,12 @@
           <q-item-side icon="rss feed" />
           <q-item-main label="Twitter" sublabel="@quasarframework" />
         </q-item>
+        -->
       </q-list>
     </q-layout-drawer>
 
     <q-page-container>
-          {{privileges}}
+          <router-view/>
     </q-page-container>
   </q-layout>
 </template>
@@ -92,7 +114,9 @@ export default {
   computed: {
     apiurl() { return this.$store.getters.apiurl },
     creds() { return this.$store.getters.creds },
-    privileges() { return this.$store.getters.privileges }
+    //privileges() { return this.$store.getters.privileges }
+    menus() { return this.$store.getters.menus },
+    filteredmenus() { return this.$store.getters.filteredmenus; },
   },
   methods: {
     clickLogout() {
@@ -130,7 +154,21 @@ export default {
       });
       this.$router.push("/");
     },
-    
+    appClicked(e) {
+      console.log("app clicked");
+      if (e.type == "external") {
+        window.open(e.config.url);
+      } else {
+        this.maintitle = e.loc_title;
+        this.$store.commit({
+          type: "changeApps",
+          data: e
+        });
+        this.$router.push("/main/" + e.title + "/");
+        //this.$globalbus.$emit("appchanged", e);
+        this.$root.$emit("appchanged", e);
+      }
+    },
     
   },
   created: function() {

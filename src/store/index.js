@@ -19,12 +19,16 @@ export default function (/* { ssrContext } */) {
       apps: [],
       currentApps: null,
       privileges: [],
+      filteredmenus: [],
       creds: {}
     },
     getters: {
       apiurl: state => state.apiurl,
       creds: state => state.creds,
-      privileges: state => state.privileges,
+      privileges: state => state.privileges,    
+      filteredmenus: state => state.filteredmenus,
+      currentApps: state => state.currentApps,
+      menus: state => state.menus,
     },
     actions: {
       privileges({ commit, state }) {
@@ -117,6 +121,33 @@ export default function (/* { ssrContext } */) {
               console.log("Logout error...");
             else {
               console.log("Logout success...");
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      },
+      changeApps(state, payload) {
+        console.log("VUEX:CURRENT APP:");
+        console.log(JSON.stringify(payload.data));
+        state.currentApps = payload.data;
+        state.maintitle = payload.data.loc_title;
+        state.maintitleicon = payload.data.icon;
+        state.timeRangeVisible = payload.data.apps[0].timeSelectorChecked;
+      },
+      updateRecord(state, payload) {
+        var url =
+          state.apiurl +
+          "generic/" + payload.data._index + "/" + payload.data._id + "?token=" +
+          state.creds.token;
+  
+        axios
+          .post(url, payload.data._source)
+          .then(response => {
+            if (response.data.error != "")
+              console.log("Save object error...");
+            else {
+              console.log("Save object success...");
             }
           })
           .catch(error => {
