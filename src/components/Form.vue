@@ -1,7 +1,7 @@
 <template slot="items">
   <div class="form-container">
     <q-field
-      v-for="item in config.config.headercolumns" :key="item.field"
+      v-for="item in formModel" :key="item.field"
       :label="item.title"
     >
 
@@ -57,14 +57,31 @@
       
 
     </q-field> 
-
-
+    <div class="button-box">
+      <q-btn 
+          color="primary" 
+          class="send-form-button"
+          
+          size="lg"
+          outline
+          :loading="loading"
+          @click="submit">Send</q-btn>
+      <q-btn 
+          color="negative" 
+          class="send-form-button"
+          
+          size="lg"
+          outline
+          :disable="loading"
+          @click="reset">Reset</q-btn>
+    </div>
   </div>
 </template>
   
 <script>
 import moment from "moment";
 import Vue from "vue";
+import axios from "axios";
 
 import VueGeolocation from 'vue-browser-geolocation';
 Vue.use(VueGeolocation);
@@ -73,10 +90,10 @@ export default {
   name: "Form",
   data: () => ({
     formLabelWidth: "120px",
-    commitunderway:false,
-    chips: ['abc'],    
-    formModel: null,
-    inverted: true
+    chips: ['abc'], 
+    inverted: true,
+    loading: false,
+    formModel: null
   }),
   props: {
     config: {
@@ -86,29 +103,19 @@ export default {
   created: function() {
     this.prepareData();
 
-    /* 
-    this.$getLocation({
-      enableHighAccuracy: false
-        
-    }).then(coordinates => {
-      this.$alert(coordinates["lng"]+''+coordinates["lat"], 'Message', {
-        confirmButtonText: 'OK',
-
-    });
-        
-    }).catch(error => {
-      alert(error);
-    });;
-*/
+    
+    
 
   },
   methods:{
     prepareData :function() {
-      this.formModel = {}
+      this.formModel = JSON.parse(JSON.stringify(this.config.config.headercolumns))
+
+
       console.log('prepare data')
       console.log(JSON.stringify(this.config.config.headercolumns))
-      for (var i in this.config.config.headercolumns) {
-        var field = this.config.config.headercolumns[i]
+      for (var i in this.formModel) {
+        var field = this.formModel[i]
 
         if(field.type == 'chips')
           field.value=[]
@@ -146,46 +153,56 @@ export default {
           field.value=null
         
         if(field.color == null)
-          field.color = 'faded'
+          field.color = 'light'
         if(field.inverted == null)
           field.inverted = true
 
       }
-      console.log(JSON.stringify(this.formModel))
+      
 
-      var tmp = JSON.parse(JSON.stringify(this.config.config.headercolumns))
-      this.config.config.headercolumns = {}
-      this.config.config.headercolumns = tmp
+      var tmp = JSON.parse(JSON.stringify(this.formModel))
+      this.formModel = {}
+      this.formModel = tmp
+    },
+    reset :function() {
+      this.prepareData()
     },
     submit :function() {
-      this.commitunderway=true;
+      this.loading = true
+      //this.$v.form.$touch()
+     
       var newRec={"_index":this.config.config.index,"_source":{},"_id":"id_" + Math.floor((1 + Math.random()) * 0x1000000)+"_"+ Math.floor((1 + Math.random()) * 0x1000000)};
       
-      for (var i in this.config.config.headercolumns)
+      for (var i in this.formModel)
       {
-        var item=this.config.config.headercolumns[i];
+        var item=this.formModel[i];
         newRec["_source"][item.field]=item.value;
       }
       newRec["_source"]["@timestamp"]=moment();
       this.$getLocation({
         enableHighAccuracy: false
-        ,timeout:5000
+        
       }).then(coordinates => {
           newRec._source.location=[coordinates["lng"],coordinates["lat"]];
-          //alert(JSON.stringify(this.$store.getters.creds.user));
           newRec._source.user=this.$store.getters.creds.user.user;
-          //alert(JSON.stringify(newRec));   
           this.$store.commit({
             type: "updateRecord",
             data: newRec
           });
-          this.$alert('Your record has been saved.', 'Message', {
-          confirmButtonText: 'OK',
 
+          this.$q.notify({
+          title: "saved",
+          message:"Saved",
+          type: "positive",
+          position: "bottom",
+          timeout:500
         });
-          this.commitunderway=false;       
+          
+          this.prepareData()
+          this.loading=false;       
         }).catch(error => {
         alert(error);
+        this.loading=false;    
       });;
      
          
@@ -194,8 +211,16 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .form-container {
   margin: 0px 10px;
+}
+
+.button-box {
+  margin: 40px;
+}
+
+.button-box button{
+  margin: 20px;
 }
 </style>

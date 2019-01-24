@@ -134,6 +134,25 @@ export default function (/* { ssrContext } */) {
         state.maintitle = payload.data.loc_title;
         state.maintitleicon = payload.data.icon;
         state.timeRangeVisible = payload.data.apps[0].timeSelectorChecked;
+      },
+      updateRecord(state, payload) {
+        var url =
+          state.apiurl +
+          "generic/" + payload.data._index + "/" + payload.data._id + "?token=" +
+          state.creds.token;
+  
+        axios
+          .post(url, payload.data._source)
+          .then(response => {
+            if (response.data.error != "")
+              console.log("Save object error...");
+            else {
+              console.log("Save object success...");
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
       }
     }
   })
