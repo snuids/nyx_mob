@@ -126,7 +126,7 @@ export default {
           this.$t("notifications.welcome") +
           " v(" +
           response.data.version +
-          ")",
+          "/v1.0)",
         type: "positive",
         position: "bottom",
         timeout:500
