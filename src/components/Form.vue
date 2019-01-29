@@ -100,15 +100,22 @@ export default {
       type: Object
     }
   },
+  computed: {
+    configin: function(){
+      return this.config
+    }
+  },
+  watch: {
+    configin: function() {
+      this.prepareData()
+    }
+  },
   created: function() {
     this.prepareData();
-
-    
-    
-
   },
   methods:{
     prepareData :function() {
+      console.log('prepare data')
       this.formModel = JSON.parse(JSON.stringify(this.config.config.headercolumns))
 
 
