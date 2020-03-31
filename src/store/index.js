@@ -14,6 +14,7 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     state: {
+      version: "v1.0.2",
       apiurl: "../api/v1/",
       menus: [],
       apps: [],
@@ -24,6 +25,7 @@ export default function (/* { ssrContext } */) {
       maintitle: '',
     },
     getters: {
+      version: state => state.version,
       apiurl: state => state.apiurl,
       creds: state => state.creds,
       privileges: state => state.privileges,    
@@ -171,6 +173,32 @@ export default function (/* { ssrContext } */) {
               console.log("Save object error...");
             else {
               console.log("Save object success...");
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+      ,
+      sendMessage(state,payload) {
+        console.log("Send Message");
+  
+        var url =
+          state.apiurl +
+          "sendmessage?token=" +
+          state.creds.token;
+  
+        var message = {
+          destination: "" + payload.data.destination,
+          body: payload.data.message
+        };
+  
+        axios
+          .post(url, message)
+          .then(response => {
+            if (response.data.error != "") console.log("Unable to send message");
+            else {
+              
             }
           })
           .catch(error => {

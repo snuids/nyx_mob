@@ -24,19 +24,20 @@
           <div class="user-info">
             <small class='text-bold lowercase text-black block'>{{creds.user.firstname}} {{creds.user.lastname}}</small>
             <small class='text text-grey-7 block'>{{creds.user.user}}</small>
+            <small class='logout-button text-bold lowercase text-black block'>{{$store.getters.version}}</small>
           </div>
 
 
-          <q-btn 
+          <!--q-btn 
             class="pwd-button" 
             rounded 
             outline 
             size="sm" 
             icon="lock" 
-            label="Password" />
+            label="Password" /-->
           <q-btn 
             @click="clickLogout()"
-            class="logout-button" 
+            class="pwd-button" 
             rounded 
             outline 
             color="negative" 

@@ -2,9 +2,8 @@
   <div class="form-container">
     <q-field
       v-for="item in formModel" :key="item.field"
-      :label="item.title"
+      :label="computeTranslatedText(item.title,$store.getters.creds.user.language)"
     >
-
       <q-input 
         v-if="item.type=='string'" 
         v-model="item.value" 
@@ -82,6 +81,7 @@
 import moment from "moment";
 import Vue from "vue";
 import axios from "axios";
+import {computeTranslatedText} from '../globalfunctions'
 
 import VueGeolocation from 'vue-browser-geolocation';
 Vue.use(VueGeolocation);
@@ -114,6 +114,9 @@ export default {
     this.prepareData();
   },
   methods:{
+    computeTranslatedText: function(inText,inLocale){      
+      return computeTranslatedText(inText,inLocale);
+    },
     prepareData :function() {
       console.log('prepare data')
       this.formModel = JSON.parse(JSON.stringify(this.config.config.headercolumns))
@@ -192,10 +195,27 @@ export default {
       }).then(coordinates => {
           newRec._source.location=[coordinates["lng"],coordinates["lat"]];
           newRec._source.user=this.$store.getters.creds.user.user;
-          this.$store.commit({
-            type: "updateRecord",
-            data: newRec
-          });
+
+          var mode="table";
+          if (this.config.config.formmode!=undefined)
+            mode=this.config.config.formmode;
+
+          if(mode=="table")
+          {
+            this.$store.commit({
+              type: "updateRecord",
+              data: newRec
+            });
+          }
+          else
+          {            
+            this.$store.commit({
+              type: "sendMessage",
+              data: {destination:this.config.config.destination
+                  ,message:JSON.stringify( newRec._source)}
+            });
+          }
+
 
           this.$q.notify({
           title: "saved",

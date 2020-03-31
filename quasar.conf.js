@@ -21,6 +21,7 @@ module.exports = function (ctx) {
     supportIE: true,
     build: {
       scopeHoisting: true,
+      publicPath:'/mobile/',
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,
