@@ -1,4 +1,4 @@
-# Quasar App
+# Nyx Mobile App
 
 ## Dev
 * quasar dev
