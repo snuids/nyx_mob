@@ -1,10 +1,10 @@
 # Quasar App
 
 ## Dev
->> quasar dev
+* quasar dev
 
 ## Build
->> quasar build
+* quasar build
 
 ## Deployment
 Add publicPath:'/mobile/', in quasar.conf.js
