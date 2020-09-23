@@ -1,5 +1,10 @@
 # Nyx Mobile App
 
+## Setup 
+* clone the project
+* cd nyx_mob
+* npm install
+
 ## Dev
 * quasar dev
 
