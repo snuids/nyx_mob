@@ -1,5 +1,8 @@
 # Nyx Mobile App
 
+## Setup 
+* npminstall
+
 ## Dev
 * quasar dev
 
