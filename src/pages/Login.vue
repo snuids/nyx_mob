@@ -87,7 +87,7 @@ export default {
         const response = await axios.post(
           //this.$store.getters.apiurl + "cred/login",
           this.$store.getters.apiurl + "cred/login",
-          { login: this.form.login, password: this.form.password }
+          { login: this.form.login, password: this.form.password, app: this.$store.getters.appName }
         );
 
         if (response.data.error == "") {

@@ -23,9 +23,11 @@ export default function (/* { ssrContext } */) {
       filteredmenus: [],
       creds: {},
       maintitle: '',
+      appName: 'mobile',
     },
     getters: {
       version: state => state.version,
+      appName: state => state.appName,
       apiurl: state => state.apiurl,
       creds: state => state.creds,
       privileges: state => state.privileges,    
@@ -110,7 +112,7 @@ export default function (/* { ssrContext } */) {
               var apps = []
               for(var k in cmenus[i].submenus[j].apps) {    
                 var type = cmenus[i].submenus[j].apps[k].type
-                if(type=='form' || type=='free-text')
+                if(type=='form' || type=='free-text' || type=='internal')
                   apps.push(cmenus[i].submenus[j].apps[k])
               }
 

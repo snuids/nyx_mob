@@ -20,8 +20,24 @@ Vue.component("Form", form);
 Vue.component("FreeText", freetext);
 
 
+const req = require.context('./custom/', true, /\.vue$/)
+
+const dynamicComponents = {}
+req.keys().forEach(filename => {
+  const name = `${filename.split('.')[1].split('/')[1]}`
+  const component = req(filename).default
+  dynamicComponents[name] = component
+})
+
+
+
 export default {
-  data: () => ({ selectedTab: "TAB-0" }),
+  data: () => ({ 
+    selectedTab: "TAB-0" 
+  }),
+  components: {
+    ...dynamicComponents
+  },
   computed: {
     currentApps() {
       return this.$store.getters.currentApps;
