@@ -21,20 +21,11 @@
       <div class="bg-brown-1 account-container">
           <q-icon size="80px" class="account-icon" name="account_circle" color="green" />
 
-          <div class="user-info">
+          <div class="user-info" v-if="creds">
             <small class='text-bold lowercase text-black block'>{{creds.user.firstname}} {{creds.user.lastname}}</small>
             <small class='text text-grey-7 block'>{{creds.user.user}}</small>
             <small class='logout-button text-bold lowercase text-black block'>{{$store.getters.version}}</small>
           </div>
-
-
-          <!--q-btn 
-            class="pwd-button" 
-            rounded 
-            outline 
-            size="sm" 
-            icon="lock" 
-            label="Password" /-->
           <q-btn 
             @click="clickLogout()"
             class="pwd-button" 
@@ -49,43 +40,16 @@
       <q-list no-border link inset-separator>
         <span v-for="(menu, index) in filteredmenus" :key="index">
             <q-list-header>{{menu.loc_category}}</q-list-header>
-            
-            
             <q-item 
-              :to="'/main/'+submenu.title" 
+              :to="'/main/'+submenu.apps[0].rec_id" 
               v-for="(submenu, index) in menu.submenus" 
               @click.native="appClicked(submenu)"
               :key="index">
               <q-item-side v-if="submenu.apps[0].type=='form'" icon="insert_drive_file" />
               <q-item-side v-else icon="school" />
-              <!--<q-item-main :label="submenu.loc_title" :sublabel="'index-'+index" />-->
               <q-item-main :label="submenu.loc_title"/>
             </q-item>
         </span>
-        <!--
-
-
-
-
-
-        <q-list-header>Applications</q-list-header>
-        <q-item to="/docs">
-          <q-item-side icon="school" />
-          <q-item-main label="Docs" sublabel="quasar-framework.org" />
-        </q-item>
-        <q-item to="/forum">
-          <q-item-side icon="record_voice_over" />
-          <q-item-main label="Forum" sublabel="forum.quasar-framework.org" />
-        </q-item>
-        <q-item to="/chat">
-          <q-item-side icon="chat" />
-          <q-item-main label="Discord Chat Channel" sublabel="https://discord.gg/5TDhbDg" />
-        </q-item>
-        <q-item to="/twitter">
-          <q-item-side icon="rss feed" />
-          <q-item-main label="Twitter" sublabel="@quasarframework" />
-        </q-item>
-        -->
       </q-list>
     </q-layout-drawer>
 
@@ -98,6 +62,7 @@
 <script>
 
 import Vue from "vue";
+import axios from "axios";
 import moment from "moment";
 import _ from "lodash";
 
@@ -114,9 +79,11 @@ export default {
   computed: {
     apiurl() { return this.$store.getters.apiurl },
     creds() { return this.$store.getters.creds },
-    //privileges() { return this.$store.getters.privileges }
     menus() { return this.$store.getters.menus },
-    maintitle() { return this.$store.getters.maintitle },
+    maintitle() { 
+      if(this.$store.getters.activeApp)
+       return this.$store.getters.activeApp.title 
+    },
     filteredmenus() { return this.$store.getters.filteredmenus; },
   },
   methods: {
@@ -156,24 +123,73 @@ export default {
       this.$router.push("/");
     },
     appClicked(e) {
-      console.log("app clicked");
       if (e.type == "external") {
         window.open(e.config.url);
-      } else {
-        this.$store.state.maintitle = e.loc_title;
-        this.$store.commit({
-          type: "changeApps",
-          data: e
-        });
-        this.$router.push("/main/" + e.title + "/");
-        //this.$globalbus.$emit("appchanged", e);
-        this.$root.$emit("appchanged", e);
-      }
-    },
-    
+      } 
+    }
   },
-  created: function() {
+  created: async function() {
+    console.log('Main created')
+
+    var vars = {};
+    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
     
+    if (vars["api"]!=undefined)
+    {  
+      this.$store.state.apiurl=vars["api"].split('#')[0];
+    }
+
+    // console.log(localStorage.authResponse)
+    // console.log(this.$store.getters.currentSubCategory)
+
+    if (this.$store.getters.currentSubCategory == undefined && localStorage.authResponse) {
+        var path = this.$route.path
+        if(path[path.length-1] == '/')
+          path = path.substring(0, path.length-1)
+
+        var rec_id = path.replace('/main/', '')
+
+        var authResponse = JSON.parse(localStorage.authResponse)
+
+        var url =
+          this.$store.getters.apiurl +
+          "status?token=" +
+          authResponse.data.cred.token;
+
+        try {
+
+          const response = await axios.get(url)
+
+          if(response.status == 200 && response.data.error=='') {
+            this.$store.commit({
+              type: "login",
+              data: authResponse.data
+            });
+            
+            this.$store.commit({
+              type: "changeApp",
+              data: rec_id
+            });
+
+            if(authResponse.data.cred.user.privileges.includes('admin')) {
+
+              this.$store.commit({
+                type: "privileges",
+                data: authResponse.data.all_priv
+              });
+              this.$store.commit({
+                type: "filters",
+                data: authResponse.data.all_filters
+              });
+            }
+          }
+        }
+        catch (e){
+          console.log(e);
+        }
+    }
   },
   mounted: function() {
     

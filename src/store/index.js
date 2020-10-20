@@ -19,6 +19,7 @@ export default function (/* { ssrContext } */) {
       menus: [],
       apps: [],
       currentApps: null,
+      activeApp: null,
       privileges: [],
       filteredmenus: [],
       creds: {},
@@ -33,6 +34,7 @@ export default function (/* { ssrContext } */) {
       privileges: state => state.privileges,    
       filteredmenus: state => state.filteredmenus,
       currentApps: state => state.currentApps,
+      activeApp: state => state.activeApp,
       menus: state => state.menus,
       maintitle: state => state.maintitle,
     },
@@ -130,6 +132,7 @@ export default function (/* { ssrContext } */) {
         }
 
         state.currentApps = state.filteredmenus[0].submenus[0];
+        state.activeApp = state.filteredmenus[0].submenus[0].apps[0];
         state.maintitle = state.filteredmenus[0].submenus[0].loc_title;
         state.maintitleicon = state.filteredmenus[0].submenus[0].icon;
   
@@ -161,6 +164,46 @@ export default function (/* { ssrContext } */) {
         state.maintitle = payload.data.loc_title;
         state.maintitleicon = payload.data.icon;
         state.timeRangeVisible = payload.data.apps[0].timeSelectorChecked;
+      },
+
+      changeApp(state, payload) {
+        console.log("changeApp mutation called.");
+        var app = null;
+
+        for (var i = 0; i < state.filteredmenus.length; i++) {
+          var cat = state.filteredmenus[i]
+
+          for (var j = 0; j < cat.submenus.length; j++) {
+            var subcat = cat.submenus[j]
+            for (var k = 0; k < subcat.apps.length; k++) {
+              if (subcat.apps[k].rec_id === payload.data) {
+                app = subcat.apps[k]
+                state.currentSubCategory = subcat
+                break
+              }
+            }
+            if (app !== null)
+              break
+          }
+          if (app !== null)
+            break
+        }
+
+
+
+
+
+        state.maintitle = state.currentSubCategory.loc_title;
+
+        state.activeApp = null
+        state.activeApp = app
+
+        console.log(app)
+        if(app.timeDefault != null && app.timeDefault != '') {
+          console.log('send forcetime')
+          Vue.prototype.$globalbus.$emit("forcetime",app.timeDefault);
+          console.log('send forcetime')
+        }
       },
       updateRecord(state, payload) {
         var url =

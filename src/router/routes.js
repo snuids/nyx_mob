@@ -15,7 +15,7 @@ const routes = [
     component: Main,
     children: [
       {
-        path: ':app',
+        path: ':recid',
         name: 'GenericComponent',
         component: GenericComponent
       }

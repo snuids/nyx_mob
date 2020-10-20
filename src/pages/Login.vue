@@ -112,14 +112,26 @@ export default {
       this.loading = false 
     },
     authenticate(response) {
+      localStorage.authResponse = JSON.stringify(response)
+
       this.$i18n.locale = response.data.cred.user.language;
       response.data.cred.user.user = this.form.login;
       this.$store.commit({
         type: "login",
         data: response.data
       });
+
+      let rec_id  = this.$store.getters.activeApp.rec_id
       
-      this.$router.push("/main/start");
+      this.$store.commit({
+        type: "changeApp",
+        data: rec_id
+      });
+      
+      let path = '/main/'+rec_id
+
+      console.log("pushing path", path)
+      this.$router.push(path);
       this.$q.notify({
         title: this.$t("notifications.message"),
         message:
