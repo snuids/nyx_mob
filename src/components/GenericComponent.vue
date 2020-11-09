@@ -25,9 +25,11 @@ const req = require.context('./custom/', true, /\.vue$/)
 
 const dynamicComponents = {}
 req.keys().forEach(filename => {
-  const name = `${filename.split('.')[1].split('/')[1]}`
+  const name = `${filename.split('.')[1].split('/')[filename.split('.')[1].split('/').length - 1]}`
   const component = req(filename).default
+  console.log(name)
   dynamicComponents[name] = component
+
 })
 
 

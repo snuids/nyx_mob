@@ -38,7 +38,7 @@ Vue.component("TargetDate", TargetDate);
 export default {
   name: "FloatingMenu",
   components: {
-    TargetDate
+    // TargetDate
   },
   data() {
     return {};

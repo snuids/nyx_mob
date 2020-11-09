@@ -117,7 +117,7 @@ export default {
         this.$store.getters.creds.token;
       //console.log("url : ", url);
 
-      this.$q.loading.show();
+      // this.$q.loading.show();
       axios
         .post(url, this.queryList)
         .then(response => {
