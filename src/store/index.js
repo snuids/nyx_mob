@@ -1,17 +1,17 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
 import axios from "axios";
-import moment from 'moment';
+import moment from "moment";
 
-import example from './module-example'
-Vue.use(Vuex)
+import example from "./module-example";
+Vue.use(Vuex);
 
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation
  */
 
-export default function (/* { ssrContext } */) {
+export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     state: {
       version: "v1.0.2",
@@ -23,20 +23,20 @@ export default function (/* { ssrContext } */) {
       privileges: [],
       filteredmenus: [],
       creds: {},
-      maintitle: '',
-      appName: 'mobile',
+      maintitle: "",
+      appName: "mobile"
     },
     getters: {
       version: state => state.version,
       appName: state => state.appName,
       apiurl: state => state.apiurl,
       creds: state => state.creds,
-      privileges: state => state.privileges,    
+      privileges: state => state.privileges,
       filteredmenus: state => state.filteredmenus,
       currentApps: state => state.currentApps,
       activeApp: state => state.activeApp,
       menus: state => state.menus,
-      maintitle: state => state.maintitle,
+      maintitle: state => state.maintitle
     },
     actions: {
       privileges({ commit, state }) {
@@ -44,12 +44,11 @@ export default function (/* { ssrContext } */) {
           state.apiurl +
           "generic_search/nyx_privilege?token=" +
           state.creds.token;
-  
+
         axios
-          .post(url, {"size":1000})
+          .post(url, { size: 1000 })
           .then(response => {
-            if (response.data.error != "")
-              console.log("Privileges error...");
+            if (response.data.error != "") console.log("Privileges error...");
             else {
               console.log("Privileges success...");
               commit("privileges", response.data.records);
@@ -61,15 +60,12 @@ export default function (/* { ssrContext } */) {
       },
       filters({ commit, state }) {
         var url =
-          state.apiurl +
-          "generic_search/nyx_filter?token=" +
-          state.creds.token;
-  
+          state.apiurl + "generic_search/nyx_filter?token=" + state.creds.token;
+
         axios
           .post(url, {})
           .then(response => {
-            if (response.data.error != "")
-              console.log("Filters error...");
+            if (response.data.error != "") console.log("Filters error...");
             else {
               console.log("Filters success...");
               commit("filters", response.data.records);
@@ -80,7 +76,7 @@ export default function (/* { ssrContext } */) {
           });
       }
     },
-  
+
     mutations: {
       filters(state, payload) {
         state.filters = payload;
@@ -104,28 +100,30 @@ export default function (/* { ssrContext } */) {
             }
           }
         }
-  
-        state.filteredmenus = []
+
+        state.filteredmenus = [];
         var cmenus = state.menus;
         for (var i in cmenus) {
           if (cmenus[i].category != "apps") {
-            var subMenus = []
-            for(var j in cmenus[i].submenus) {
-              var apps = []
-              for(var k in cmenus[i].submenus[j].apps) {    
-                var type = cmenus[i].submenus[j].apps[k].type
-                if(type=='form' || type=='free-text' || type=='internal')
-                  apps.push(cmenus[i].submenus[j].apps[k])
+            var subMenus = [];
+            for (var j in cmenus[i].submenus) {
+              var apps = [];
+              for (var k in cmenus[i].submenus[j].apps) {
+                var type = cmenus[i].submenus[j].apps[k].type;
+                if (type == "form" || type == "free-text" || type == "internal")
+                  apps.push(cmenus[i].submenus[j].apps[k]);
               }
 
-              if(apps.length > 0) {
-                cmenus[i].submenus[j].apps = JSON.parse(JSON.stringify(apps))
-                subMenus.push(JSON.parse(JSON.stringify(cmenus[i].submenus[j])))
+              if (apps.length > 0) {
+                cmenus[i].submenus[j].apps = JSON.parse(JSON.stringify(apps));
+                subMenus.push(
+                  JSON.parse(JSON.stringify(cmenus[i].submenus[j]))
+                );
               }
             }
-            
-            if(subMenus.length > 0) {
-              cmenus[i].submenus = JSON.parse(JSON.stringify(subMenus))
+
+            if (subMenus.length > 0) {
+              cmenus[i].submenus = JSON.parse(JSON.stringify(subMenus));
               state.filteredmenus.push(cmenus[i]);
             }
           }
@@ -135,20 +133,16 @@ export default function (/* { ssrContext } */) {
         state.activeApp = state.filteredmenus[0].submenus[0].apps[0];
         state.maintitle = state.filteredmenus[0].submenus[0].loc_title;
         state.maintitleicon = state.filteredmenus[0].submenus[0].icon;
-  
+
         console.log("Login mutation done.");
       },
       logout(state) {
-        var url =
-          state.apiurl +
-          "cred/logout?token=" +
-          state.creds.token;
-  
+        var url = state.apiurl + "cred/logout?token=" + state.creds.token;
+
         axios
           .get(url)
           .then(response => {
-            if (response.data.error != "")
-              console.log("Logout error...");
+            if (response.data.error != "") console.log("Logout error...");
             else {
               console.log("Logout success...");
             }
@@ -171,51 +165,48 @@ export default function (/* { ssrContext } */) {
         var app = null;
 
         for (var i = 0; i < state.filteredmenus.length; i++) {
-          var cat = state.filteredmenus[i]
+          var cat = state.filteredmenus[i];
 
           for (var j = 0; j < cat.submenus.length; j++) {
-            var subcat = cat.submenus[j]
+            var subcat = cat.submenus[j];
             for (var k = 0; k < subcat.apps.length; k++) {
               if (subcat.apps[k].rec_id === payload.data) {
-                app = subcat.apps[k]
-                state.currentSubCategory = subcat
-                break
+                app = subcat.apps[k];
+                state.currentSubCategory = subcat;
+                break;
               }
             }
-            if (app !== null)
-              break
+            if (app !== null) break;
           }
-          if (app !== null)
-            break
+          if (app !== null) break;
         }
-
-
-
-
 
         state.maintitle = state.currentSubCategory.loc_title;
 
-        state.activeApp = null
-        state.activeApp = app
+        state.activeApp = null;
+        state.activeApp = app;
 
-        console.log(app)
-        if(app.timeDefault != null && app.timeDefault != '') {
-          console.log('send forcetime')
-          Vue.prototype.$globalbus.$emit("forcetime",app.timeDefault);
-          console.log('send forcetime')
+        console.log(app);
+        if (app.timeDefault != null && app.timeDefault != "") {
+          console.log("send forcetime");
+          Vue.prototype.$globalbus.$emit("forcetime", app.timeDefault);
+          console.log("send forcetime");
         }
       },
       updateRecord(state, payload) {
         var url =
           state.apiurl +
-          "generic/" + payload.data._index + "/" + payload.data._id + "?token=" +
+          "generic/" +
+          payload.data._index +
+          "/" +
+          payload.data._id +
+          "?token=" +
           state.creds.token;
-  
+
         axios
           .post(url, payload.data._source)
           .then(response => {
-            if (response.data.error != "")
-              console.log("Save object error...");
+            if (response.data.error != "") console.log("Save object error...");
             else {
               console.log("Save object success...");
             }
@@ -223,27 +214,23 @@ export default function (/* { ssrContext } */) {
           .catch(error => {
             console.log(error);
           });
-      }
-      ,
-      sendMessage(state,payload) {
+      },
+      sendMessage(state, payload) {
         console.log("Send Message");
-  
-        var url =
-          state.apiurl +
-          "sendmessage?token=" +
-          state.creds.token;
-  
+
+        var url = state.apiurl + "sendmessage?token=" + state.creds.token;
+
         var message = {
           destination: "" + payload.data.destination,
           body: payload.data.message
         };
-  
+
         axios
           .post(url, message)
           .then(response => {
-            if (response.data.error != "") console.log("Unable to send message");
+            if (response.data.error != "")
+              console.log("Unable to send message");
             else {
-              
             }
           })
           .catch(error => {
@@ -251,7 +238,7 @@ export default function (/* { ssrContext } */) {
           });
       }
     }
-  })
+  });
 
-  return Store
+  return Store;
 }
