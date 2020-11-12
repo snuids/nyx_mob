@@ -11,7 +11,7 @@
 
 import Vue from 'vue'
 
-import {Quasar,QLayout,QLayoutHeader,QLayoutDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QListHeader,QItem,QItemMain,QField,QItemSide,QUploader,QChipsInput,QSelect,QRating,QToggle,QDatetime,QDatetimePicker,Ripple,Notify,Dialog} from 'quasar'
+import {Quasar,QLayout,QLayoutHeader,QLayoutDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QListHeader,QItem,QItemMain,QField,QItemSide,QUploader,QChipsInput,QSelect,QRating,QToggle,QDatetime,QDatetimePicker,QCard,QFab,QFabAction,QWindowResizeObservable,QResizeObservable,Ripple,Notify,Dialog,Loading} from 'quasar'
 
 
-Vue.use(Quasar, { config: {},components: {QLayout,QLayoutHeader,QLayoutDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QListHeader,QItem,QItemMain,QField,QItemSide,QUploader,QChipsInput,QSelect,QRating,QToggle,QDatetime,QDatetimePicker},directives: {Ripple},plugins: {Notify,Dialog} })
+Vue.use(Quasar, { config: {},components: {QLayout,QLayoutHeader,QLayoutDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QListHeader,QItem,QItemMain,QField,QItemSide,QUploader,QChipsInput,QSelect,QRating,QToggle,QDatetime,QDatetimePicker,QCard,QFab,QFabAction,QWindowResizeObservable,QResizeObservable},directives: {Ripple},plugins: {Notify,Dialog,Loading} })

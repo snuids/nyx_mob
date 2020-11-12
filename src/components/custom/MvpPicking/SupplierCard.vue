@@ -1,34 +1,57 @@
 <template>
-  <q-item class="full-width">
-    <q-card
-      clickable
-      @click="onCardClick"
-      class="row bg-white q-mb-xs full-width justify-between"
-    >
-      <div class="flex">
-        <div class="bg-yellow">{{ expected_date | dateShort }}</div>
-        <div class="bg-red q-ml-xs">{{ supplier }}</div>
-      </div>
-      <div class="bg-blue">{{ status }}</div>
-      <!-- <q-item-side class="date-card">
-        {{ expected_date | dateShort }}
-      </q-item-side>
-
-      <div class="q-ml-xs inner-cont">
-        <div class="full-width">
-          <q-item-main class="main-card">
-            <q-item>
-              {{ supplier }}
-            </q-item>
-          </q-item-main>
-
-          <q-item-side class="icon-card">
-            {{ status }}
-          </q-item-side> 
+  <q-item class="item-supplier">
+    <q-card class="bg-white q-mb-sm full-width">
+      <div class="row" clickable @click="onCardClick" v-ripple>
+        <div class="date-toto q-py-sm">
+          {{ expected_date | dateShort }}
         </div>
-      </div>-->
+        <div class="cont-toto flex justify-between">
+          <div class="name-toto q-py-sm q-px-lg">
+            {{ supplier | uppercaseFirst }}
+          </div>
+          <div class="icon-toto q-py-sm q-px-lg">{{ status }}</div>
+        </div>
+      </div>
     </q-card>
   </q-item>
+
+  <!-- SAVE -->
+  <!-- <q-item class="full-width item-supplier">
+    <q-card class="bg-white q-mb-sm full-width" ref="cardLink" id="cardLink">
+      <q-resize-observable @resize="onResize" />
+      <div class="row full-width" clickable @click="onCardClick" v-ripple>
+        <div class="date-toto">{{ expected_date | dateShort }}</div>
+        <div class="conteneur flex-inline justify-between">
+          <div class="name-toto">
+            {{ supplier | uppercaseFirst }}
+          </div>
+          <div class="icon-toto">{{ status }}</div>
+        </div>
+      </div>
+    </q-card>
+  </q-item> -->
+
+  <!-- SAVE VAL -->
+  <!-- <q-item class="full-width item-supplier">
+    <q-card class="bg-white q-mb-sm full-width">
+      <div
+        class="row full-width justify-between"
+        clickable
+        @click="onCardClick"
+        v-ripple
+      >
+        <div class="flex">
+          <div class="q-py-md q-px-sm date-card">
+            {{ expected_date | dateShort }}
+          </div>
+          <div class="q-py-md q-px-sm main-card">
+            {{ supplier | uppercaseFirst }}
+          </div>
+        </div>
+        <div class="q-py-md q-px-sm icon-card">{{ status }}</div>
+      </div>
+    </q-card>
+  </q-item> -->
 </template>
 
 <script>
@@ -54,28 +77,40 @@ export default {
     number: {
       type: String,
       required: true
+    },
+    id: {
+      type: String,
+      required: true
+    },
+    index: {
+      type: String,
+      required: true
     }
   },
   data() {
-    return {};
+    return {
+      cardWidth: 15
+    };
   },
   methods: {
     onCardClick() {
-      console.log("clicked");
+      //console.log("clicked: ", this.id);
+      //console.log("clicked: ", this.index);
+      var o = { id: this.id, index: this.index };
+      this.$root.$emit("toggleDisplayEvent", o);
+    },
+    onResize(size) {
+      console.log("onResize ELEMENT : " + size.width);
+      this.cardWidth = size.width;
     }
   },
-  mounted() {
-    console.log("i am a supplier card ");
-  },
-  beforeCreate() {
-    console.log("ZEBI LA MOUCHEEEEEEEEEEEEEEEEEEE");
-  }
+  mounted() {}
 };
 </script>
 
 <style lang="css">
 .date-card {
-  padding: 5px;
+
   background-color:lightskyblue;
   min-height: 100%;
   min-width: 60px !important;
@@ -87,17 +122,42 @@ export default {
   min-width: 70% !important;
   max-width: 550px;
   min-height: 1.1em;
-  font-size: 1.4em;
+  font-size: 1.2em;
 }
 .icon-card {
-  padding: 5px;
   background-color:rgb(226, 102, 102);
   min-width: 125px !important;
   width: auto !important;
   max-width: 200px;
+  /* margin-left: 60px; */
 }
 .inner-cont {
-    /* width: auto;
-    min-width: auto; */
+    width: auto;
+    min-width: auto;
+}
+.item-supplier {
+  padding: 0px;
+}
+
+.date-toto {
+  background-color:skyblue;
+  font-size: 1.3em;
+  min-width: 70px !important;
+  max-width: 70px !important;
+  min-height: 100%;
+  text-align: center;
+}
+.name-toto {
+  background-color:yellow;
+  font-size: 1.3em;
+}
+.icon-toto {
+  background-color:orangered;
+  font-size: 1.3em;
+  text-align: center;
+}
+.cont-toto {
+  background-color: slategrey;
+  flex-grow: 1;
 }
 </style>

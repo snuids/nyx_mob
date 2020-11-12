@@ -1,9 +1,10 @@
 <template>
   <div class="">
+    <q-window-resize-observable @resize="onResize" />
     <q-fab
       color="primary"
       icon="calendar_today"
-      direction="up"
+      :direction="direction"
       class="fixed"
       style="right: 25px; bottom: 25px; z-index: 10;"
     >
@@ -38,13 +39,26 @@ Vue.component("TargetDate", TargetDate);
 export default {
   name: "FloatingMenu",
   components: {
-    // TargetDate
+    TargetDate
   },
   data() {
-    return {};
+    return {
+      direction: "up"
+    };
   },
-  methods: {},
-  mounted() {}
+  methods: {
+    onResize(size) {
+      //console.log(size);
+      if (size.height < 550) this.direction = "left";
+      else this.direction = "up";
+      // {
+      //   width: 1200 // width of viewport (in px)
+      //   height: 920 // height of viewport (in px)
+      // }
+    }
+  },
+  mounted() {},
+  computed: {}
 };
 </script>
 

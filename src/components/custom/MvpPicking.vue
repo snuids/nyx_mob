@@ -1,11 +1,11 @@
 <template>
   <q-page class="flex bg-grey-5 row">
     <div v-if="!isPurchaseOrderDisplayed" class="my-container full-width">
-      <PurchaseOrdersList @toggleDisplay="toggleDisplay" />
-      {{ showMe() }}
+      <PurchaseOrdersList />
+      <!-- {{ showMe() }} -->
     </div>
     <div v-else class="">
-      <PurchaseOrderDisplay @toggleDisplay="toggleDisplay" />
+      <PurchaseOrderDisplay />
     </div>
   </q-page>
 </template>
@@ -31,43 +31,93 @@ export default {
     };
   },
   methods: {
+    createCustomStore() {
+      this.$store.registerModule("pickingModule", {
+        state: {
+          targetDate: {
+            dateFrom: "",
+            dateTo: "",
+            dateFromShort: "",
+            dateToShort: ""
+          },
+          currentOrder: {
+            meta: {
+              id: "",
+              index: ""
+            },
+            orderDetails: {}
+          },
+          allPurchaseOrders: {}
+        },
+        getters: {
+          targetDate: state => state.targetDate,
+          currentOrder: state => state.currentOrder,
+          allPurchaseOrders: state => state.allPurchaseOrders
+        },
+        mutations: {
+          mutate_targetDate(state, payload) {
+            state.targetDate = payload.dateObj;
+          },
+          mutate_currentOrder(state, payload) {
+            state.currentOrder = payload.order;
+          },
+          mutate_allPurchaseOrders(state, payload) {
+            state.allPurchaseOrders = payload.data;
+          }
+        }
+      });
+    },
+    addEventListener() {
+      this.$root.$on("toggleDisplayEvent", event => {
+        this.toggleDisplay(event);
+      });
+    },
+    removeEventListener() {
+      this.$root.$off("toggleDisplayEvent");
+    },
     showMe() {
       console.log("#### testest : ", this.$store.state.pickingModule.date);
       console.log("testest getter: ", this.$store.getters.date);
       return this.$store.getters.date;
     },
     toggleDisplay(event) {
-      this.currentOrder = null;
-      for (var i = 0; i < this.ordersList.length; i++) {
-        if (this.ordersList[i].id == event)
-          this.currentOrder = this.ordersList[i];
-      }
+      // console.log(
+      //   "i am toggleDisplay function and i just received an event",
+      //   event
+      // );
+      this.currentOrderMeta = event;
+      this.$store.commit("mutate_currentOrder", {
+        order: {
+          meta: {
+            id: event.id,
+            index: event.index
+          }
+        }
+      });
+      console.log("currentOrderMeta: ", this.currentOrderMeta);
+      // for (var i = 0; i < this.ordersList.length; i++) {
+      //   if (this.ordersList[i].id == event)
+      //     this.currentOrder = this.ordersList[i];
+      // }
       this.isPurchaseOrderDisplayed = !this.isPurchaseOrderDisplayed;
     }
   },
+  /* COMPONENT LIFECYCLE */
+  beforeCreate() {},
   created() {
-    console.log("hello coucou");
-    this.$store.registerModule("pickingModule", {
-      state: {
-        date: "route 66"
-      },
-      getters: {
-        date: state => state.date
-      },
-      mutations: {
-        redate(state, payload) {
-          state.date = payload.date;
-        }
-      }
-    });
-    console.log("byebye coucou");
+    this.createCustomStore();
+    this.addEventListener();
   },
-  mounted() {
-    console.log("ayayayayaye");
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  beforeDestroy() {
+    this.removeEventListener();
+    this.$store.unregisterModule("pickingModule");
   },
-  befpreCreate() {
-    console.log("caramba");
-  }
+  destroyed() {},
+  computed: {}
 };
 </script>
 

@@ -59,7 +59,13 @@ export default {
       //     " / " +
       //     this.dateToShort
       // );
-
+      var obj = {
+        dateFrom: this.dateFrom,
+        dateTo: this.dateTo,
+        dateFromShort: this.dateFromShort,
+        dateToShort: this.dateToShort
+      };
+      this.$store.commit("mutate_targetDate", { dateObj: obj });
       /* VUE-X TESTS */
       // console.log(
       //   "test targetDate.vue => onToday() : " + this.$store.getters.date
@@ -74,8 +80,12 @@ export default {
   created() {
     this.onToday();
   },
-  mounted() {
-    console.log("ICIIIIIIIIIIIIIIIIIIIIIIII");
+  mounted() {},
+  beforeDestroy() {
+    this.dateFrom = null;
+    this.dateTo = null;
+    this.dateFromShort = null;
+    this.dateToShort = null;
   },
   computed: {}
 };

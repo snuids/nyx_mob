@@ -36,3 +36,9 @@ Vue.filter("dateFrench", function(value) {
     return moment(String(value)).format("DD MMMM YYYY");
   }
 });
+
+Vue.filter("uppercaseFirst", function(value) {
+  if (value) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+});

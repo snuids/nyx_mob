@@ -85,9 +85,6 @@ export default {
     };
   },
   methods: {
-    onCardClick() {
-      this.$emit("toggleDisplay", this.id);
-    },
     getPoList() {
       // console.log("#################### getPoList ####################");
       // console.log("###################################################");
@@ -122,38 +119,38 @@ export default {
         .post(url, this.queryList)
         .then(response => {
           this.fullResponse = response;
-          console.log("getPoList() full response : ", response);
+          //console.log("getPoList() full response : ", response);
 
           this.allPurchaseOrders = [];
           for (var i = 0; i < response.data.records.length; i++) {
             this.allPurchaseOrders.push(response.data.records[i]._source);
+            this.allPurchaseOrders[i].id = response.data.records[i]._id;
+            this.allPurchaseOrders[i].index = response.data.records[i]._index;
           }
           console.log(
-            "getPoList() allPurchaseOrders: ",
+            "getPoList()::allPurchaseOrders: ",
             this.allPurchaseOrders
           );
+          this.$store.commit("mutate_allPurchaseOrders", {
+            data: this.allPurchaseOrders
+          });
 
           // UPDATING DISPLAY TRICK
-          var tmp = this.allPurchaseOrders;
-          this.allPurchaseOrders = null;
-          this.allPurchaseOrders = tmp;
+          // var tmp = this.allPurchaseOrders;
+          // this.allPurchaseOrders = null;
+          // this.allPurchaseOrders = tmp;
 
           this.$q.loading.hide();
         })
         .catch(error => {
-          console.log(
-            "| getPoList() / POST | UN PROBLEME EST SURVENU : ",
-            error
-          );
+          console.log("|getPoList()::POST| UN PROBLEME EST SURVENU : ", error);
           this.$q.loading.hide();
         });
     }
   },
   mounted() {
     //this.onToday();
-    console.log("COUCOU");
     this.getPoList();
-    console.log("COUCOU FIN");
   }
 };
 </script>
