@@ -14,7 +14,7 @@ Vue.use(Vuex)
 export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     state: {
-      version: "v1.0.2",
+      version: "v1.0.3",
       apiurl: "../api/v1/",
       menus: [],
       apps: [],
