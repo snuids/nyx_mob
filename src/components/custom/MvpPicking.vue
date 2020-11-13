@@ -132,7 +132,8 @@
             </q-alert>
           </div>
 
-          <!-- CART ITEMS LIST -->
+          <!-- /////////////////////////////////////////////// -->
+          <!-- /////////////// CART ITEMS LIST /////////////// -->
           <q-list class="bg-white" separator bordered>
             <q-item
               :class="getTheColor(item, 'bg')"
@@ -150,12 +151,23 @@
                   class="q-mr-xs text-right"
                   style="display: inline-block; min-width: 75px; float: right;"
                 >
+                  <span
+                    class="caption q-mx-sm"
+                    :style="getTheColor(item, 'name')"
+                  >
+                    {{ getDlc(item) }}
+                  </span>
+                  <q-btn
+                    label="DLC"
+                    small
+                    style="margin-right: 15px; background-color: #9f9999; color: white;"
+                    @click="openDlcBox(index)"
+                  />
                   <q-chip
                     small
                     style="width: 75px; text-align: center"
                     :color="getTheColor(item, 'chip')"
                   >
-                    <!-- <b>{{ item.received }} / {{ item.quantity }}</b> -->
                     <b>{{ chipFill(item.quantity, item.received) }}</b>
                   </q-chip>
                 </div>
@@ -208,9 +220,23 @@
             size="md"
             :disable="disableValidate"
           />
-          <!-- <q-btn label="Valider le bon" color="light-blue-2" icon-right="send" class="q-mx-lg" :disable="!hasPoChanged" @click="sendData" /> -->
         </div>
       </q-card>
+
+      <!-- DLC BOX -->
+      <q-dialog v-model="dlcBox" @ok="onOkDlcPicker" minimized>
+        <span slot="title">Renseigner la DLC</span>
+        <div slot="body">
+          <q-datetime
+            v-model="dateDlc"
+            minimal
+            stack-label="Date limite de consommation"
+          />
+        </div>
+        <template slot="buttons" slot-scope="props">
+          <q-btn flat label="Valider" color="primary" @click="props.ok" />
+        </template>
+      </q-dialog>
 
       <!-- REPORT PROBLEM DIALOG BOX -->
       <q-dialog
@@ -497,79 +523,6 @@
                   </div>
                 </div>
               </div>
-              <!-- ############### GOOD ############### -->
-              <!-- <div class="row full-width">
-                <div
-                  style="float: left; display: inline-flex; font-size: 1.1em; font-weight: bold;"
-                >
-                  <div class="q-mr-sm full-height" style="min-width: 50px;">
-                    {{ purchaseOrder._source.expected_date | formatDate }}
-                  </div>
-                  <div class="q-mr-sm" style="min-width: 250px;">
-                    {{ purchaseOrder._source.supplier }}
-                  </div>
-                </div>
-                <div
-                  style="display:block; float: right; min-width: 150px; margin-left: auto;"
-                >
-                  <div style="display: inline-flex;">
-                    <div class="q-mr-sm" style="min-width: 50px;">
-                      {{ checkNumber(purchaseOrder._source.number) }}
-                    </div>
-                    <div style="min-width: 100px; text-align: right;">
-                      {{ chipStatus(purchaseOrder._source.status) }}
-                    </div>
-                  </div>
-                </div>
-              </div> -->
-              <!-- ############### GOOD ############### -->
-
-              <!-- <q-item class="q-pa-xs">
-                <q-item-side
-                  style="min-width: 43px;"
-                  :text-color="getTextColor(purchaseOrder._source.status)"
-                >
-                  {{ purchaseOrder._source.expected_date | formatDate }}
-                </q-item-side>
-                <q-item-main style="min-width: 230px !important;">
-                  {{ purchaseOrder._source.supplier }}
-                </q-item-main>
-                <q-item-side
-                  :text-color="getTextColor(purchaseOrder._source.status)"
-                  style="display: inline-flex; min-width: 150px;"
-                >
-                  <div style="text-align: right;" class="q-mr-sm">
-                    {{ checkNumber(purchaseOrder._source.number) }}
-                  </div>
-                  <div style="text-align: right; width: 110px !important;">
-                    {{ chipStatus(purchaseOrder._source.status) }}
-                  </div>
-                </q-item-side>
-              </q-item> -->
-
-              <!-- <div class="row full-width">
-                <div style="display:inline; float: left;">
-                  <div class="q-mr-md">
-                    {{ purchaseOrder._source.expected_date | formatDate }}
-                  </div>
-                  <div>
-                    {{ purchaseOrder._source.supplier }}
-                  </div>
-                </div>
-                <div style="display:block; float:right;">
-                  <div style="">
-                    <div
-                      class="q-mr-md"
-                      style="width: 75px; text-align: right;"
-                    >
-                      {{ checkNumber(purchaseOrder._source.number) }}
-                    </div>
-                    <div class="" style="width: 100px; text-align: right;">
-                      <b>{{ chipStatus(purchaseOrder._source.status) }}</b>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
             </div>
           </q-card>
         </div>
@@ -646,8 +599,8 @@
     <q-dialog v-model="pickRangeDateDialog" @ok="onOkRangeDatePicker">
       <span slot="title">Choisir une période</span>
       <div slot="body">
-        <q-datetime v-model="dateFrom" stack-label="Date de début" />
-        <q-datetime v-model="dateTo" stack-label="Date de fin" />
+        <q-datetime minimal v-model="dateFrom" stack-label="Date de début" />
+        <q-datetime minimal v-model="dateTo" stack-label="Date de fin" />
       </div>
       <template slot="buttons" slot-scope="props">
         <q-btn flat label="Valider" color="primary" @click="props.ok" />
@@ -819,17 +772,18 @@ export default {
       slackPushMessageBox: false,
       slackPushMessage: null,
       slackMention: [
-        { user: "Pierre", id: "<@U01AKULTWGP>" },
-        { user: "Valentin", id: "<@U01DKKRJU20>" }
+        { user: "UserName1", id: "<@xxxx>" },
+        { user: "UserName2", id: "<@xxxx>" }
       ],
-      disableValidate: true
+      disableValidate: true,
+      dlcBox: false,
+      dateDlc: null
     };
   },
   // #endregion
   //#region METHODS
   methods: {
     getPoList() {
-      //console.log(' >>>>> AVANT ENVOI : dateFrom/dateTo : ' + this.dateFrom + '/' + this.dateTo)
       this.isDateCorrect();
       this.queryPoList.query.bool.must[0].range.expected_date.gte = this.dateFrom;
       this.queryPoList.query.bool.must[0].range.expected_date.lte = this.dateTo;
@@ -840,7 +794,6 @@ export default {
         this.indice +
         "?token=" +
         this.$store.getters.creds.token;
-      console.log("url : ", url);
 
       this.$q.loading.show();
       axios
@@ -849,9 +802,6 @@ export default {
         })
         .then(response => {
           this.poList = response.data.records;
-          console.log("PoList full response : ", response);
-          //console.log("TEST-O-CON : ", this.poList[10]);
-
           this.checkCustomFields();
 
           // UPDATING DISPLAY TRICK
@@ -859,8 +809,6 @@ export default {
           this.poList = null;
           this.poList = tmp;
 
-          console.log(" Post-Process getPoList : ", this.poList);
-          //console.log("Data succesfully received : ", this.poList)
           this.$q.loading.hide();
         })
         .catch(error => {
@@ -869,8 +817,6 @@ export default {
         });
     },
     getPurchaseOrder(id, index) {
-      //console.log(' ################ >> getPurchaseOrder [id: '+ id +'] & [index: '+ index +']')
-
       var url =
         this.$store.getters.apiurl +
         "generic/" +
@@ -879,41 +825,17 @@ export default {
         id +
         "?token=" +
         this.$store.getters.creds.token;
-      //console.log('url: ', url)
 
       this.$q.loading.show();
-      // this.timer = setTimeout(() => { this.timer = void 0 }, 4500)
       axios
         .get(url)
         .then(response => {
-          console.log(" #####  AXIOS.POST #####");
           this.rawResponse = response;
           this.currentPurchaseOrder = response.data.data._source;
           this.currentPurchaseOrder.line_items = Array.from(
             JSON.parse(this.currentPurchaseOrder.line_items)
           );
-          //console.log('test >>>>>>> ', JSON.stringify(this.currentPurchaseOrder) != JSON.stringify(this.originalPurchaseOrder))
-          console.log(" ############# >> getPurchaseOrder", this.rawResponse);
-
-          // add line_items.received field if it doesn't exist yet
-          // for (
-          //   var i = 0;
-          //   i < this.currentPurchaseOrder.line_items.length;
-          //   i++
-          // ) {
-          //   if (this.currentPurchaseOrder.line_items[i].received == null)
-          //     this.currentPurchaseOrder.line_items[i].received = -1;
-          // }
-          // add units_ordered & units_received if it doesn't exist yet
-          // if (this.currentPurchaseOrder.units_ordered == null)
-          //   this.currentPurchaseOrder.units_ordered = -1;
-          // if (this.currentPurchaseOrder.units_received == null)
-          //   this.currentPurchaseOrder.units_received = -1;
-          // if (this.currentPurchaseOrder.cart_status == null)
-          //   this.currentPurchaseOrder.cart_status = null;
           this.checkCustomFieldsOrder();
-
-          //console.log("POST RECEIVED PROCESSING", this.currentPurchaseOrder);
 
           this.originalPurchaseOrder = JSON.parse(
             JSON.stringify(this.currentPurchaseOrder)
@@ -950,7 +872,6 @@ export default {
       }
     },
     checkCustomFieldsOrder() {
-      console.log("customFieldsOrder : ", this.currentPurchaseOrder);
       if (this.currentPurchaseOrder.units_ordered == null)
         this.currentPurchaseOrder.units_ordered = -1;
       if (this.currentPurchaseOrder.units_received == null)
@@ -968,31 +889,17 @@ export default {
 
       // check received field on each item of line_items
       for (var u = 0; u < this.currentPurchaseOrder.line_items.length; u++) {
-        console.log(
-          "Checking item [" + u + "]",
-          this.currentPurchaseOrder.line_items[u]
-        );
         if (this.currentPurchaseOrder.line_items[u].received == null) {
           this.currentPurchaseOrder.line_items[u].received = -1;
         }
       }
-      // this.currentPurchaseOrder.line_items = Array.from(
-      //   JSON.parse(this.currentPurchaseOrder.line_items)
-      // );
     },
     validateOrder() {
       if (!this.disableValidate) {
-        console.log("execute order 66");
-        // on passe validated a true
         this.currentPurchaseOrder.validated = true;
-
-        // on check si il y a des problemes dans la commande, auquel cas ou push un msg sur slack
         this.anyMissingItemsForValidation();
-
-        // on envoie les data au server
         this.sendData();
 
-        // on notifie le resultat
         this.$q.notify({
           message: "Le bon est correctement validé !",
           timeout: 5000,
@@ -1008,18 +915,7 @@ export default {
       }
     },
     sendData() {
-      console.log("======= SENDING DATA =========");
-      // console.log('order : ', this.currentPurchaseOrder)
-      // console.log('cart : ', this.currentCart)
-      // any changes ?
-      console.log(" ///// >>> original PO : ", this.originalPurchaseOrder);
-      console.log(" ////// >>> current PO : ", this.currentPurchaseOrder);
-
       if (!this.hasPoChanged) return;
-      console.log(
-        "======= SOMETHING HAS CHANGED => WE'RE SENDING DATA ========="
-      );
-
       // count ordered & received items
       this.currentPurchaseOrder.units_received = this.totalItemsReceived();
       this.currentPurchaseOrder.units_ordered = this.totalItems();
@@ -1042,7 +938,6 @@ export default {
         _source: tmp,
         _id: this.rawResponse.data.data._id
       };
-      console.log("######### PRE SEND : ", updatedPurchaseOrder);
 
       // send the update request
       this.$store.commit({
@@ -1067,7 +962,6 @@ export default {
       console.log("url : ", url);
 
       this.queryProductsList.query.bool.filter[0].multi_match.query = this.currentPurchaseOrder.supplier;
-      //console.log("Verification query products : ", this.queryProductsList)
 
       this.$q.loading.show();
       axios
@@ -1076,7 +970,6 @@ export default {
         })
         .then(response => {
           this.productList = response.data.records;
-          console.log("Data succesfully received : ", response.data.records);
           this.prepareProducts();
           this.$q.loading.hide();
         })
@@ -1093,7 +986,6 @@ export default {
       this.productSearch = true;
     },
     showOrderComment() {
-      //console.log("we want to display the comment box");
       if (this.currentPurchaseOrder.comment != null)
         this.orderComment = this.currentPurchaseOrder.comment;
       this.orderCommentBox = true;
@@ -1102,7 +994,6 @@ export default {
       this.slackPushMessageBox = true;
     },
     saveComment() {
-      //console.log("we want to save the comment : ", this.orderComment);
       this.currentPurchaseOrder.comment = this.orderComment;
       this.orderCommentBox = false;
     },
@@ -1181,24 +1072,12 @@ export default {
       if (str === "partially_collected") return "INCOMPLETE";
     },
     chipColor(int) {
-      // console.log('debug chipColor', this.poList)
       var str = this.getThePassage(int);
       if (str === "passage") return "blue";
       if (str === "fini") return "green";
       if (str === "entrain") return "orange";
     },
     chipFill(qty, qty_rvd) {
-      // if (isNaN(this.currentEditQty_received)) {
-      //   return this.currentEditQty_received + ' / '+ this.currentEditQty
-      // } else {
-      //   return this.currentEditQty
-      // }
-      // ##############""
-      // if (isNaN(qty_rvd)) {
-      //   return qty_rvd +' / '+ qty
-      // } else {
-      //   return qty
-      // }
       if (qty_rvd == -1) {
         return qty;
       } else if (qty_rvd == qty) {
@@ -1208,11 +1087,9 @@ export default {
       }
     },
     lineIsOk(index) {
-      //console.log('LINE IS OK >>>> ', this.currentPurchaseOrder.line_items)
       this.currentPurchaseOrder.line_items[
         index
       ].received = this.currentPurchaseOrder.line_items[index].quantity;
-      //console.log('we want this line all ok', this.currentCart[index])
       var tmp = JSON.parse(JSON.stringify(this.currentPurchaseOrder));
       this.currentPurchaseOrder = null;
       this.currentPurchaseOrder = tmp;
@@ -1248,19 +1125,8 @@ export default {
         this.currentEditQty_received = this.currentPurchaseOrder.line_items[
           id
         ].received;
-      //this.fillScrollPickerOptions(this.currentEditQty)
-      // var tmp = this.currentEditQty_received
-      // this.currentEditQty_received = null
-      // this.currentEditQty_received = tmp
       this.problemBox = true;
     },
-    // fillScrollPickerOptions (int) {
-    //   this.scrollPickerOptions = []
-    //   for (var i = 0; i < int+1; i++) {
-    //     this.scrollPickerOptions.push(i)
-    //   }
-    //   //console.log("OPTIONS >>>> ", this.scrollPickerOptions)
-    // },
     getTheColor(obj, str) {
       switch (str) {
         case "bg":
@@ -1283,11 +1149,10 @@ export default {
           else return "color: white;";
           break;
         default:
-          console.log("Probleme switch getTheColor()");
+          console.log("Switch getTheColor() crashed");
       }
     },
     getBgColor(str) {
-      //console.log("getBgColor (str) >> : ", str);
       switch (str) {
         case "to_be_collected":
           return "white";
@@ -1299,11 +1164,10 @@ export default {
           return "green";
           break;
         default:
-          console.log("Probleme switch getBgColor()");
+          console.log("Switch getBgColor() crashed");
       }
     },
     isThereChip(str) {
-      //console.log("getBgColor (str) >> : ", str);
       switch (str) {
         case "to_be_collected":
           return false;
@@ -1313,7 +1177,6 @@ export default {
       }
     },
     getChipColor(str) {
-      //console.log("getBgColor (str) >> : ", str);
       switch (str) {
         case "partially_collected":
           return "orange-9";
@@ -1322,11 +1185,10 @@ export default {
           return "green-9";
           break;
         default:
-          console.log("Probleme switch getChipColor()");
+          console.log("Switch getChipColor() crashed");
       }
     },
     getChipIcon(str) {
-      //console.log("getBgColor (str) >> : ", str);
       switch (str) {
         case "partially_collected":
           return "error";
@@ -1335,7 +1197,7 @@ export default {
           return "thumb_up";
           break;
         default:
-          console.log("Probleme switch getChipIcon()");
+          console.log("Switch getChipIcon() crashed");
       }
     },
     getTextColor(str) {
@@ -1350,7 +1212,7 @@ export default {
           return "color: white;";
           break;
         default:
-          console.log("Probleme switch getBgColor()");
+          console.log("Switch getBgColor() crashed");
       }
     },
     toggleFab() {
@@ -1371,27 +1233,23 @@ export default {
       }
     },
     totalItems() {
-      //console.log('###### totalItems ######')
       var u = 0;
       for (var i = 0; i < this.currentPurchaseOrder.line_items.length; i++) {
         u += this.currentPurchaseOrder.line_items[i].quantity;
       }
-      console.log(">>>>>> TOTAL : ", u);
       return u;
     },
     totalItemsReceived() {
-      //console.log('###### totalItems ######')
       var u = 0;
       for (var i = 0; i < this.currentPurchaseOrder.line_items.length; i++) {
         if (this.currentPurchaseOrder.line_items[i].received > 0)
           u += this.currentPurchaseOrder.line_items[i].received;
       }
-      console.log(">>>>>> TOTAL RECEIVED : ", u);
       return u;
     },
     anyChangeToSubmit() {
-      // return false si pas de difference
-      // return true si des differences sont trouvées
+      // return false if no difference
+      // return true if some differences have been found
       for (var i = 0; i < this.currentPurchaseOrder.line_items.length; i++) {
         if (this.currentPurchaseOrder.line_items[i].received > -1) return true;
       }
@@ -1428,12 +1286,6 @@ export default {
         ].received;
     },
     addThisProduct() {
-      console.log(
-        "we want to add this product ... ",
-        this.productList[this.rawIndex]
-      );
-      console.log("... to this purchase order : ", this.currentPurchaseOrder);
-
       if (this.rawQty > 5000) this.rawQty = 5000;
       if (this.rawQty <= 0) this.rawQty = 0;
 
@@ -1465,46 +1317,33 @@ export default {
       this.rawQty = 1;
     },
     prepareProducts() {
-      console.log(
-        "//// PREPARE_PRODUCTS nb de produits : ",
-        this.productList.length
-      );
       if (this.productList.length == 0) {
         this.noProducts = true;
         return;
       }
-
       var array = [];
       for (var i = 0; i < this.productList.length; i++) {
         array[i] = this.productList[i]._source;
       }
-      //console.log("//// PREPARE_PRODUCTS : ", array)
 
       array.sort(function(a, b) {
         var nameA = a.title.toLowerCase(),
           nameB = b.title.toLowerCase();
-        if (nameA < nameB)
-          //sort string ascending
-          return -1;
+        if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
-        return 0; //default return value (no sorting)
+        return 0;
       });
-      //console.log("//// PREPARE_PRODUCTS trié : ", array)
       this.productList = array;
     },
     getThePassage(int) {
-      //console.log('######### getThePassage for index ['+int+']')
       var cart = Array.from(JSON.parse(this.poList[int]._source.line_items));
-      //console.log('debug cart post array.from.parse : ', cart)
       var foundQty = false;
       var foundMinusOne = false;
       for (var i = 0; i < cart.length; i++) {
-        // console.log('line_items [ '+ cart[i].full_title +' : '+ cart[i].received +' ]')
         if (cart[i].received > -1) foundQty = true;
         else if (cart[i].received === -1) foundMinusOne = true;
         else foundMinusOne = true;
       }
-      // console.log('######### getThePassage for index ['+int+'] : foundQty['+ foundQty +'] & foundMinusOne['+ foundMinusOne +']')
       if (foundQty && foundMinusOne) return "entrain";
       else if (!foundQty && foundMinusOne) return "passage";
       else return "fini";
@@ -1526,8 +1365,6 @@ export default {
       if (this.rawQty === "") this.rawQty = 1;
     },
     alreadyInCart(str) {
-      console.log("already In Cart / we re looking for :  ", str);
-      console.log("already In Cart : ", this.currentPurchaseOrder.line_items);
       for (var i = 0; i < this.currentPurchaseOrder.line_items.length; i++) {
         if (this.currentPurchaseOrder.line_items[i].full_title == str)
           return true;
@@ -1539,6 +1376,7 @@ export default {
     },
     sendSlackMsg(channel, supplier, number, date, problems) {
       if (number == "CREATED_BY_NYX") number = "PO-NYX";
+      var title = "Tournée de ramassage : nouveau message.";
 
       var testO =
         "[" +
@@ -1555,7 +1393,6 @@ export default {
         " ]\n" +
         this.slackPushMessage;
 
-      //console.log("###### debug : ", testO);
       var formatedMentions = "";
       for (var i = 0; i < this.slackMention.length; i++) {
         formatedMentions = formatedMentions + this.slackMention[i].id + " ";
@@ -1587,6 +1424,7 @@ export default {
 
       // supply quantity problems to be reported
       if (problems != null) {
+        text2send[0].text.text = "Problème lors de la livraison";
         text2send.push({ type: "divider" });
         for (var i = 0; i < problems.length; i++) {
           var toAdd = {
@@ -1598,7 +1436,7 @@ export default {
                 problems[i].title +
                 "\n*Variant id :* " +
                 problems[i].variant +
-                "\n*Quantite reçue:* " +
+                "\n*Quantité reçue:* " +
                 problems[i].received +
                 " / " +
                 problems[i].quantity
@@ -1608,41 +1446,6 @@ export default {
         }
         text2send.push({ type: "divider" });
       }
-      // var text2send = [
-      //   {
-      //     type: "header",
-      //     text: {
-      //       type: "plain_text",
-      //       text: "Problème de livraison <@U01AKULTWGP>"
-      //     }
-      //   },
-      //   {
-      //     type: "section",
-      //     text: {
-      //       type: "plain_text",
-      //       text: "User / truc muche ext."
-      //     }
-      //   },
-      //   {
-      //     type: "section",
-      //     text: {
-      //       type: "mrkdwn",
-      //       text: "*Produit :* blabla\n*Quantite reçue:* 2 / 3\n"
-      //     }
-      //   },
-      //   {
-      //     type: "section",
-      //     text: {
-      //       type: "mrkdwn",
-      //       text: "*Produit :* blabla\n*Quantite reçue:* 2 / 3\n"
-      //     }
-      //   },
-      //   {
-      //     type: "divider"
-      //   }
-      // ];
-
-      console.log("DEBUG TEXT2SEND : ", text2send);
 
       var slackObject = {
         channel: channel,
@@ -1651,7 +1454,7 @@ export default {
       var slackUrl =
         this.$store.getters.apiurl +
         "lambdas/4/publish_to_slack?apikey=MVP2410MVP";
-      //console.log("SLACK OBJECT >>> ", slackObject);
+
       axios
         .post(slackUrl, slackObject)
         .then(response => {
@@ -1679,34 +1482,22 @@ export default {
     checkValidateState() {
       var tmpState = true;
       for (var i = 0; i < this.currentPurchaseOrder.line_items.length; i++) {
-        // console.log(
-        //   "CHACK_VALIDATE_STATE : ",
-        //   this.currentPurchaseOrder.line_items[i]
-        // );
         if (this.currentPurchaseOrder.line_items[i].received == -1) {
-          // console.log(
-          //   "on a trouvé un -1, pas la peine d'aller plus loin : on return"
-          // );
           this.disableValidate = true;
-          //console.log("FINAL STATE for allowValidate : ", this.disableValidate);
           return;
         } else {
-          //console.log("on a trouvé une ligne remplie");
           tmpState = false;
         }
         this.disableValidate = tmpState;
-        //console.log("FINAL STATE for allowValidate : ", this.disableValidate);
       }
     },
     anyMissingItemsForValidation() {
-      //console.log(" anyMissingItemsForValidation ENTERING");
       var flag = false;
       for (var i = 0; i < this.currentPurchaseOrder.line_items.length; i++) {
         if (
           this.currentPurchaseOrder.units_received !=
           this.currentPurchaseOrder.units_ordered
         ) {
-          console.log("cette commande a un/des probleme(s)");
           var problemsArray = [];
           for (
             var i = 0;
@@ -1739,6 +1530,20 @@ export default {
           );
         }
       }
+    },
+    openDlcBox(id) {
+      this.currentEditId = id;
+      this.dlcBox = true;
+    },
+    onOkDlcPicker() {
+      this.currentPurchaseOrder.line_items[
+        this.currentEditId
+      ].dlc = this.dateDlc;
+      this.dlcBox = false;
+      this.dateDlc = null;
+    },
+    getDlc(item) {
+      if (item.dlc != null) return moment(item.dlc).format("DD/MM/YY");
     }
   },
   // #endregion
@@ -1789,14 +1594,6 @@ export default {
   font-size: 32px;
 }
 .custom-card {
-  /* background: linear-gradient(150deg, #fff 50%, #74abf2 50%); */
-  /* display:inline-block;
-    padding:0.75em 2.0em; */
-  /* text-align:center;
-    margin:0.25em 0;
-    color:#ffffff; */
-  /* font-weight: bolder; */
-  /* font-family: sans-serif; */
   font-size: 1em;
   text-transform: uppercase;
   max-width: 1200px;
