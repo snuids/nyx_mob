@@ -66,9 +66,16 @@ module.exports = function(ctx) {
         "QFab",
         "QFabAction",
         "QWindowResizeObservable",
-        "QResizeObservable"
+        "QResizeObservable",
+        "QCollapsible",
+        "QInfiniteScroll",
+        "QModal",
+        "QCardMain",
+        "QCardSeparator",
+        "QDialog",
+        "QChip"
       ],
-      directives: ["Ripple"],
+      directives: ["Ripple", "CloseOverlay"],
       // Quasar plugins
       plugins: ["Notify", "Dialog", "Loading"]
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
