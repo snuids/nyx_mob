@@ -73,7 +73,8 @@ module.exports = function(ctx) {
         "QCardMain",
         "QCardSeparator",
         "QDialog",
-        "QChip"
+        "QChip",
+        "QAlert"
       ],
       directives: ["Ripple", "CloseOverlay"],
       // Quasar plugins

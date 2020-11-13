@@ -95,7 +95,7 @@
             <q-btn
               color="primary"
               class="full-width q-my-sm"
-              label="Ajouter un produit"
+              label="Ajouter un produit au bon"
               icon="add"
               @click="addProduct"
               size="lg"
@@ -103,7 +103,7 @@
             <q-btn
               color="primary"
               class="full-width q-my-sm"
-              label="Envoyer sur slack"
+              label="Envoyer un message sur slack"
               icon="chat_bubble_outline"
               @click="showSlackMessage"
               size="lg"
@@ -111,7 +111,7 @@
             <q-btn
               color="primary"
               class="full-width q-my-sm"
-              label="Commentaire"
+              label="Ajouter un commentaire au bon"
               icon="notes"
               @click="showOrderComment"
               size="lg"
@@ -309,7 +309,8 @@
                 '#appro',
                 currentPurchaseOrder.supplier,
                 currentPurchaseOrder.number,
-                currentPurchaseOrder.expected_date
+                currentPurchaseOrder.expected_date,
+                null
               )
             "
             size="md"
@@ -817,6 +818,10 @@ export default {
       orderComment: null,
       slackPushMessageBox: false,
       slackPushMessage: null,
+      slackMention: [
+        { user: "Pierre", id: "<@U01AKULTWGP>" },
+        { user: "Valentin", id: "<@U01DKKRJU20>" }
+      ],
       disableValidate: true
     };
   },
@@ -908,7 +913,7 @@ export default {
           //   this.currentPurchaseOrder.cart_status = null;
           this.checkCustomFieldsOrder();
 
-          console.log("POST RECEIVED PROCESSING", this.currentPurchaseOrder);
+          //console.log("POST RECEIVED PROCESSING", this.currentPurchaseOrder);
 
           this.originalPurchaseOrder = JSON.parse(
             JSON.stringify(this.currentPurchaseOrder)
@@ -960,6 +965,20 @@ export default {
         this.currentPurchaseOrder.comment = null;
       if (this.currentPurchaseOrder.validated == null)
         this.currentPurchaseOrder.validated = null;
+
+      // check received field on each item of line_items
+      for (var u = 0; u < this.currentPurchaseOrder.line_items.length; u++) {
+        console.log(
+          "Checking item [" + u + "]",
+          this.currentPurchaseOrder.line_items[u]
+        );
+        if (this.currentPurchaseOrder.line_items[u].received == null) {
+          this.currentPurchaseOrder.line_items[u].received = -1;
+        }
+      }
+      // this.currentPurchaseOrder.line_items = Array.from(
+      //   JSON.parse(this.currentPurchaseOrder.line_items)
+      // );
     },
     validateOrder() {
       if (!this.disableValidate) {
@@ -1518,56 +1537,110 @@ export default {
     capitalizeFistLetter(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
-    sendSlackMsg(channel, supplier, number, date) {
+    sendSlackMsg(channel, supplier, number, date, problems) {
       if (number == "CREATED_BY_NYX") number = "PO-NYX";
 
-      // var text2send =
-      //   "[ " +
-      //   this.capitalizeFistLetter(this.$store.getters.creds.user.firstname) +
-      //   " | " +
-      //   this.capitalizeFistLetter(supplier) +
-      //   " | " +
-      //   number +
-      //   " | " +
-      //   moment(date).format("DD/MM/YYYY") +
-      //   " ] [" +
-      //   channel +
-      //   "] : \n" +
-      //   this.slackPushMessage;
+      var testO =
+        "[" +
+        channel +
+        "] " +
+        "[ " +
+        this.capitalizeFistLetter(this.$store.getters.creds.user.firstname) +
+        " | " +
+        this.capitalizeFistLetter(supplier) +
+        " | " +
+        number +
+        " | " +
+        moment(date).format("DD/MM/YYYY") +
+        " ]\n" +
+        this.slackPushMessage;
+
+      //console.log("###### debug : ", testO);
+      var formatedMentions = "";
+      for (var i = 0; i < this.slackMention.length; i++) {
+        formatedMentions = formatedMentions + this.slackMention[i].id + " ";
+      }
 
       var text2send = [
         {
           type: "header",
           text: {
             type: "plain_text",
-            text: "Probleme livraison <@U01AKULTWGP>"
+            text: "Tournée de ramassage : nouveau message."
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: formatedMentions
           }
         },
         {
           type: "section",
           text: {
             type: "plain_text",
-            text: "User / truc muche ext."
+            text: testO
           }
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "*Produit :* blabla\n*Quantite reçue:* 2 / 3\n"
-          }
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "*Produit :* blabla\n*Quantite reçue:* 2 / 3\n"
-          }
-        },
-        {
-          type: "divider"
         }
       ];
+
+      // supply quantity problems to be reported
+      if (problems != null) {
+        text2send.push({ type: "divider" });
+        for (var i = 0; i < problems.length; i++) {
+          var toAdd = {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text:
+                "*Produit :* " +
+                problems[i].title +
+                "\n*Variant id :* " +
+                problems[i].variant +
+                "\n*Quantite reçue:* " +
+                problems[i].received +
+                " / " +
+                problems[i].quantity
+            }
+          };
+          text2send.push(toAdd);
+        }
+        text2send.push({ type: "divider" });
+      }
+      // var text2send = [
+      //   {
+      //     type: "header",
+      //     text: {
+      //       type: "plain_text",
+      //       text: "Problème de livraison <@U01AKULTWGP>"
+      //     }
+      //   },
+      //   {
+      //     type: "section",
+      //     text: {
+      //       type: "plain_text",
+      //       text: "User / truc muche ext."
+      //     }
+      //   },
+      //   {
+      //     type: "section",
+      //     text: {
+      //       type: "mrkdwn",
+      //       text: "*Produit :* blabla\n*Quantite reçue:* 2 / 3\n"
+      //     }
+      //   },
+      //   {
+      //     type: "section",
+      //     text: {
+      //       type: "mrkdwn",
+      //       text: "*Produit :* blabla\n*Quantite reçue:* 2 / 3\n"
+      //     }
+      //   },
+      //   {
+      //     type: "divider"
+      //   }
+      // ];
 
       console.log("DEBUG TEXT2SEND : ", text2send);
 
@@ -1578,7 +1651,7 @@ export default {
       var slackUrl =
         this.$store.getters.apiurl +
         "lambdas/4/publish_to_slack?apikey=MVP2410MVP";
-      console.log("SLACK OBJECT >>> ", slackObject);
+      //console.log("SLACK OBJECT >>> ", slackObject);
       axios
         .post(slackUrl, slackObject)
         .then(response => {
@@ -1634,7 +1707,7 @@ export default {
           this.currentPurchaseOrder.units_ordered
         ) {
           console.log("cette commande a un/des probleme(s)");
-          var text = "\n";
+          var problemsArray = [];
           for (
             var i = 0;
             i < this.currentPurchaseOrder.line_items.length;
@@ -1644,19 +1717,14 @@ export default {
               this.currentPurchaseOrder.line_items[i].quantity !=
               this.currentPurchaseOrder.line_items[i].received
             ) {
-              text =
-                text +
-                "Produit: " +
-                this.currentPurchaseOrder.line_items[i].full_title +
-                " (" +
-                this.currentPurchaseOrder.line_items[i].variant_id +
-                ")\n" +
-                "Quantité commandée: " +
-                this.currentPurchaseOrder.line_items[i].quantity +
-                "\n" +
-                "Quantité reçue: " +
-                this.currentPurchaseOrder.line_items[i].received +
-                "\n\n\n";
+              var o = {
+                title: this.currentPurchaseOrder.line_items[i].full_title,
+                variant: this.currentPurchaseOrder.line_items[i].variant_id,
+                quantity: this.currentPurchaseOrder.line_items[i].quantity,
+                received: this.currentPurchaseOrder.line_items[i].received
+              };
+              problemsArray.push(o);
+              var text = "Il manque des produits : ";
             }
           }
           this.slackPushMessage = text;
@@ -1666,7 +1734,8 @@ export default {
             "#ramassage",
             this.currentPurchaseOrder.supplier,
             this.currentPurchaseOrder.number,
-            this.currentPurchaseOrder.expected_date
+            this.currentPurchaseOrder.expected_date,
+            problemsArray
           );
         }
       }
