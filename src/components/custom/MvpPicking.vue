@@ -1453,7 +1453,7 @@ export default {
       };
       var slackUrl =
         this.$store.getters.apiurl +
-        "lambdas/4/publish_to_slack?apikey=MVP2410MVP";
+        "lambdas/4/publish_to_slack?apikey=XXXXX";
 
       axios
         .post(slackUrl, slackObject)
