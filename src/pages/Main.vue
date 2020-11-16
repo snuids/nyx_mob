@@ -1,6 +1,6 @@
 <template>
   <q-layout>
-    <q-layout-header>
+    <q-header>
       <q-toolbar>
         <!-- showLeft is a model attached to left side drawer below -->
         <q-btn
@@ -15,9 +15,9 @@
         </q-toolbar-title>
 
       </q-toolbar>
-    </q-layout-header>
+    </q-header>
 
-    <q-layout-drawer side="left" v-model="showLeft">
+    <q-drawer side="left" v-model="showLeft">
       <div class="bg-brown-1 account-container">
           <q-icon size="80px" class="account-icon" name="account_circle" color="green" />
 
@@ -39,19 +39,21 @@
       
       <q-list no-border link inset-separator>
         <span v-for="(menu, index) in filteredmenus" :key="index">
-            <q-list-header>{{menu.loc_category}}</q-list-header>
+            <q-item-label header>{{menu.loc_category}}</q-item-label>
             <q-item 
               :to="'/main/'+submenu.apps[0].rec_id" 
               v-for="(submenu, index) in menu.submenus" 
               @click.native="appClicked(submenu)"
               :key="index">
-              <q-item-side v-if="submenu.apps[0].type=='form'" icon="insert_drive_file" />
-              <q-item-side v-else icon="school" />
-              <q-item-main :label="submenu.loc_title"/>
+              <q-item-section avatar v-if="submenu.apps[0].type=='form'" icon="insert_drive_file" />
+              <q-item-section avatar v-else>
+                <q-icon name="school"/>
+              </q-item-section>
+              <q-item-section>{{submenu.loc_title}}</q-item-section>
             </q-item>
         </span>
       </q-list>
-    </q-layout-drawer>
+    </q-drawer>
 
     <q-page-container>
           <router-view/>

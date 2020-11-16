@@ -2,11 +2,14 @@
  * THIS FILE IS GENERATED AUTOMATICALLY.
  * DO NOT EDIT.
  *
- * You are probably looking on adding initialization code.
- * Use "quasar new plugin <name>" and add it there.
- * One plugin per concern. Then reference the file(s) in quasar.conf.js > plugins:
- * plugins: ['file', ...] // do not add ".js" extension to it.
+ * You are probably looking on adding startup/initialization code.
+ * Use "quasar new boot <name>" and add it there.
+ * One boot file per concern. Then reference the file(s) in quasar.conf.js > boot:
+ * boot: ['file', ...] // do not add ".js" extension to it.
+ *
+ * Boot files are your "main.js"
  **/
+import Vue from 'vue'
 import './import-quasar.js'
 
 
@@ -14,19 +17,23 @@ import './import-quasar.js'
 import App from 'app/src/App.vue'
 
 
-import createStore from 'app/src/store/index.js'
+import createStore from 'app/src/store/index'
 
-import createRouter from 'app/src/router/index.js'
+import createRouter from 'app/src/router/index'
 
-export default function () {
+
+
+
+
+export default async function () {
   // create store and router instances
   
   const store = typeof createStore === 'function'
-    ? createStore()
+    ? await createStore({Vue})
     : createStore
   
   const router = typeof createRouter === 'function'
-    ? createRouter({store})
+    ? await createRouter({Vue, store})
     : createRouter
   
   // make router instance available in store
@@ -37,12 +44,14 @@ export default function () {
   // Here we inject the router, store to all child components,
   // making them available everywhere as `this.$router` and `this.$store`.
   const app = {
-    el: '#q-app',
     router,
     store,
     render: h => h(App)
   }
 
+
+  
+  app.el = '#q-app'
   
 
   // expose the app, the router and the store.

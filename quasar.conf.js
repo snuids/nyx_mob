@@ -2,8 +2,8 @@
 
 module.exports = function (ctx) {
   return {
-    // app plugins (/src/plugins)
-    plugins: [
+    // app boot (/src/boot)
+    boot: [
       'i18n',
       'axios',
       'vuelidate'
@@ -12,16 +12,16 @@ module.exports = function (ctx) {
       'app.styl'
     ],
     extras: [
-      ctx.theme.mat ? 'roboto-font' : null,
+      'roboto-font',
       'material-icons', // optional, you are not bound to it
-      'ionicons',
-      'mdi',
-      'fontawesome'
+      'ionicons-v4',
+      'mdi-v5',
+      'fontawesome-v5'
     ],
     supportIE: true,
     build: {
       scopeHoisting: true,
-      publicPath:'/mobile/',
+      publicPath:'/',
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,
@@ -46,8 +46,8 @@ module.exports = function (ctx) {
     framework: {
       components: [
         'QLayout',
-        'QLayoutHeader',
-        'QLayoutDrawer',
+        'QHeader',
+        'QDrawer',
         'QPageContainer',
         'QPage',
         'QToolbar',
@@ -56,18 +56,16 @@ module.exports = function (ctx) {
         'QIcon',
         'QInput',
         'QList',
-        'QListHeader',
         'QItem',
-        'QItemMain',
         'QField',
-        'QItemSide',
+        'QItemSection',
         'QUploader',
-        'QChipsInput',
+        'QChip',
         'QSelect',
         'QRating',
         'QToggle',
-        'QDatetime',
-        'QDatetimePicker'
+        'QDate',
+        'QTime'
       ],
       directives: [
         'Ripple'
