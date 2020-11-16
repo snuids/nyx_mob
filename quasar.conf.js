@@ -3,25 +3,19 @@
 module.exports = function(ctx) {
   return {
     // app boot (/src/boot)
-    boot: [
-      'i18n',
-      'axios',
-      'vuelidate'
-    ],
-    css: [
-      'app.styl'
-    ],
+    boot: ["i18n", "axios", "vuelidate"],
+    css: ["app.styl"],
     extras: [
-      'roboto-font',
-      'material-icons', // optional, you are not bound to it
-      'ionicons-v4',
-      'mdi-v5',
-      'fontawesome-v5'
+      "roboto-font",
+      "material-icons", // optional, you are not bound to it
+      "ionicons-v4",
+      "mdi-v5",
+      "fontawesome-v5"
     ],
     supportIE: true,
     build: {
       scopeHoisting: true,
-      publicPath:'/',
+      publicPath: "/",
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,
@@ -45,29 +39,29 @@ module.exports = function(ctx) {
 
     framework: {
       components: [
-        'QLayout',
-        'QHeader',
-        'QDrawer',
-        'QPageContainer',
-        'QPage',
-        'QToolbar',
-        'QToolbarTitle',
-        'QBtn',
-        'QIcon',
-        'QInput',
-        'QList',
-        'QItem',
-        'QField',
-        'QItemSection',
-        'QUploader',
-        'QChip',
-        'QSelect',
-        'QRating',
-        'QToggle',
-        'QDate',
-        'QTime'
+        "QLayout",
+        "QHeader",
+        "QDrawer",
+        "QPageContainer",
+        "QPage",
+        "QToolbar",
+        "QToolbarTitle",
+        "QBtn",
+        "QIcon",
+        "QInput",
+        "QList",
+        "QItem",
+        "QField",
+        "QItemSection",
+        "QUploader",
+        "QChip",
+        "QSelect",
+        "QRating",
+        "QToggle",
+        "QDate",
+        "QTime"
       ],
-      directives: ["Ripple", "CloseOverlay"],
+      directives: ["Ripple"],
       // Quasar plugins
       plugins: ["Notify", "Dialog", "Loading"]
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
