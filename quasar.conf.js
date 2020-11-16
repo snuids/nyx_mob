@@ -2,20 +2,26 @@
 
 module.exports = function(ctx) {
   return {
-    // app plugins (/src/plugins)
-    plugins: ["i18n", "axios", "vuelidate"],
-    css: ["app.styl"],
+    // app boot (/src/boot)
+    boot: [
+      'i18n',
+      'axios',
+      'vuelidate'
+    ],
+    css: [
+      'app.styl'
+    ],
     extras: [
-      ctx.theme.mat ? "roboto-font" : null,
-      "material-icons", // optional, you are not bound to it
-      "ionicons",
-      "mdi",
-      "fontawesome"
+      'roboto-font',
+      'material-icons', // optional, you are not bound to it
+      'ionicons-v4',
+      'mdi-v5',
+      'fontawesome-v5'
     ],
     supportIE: true,
     build: {
       scopeHoisting: true,
-      publicPath: "/mobile/",
+      publicPath:'/',
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,
@@ -39,42 +45,27 @@ module.exports = function(ctx) {
 
     framework: {
       components: [
-        "QLayout",
-        "QLayoutHeader",
-        "QLayoutDrawer",
-        "QPageContainer",
-        "QPage",
-        "QToolbar",
-        "QToolbarTitle",
-        "QBtn",
-        "QIcon",
-        "QInput",
-        "QList",
-        "QListHeader",
-        "QItem",
-        "QItemMain",
-        "QField",
-        "QItemSide",
-        "QUploader",
-        "QChipsInput",
-        "QSelect",
-        "QRating",
-        "QToggle",
-        "QDatetime",
-        "QDatetimePicker",
-        "QCard",
-        "QFab",
-        "QFabAction",
-        "QWindowResizeObservable",
-        "QResizeObservable",
-        "QCollapsible",
-        "QInfiniteScroll",
-        "QModal",
-        "QCardMain",
-        "QCardSeparator",
-        "QDialog",
-        "QChip",
-        "QAlert"
+        'QLayout',
+        'QHeader',
+        'QDrawer',
+        'QPageContainer',
+        'QPage',
+        'QToolbar',
+        'QToolbarTitle',
+        'QBtn',
+        'QIcon',
+        'QInput',
+        'QList',
+        'QItem',
+        'QField',
+        'QItemSection',
+        'QUploader',
+        'QChip',
+        'QSelect',
+        'QRating',
+        'QToggle',
+        'QDate',
+        'QTime'
       ],
       directives: ["Ripple", "CloseOverlay"],
       // Quasar plugins

@@ -2,16 +2,18 @@
  * THIS FILE IS GENERATED AUTOMATICALLY.
  * DO NOT EDIT.
  *
- * You are probably looking on adding initialization code.
- * Use "quasar new plugin <name>" and add it there.
- * One plugin per concern. Then reference the file(s) in quasar.conf.js > plugins:
- * plugins: ['file', ...] // do not add ".js" extension to it.
+ * You are probably looking on adding startup/initialization code.
+ * Use "quasar new boot <name>" and add it there.
+ * One boot file per concern. Then reference the file(s) in quasar.conf.js > boot:
+ * boot: ['file', ...] // do not add ".js" extension to it.
+ *
+ * Boot files are your "main.js"
  **/
 
 
 import Vue from 'vue'
 
-import {Quasar,QLayout,QLayoutHeader,QLayoutDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QListHeader,QItem,QItemMain,QField,QItemSide,QUploader,QChipsInput,QSelect,QRating,QToggle,QDatetime,QDatetimePicker,QCard,QFab,QFabAction,QWindowResizeObservable,QResizeObservable,QCollapsible,QInfiniteScroll,QModal,QCardMain,QCardSeparator,QDialog,QChip,QAlert,Ripple,CloseOverlay,Notify,Dialog,Loading} from 'quasar'
+import {Quasar,QLayout,QHeader,QDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QItem,QField,QItemSection,QUploader,QChip,QSelect,QRating,QToggle,QDate,QTime,Ripple,Notify,Dialog} from 'quasar'
 
 
-Vue.use(Quasar, { config: {},components: {QLayout,QLayoutHeader,QLayoutDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QListHeader,QItem,QItemMain,QField,QItemSide,QUploader,QChipsInput,QSelect,QRating,QToggle,QDatetime,QDatetimePicker,QCard,QFab,QFabAction,QWindowResizeObservable,QResizeObservable,QCollapsible,QInfiniteScroll,QModal,QCardMain,QCardSeparator,QDialog,QChip,QAlert},directives: {Ripple,CloseOverlay},plugins: {Notify,Dialog,Loading} })
+Vue.use(Quasar, { config: {},components: {QLayout,QHeader,QDrawer,QPageContainer,QPage,QToolbar,QToolbarTitle,QBtn,QIcon,QInput,QList,QItem,QField,QItemSection,QUploader,QChip,QSelect,QRating,QToggle,QDate,QTime},directives: {Ripple},plugins: {Notify,Dialog} })
