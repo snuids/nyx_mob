@@ -3,19 +3,19 @@
 module.exports = function(ctx) {
   return {
     // app boot (/src/boot)
-    boot: ["i18n", "axios", "vuelidate"],
-    css: ["app.styl"],
+    boot: ['i18n', 'axios', 'vuelidate'],
+    css: ['app.styl'],
     extras: [
-      "roboto-font",
-      "material-icons", // optional, you are not bound to it
-      "ionicons-v4",
-      "mdi-v5",
-      "fontawesome-v5"
+      'roboto-font',
+      'material-icons', // optional, you are not bound to it
+      'ionicons-v4',
+      'mdi-v5',
+      'fontawesome-v5'
     ],
     supportIE: true,
     build: {
       scopeHoisting: true,
-      publicPath: "/",
+      publicPath: '/',
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,
@@ -23,11 +23,11 @@ module.exports = function(ctx) {
       // extractCSS: false,
       extendWebpack(cfg) {
         cfg.module.rules.push({
-          enforce: "pre",
+          enforce: 'pre',
           test: /\.(js|vue)$/,
-          loader: "eslint-loader",
+          loader: 'eslint-loader',
           exclude: /node_modules/
-        });
+        })
       }
     },
     devServer: {
@@ -35,35 +35,38 @@ module.exports = function(ctx) {
       port: 8888,
       open: true // opens browser window automatically
     },
-    //framework: 'all' --- includes everything; for dev only!
+    // framework: 'all' --- includes everything; for dev only!
 
     framework: {
       components: [
-        "QLayout",
-        "QHeader",
-        "QDrawer",
-        "QPageContainer",
-        "QPage",
-        "QToolbar",
-        "QToolbarTitle",
-        "QBtn",
-        "QIcon",
-        "QInput",
-        "QList",
-        "QItem",
-        "QField",
-        "QItemSection",
-        "QUploader",
-        "QChip",
-        "QSelect",
-        "QRating",
-        "QToggle",
-        "QDate",
-        "QTime"
+        'QLayout',
+        'QHeader',
+        'QDrawer',
+        'QPageContainer',
+        'QPage',
+        'QToolbar',
+        'QToolbarTitle',
+        'QBtn',
+        'QIcon',
+        'QInput',
+        'QList',
+        'QItem',
+        'QField',
+        'QItemSection',
+        'QUploader',
+        'QChip',
+        'QSelect',
+        'QRating',
+        'QToggle',
+        'QDate',
+        'QTime'
       ],
-      directives: ["Ripple"],
+      directives: ['Ripple'],
       // Quasar plugins
-      plugins: ["Notify", "Dialog", "Loading"]
+      plugins: ['Notify', 'Dialog', 'Loading'],
+      config: {
+        loading: { delay: 400 }
+      }
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
       // i18n: 'de' // Quasar language
     },
@@ -79,35 +82,35 @@ module.exports = function(ctx) {
         // name: 'Quasar App',
         // short_name: 'Quasar-PWA',
         // description: 'Best PWA App in town!',
-        display: "standalone",
-        orientation: "portrait",
-        background_color: "#ffffff",
-        theme_color: "#027be3",
+        display: 'standalone',
+        orientation: 'portrait',
+        background_color: '#ffffff',
+        theme_color: '#027be3',
         icons: [
           {
-            src: "statics/icons/icon-128x128.png",
-            sizes: "128x128",
-            type: "image/png"
+            src: 'statics/icons/icon-128x128.png',
+            sizes: '128x128',
+            type: 'image/png'
           },
           {
-            src: "statics/icons/icon-192x192.png",
-            sizes: "192x192",
-            type: "image/png"
+            src: 'statics/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
           },
           {
-            src: "statics/icons/icon-256x256.png",
-            sizes: "256x256",
-            type: "image/png"
+            src: 'statics/icons/icon-256x256.png',
+            sizes: '256x256',
+            type: 'image/png'
           },
           {
-            src: "statics/icons/icon-384x384.png",
-            sizes: "384x384",
-            type: "image/png"
+            src: 'statics/icons/icon-384x384.png',
+            sizes: '384x384',
+            type: 'image/png'
           },
           {
-            src: "statics/icons/icon-512x512.png",
-            sizes: "512x512",
-            type: "image/png"
+            src: 'statics/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
           }
         ]
       }
@@ -135,5 +138,5 @@ module.exports = function(ctx) {
         // appId: 'quasar-app'
       }
     }
-  };
-};
+  }
+}

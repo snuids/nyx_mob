@@ -1,5 +1,5 @@
 <template>
-  <div class="a-dallas">
+  <div class="">
     <q-card flat bordered class="bg-white q-ma-xs q-pa-xs">
       {{ item.full_title }} - {{ item.quantity }} -
       {{ item.received }}
@@ -9,9 +9,9 @@
 
 <script>
 export default {
-  name: "CartItem",
+  name: 'CartItem',
   data() {
-    return {};
+    return {}
   },
   props: {
     item: {
@@ -20,17 +20,12 @@ export default {
   },
   methods: {
     zebi() {
-      console.log("debug item ::::: ", this);
+      console.log('debug item ::::: ', this)
     }
   },
   created() {},
   computed: {}
-};
+}
 </script>
 
-<style lang="css">
-.a-dallas {
-    font-size: 28px;
-    color: red;
-}
-</style>
+<style lang="css"></style>

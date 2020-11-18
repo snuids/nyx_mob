@@ -1,14 +1,10 @@
 <template>
-  <div class="a-dallas">
-    <div>
-      tu peux pas test
+  <div class="my-display">
+    <div v-if="loaded" class="q-px-xs">
+      <SupplierInfos ref="SupplierInfoInstance" />
     </div>
 
-    <div>
-      <SupplierInfos />
-    </div>
-
-    <q-list class="cart-list">
+    <q-list v-if="loaded" class="cart-list q-pa-xs">
       <CartItem v-for="item in allItems" :key="item.id" :item="item" />
     </q-list>
 
@@ -23,6 +19,7 @@
           size="md"
         />
         <q-btn
+          v-if="loaded"
           label="Valider"
           icon-right="send"
           color="primary"
@@ -37,16 +34,16 @@
 </template>
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-import SupplierInfos from "components/custom/MvpPicking/SupplierInfos.vue";
-import CartItem from "components/custom/MvpPicking/CartItem.vue";
+import Vue from 'vue'
+import axios from 'axios'
+import SupplierInfos from 'components/custom/MvpPicking/SupplierInfos.vue'
+import CartItem from 'components/custom/MvpPicking/CartItem.vue'
 
-Vue.component("SupplierInfos", SupplierInfos);
-Vue.component("CartItem", CartItem);
+Vue.component('SupplierInfos', SupplierInfos)
+Vue.component('CartItem', CartItem)
 
 export default {
-  name: "PurchaseOrderDisplay",
+  name: 'PurchaseOrderDisplay',
   components: {
     SupplierInfos,
     CartItem
@@ -54,40 +51,41 @@ export default {
   data() {
     return {
       allItems: [],
-      disableValidate: true
-    };
+      disableValidate: true,
+      loaded: false
+    }
   },
   methods: {
     getPurchaseOrder() {
       var url =
         this.$store.getters.apiurl +
-        "generic/" +
+        'generic/' +
         this.$store.state.pickingModule.currentOrder.meta.index +
-        "/" +
+        '/' +
         this.$store.state.pickingModule.currentOrder.meta.id +
-        "?token=" +
-        this.$store.getters.creds.token;
+        '?token=' +
+        this.$store.getters.creds.token
       //console.log('url: ', url)
 
-      this.$q.loading.show();
+      this.$q.loading.show()
       // this.timer = setTimeout(() => { this.timer = void 0 }, 4500)
       axios
         .get(url)
         .then(response => {
-          var currentOrder = this.$store.state.pickingModule.currentOrder;
+          var currentOrder = this.$store.state.pickingModule.currentOrder
 
           var cart = Array.from(
             JSON.parse(response.data.data._source.line_items)
-          );
+          )
           //console.log("var cart : ", cart);
-          var totItems = cart.length;
-          var totProducts = 0;
+          var totItems = cart.length
+          var totProducts = 0
           for (var i = 0; i < cart.length; i++) {
-            totProducts += cart[i].quantity;
+            totProducts += cart[i].quantity
           }
-          this.allItems = cart;
+          this.allItems = cart
 
-          this.$store.commit("mutate_currentOrder", {
+          this.$store.commit('mutate_currentOrder', {
             order: {
               meta: {
                 id: currentOrder.meta.id,
@@ -115,41 +113,45 @@ export default {
                 line_items: cart
               }
             }
-          });
+          })
 
           console.log(
-            "#### POST COMMIT : ",
+            '#### POST COMMIT : ',
             this.$store.state.pickingModule.currentOrder
-          );
+          )
+          this.loaded = true
 
-          this.$q.loading.hide();
+          this.$q.loading.hide()
         })
         .catch(error => {
           console.log(
-            "(getPurchaseOrder()::GET) UN PROBLEME EST SURVENU : ",
+            '(getPurchaseOrder()::GET) UN PROBLEME EST SURVENU : ',
             error
-          );
-          this.$q.loading.hide();
-        });
+          )
+          this.$q.loading.hide()
+        })
     },
     backToList() {
-      var o = { id: "", index: "" };
-      this.$root.$emit("toggleDisplayEvent", o);
+      var o = { id: '', index: '' }
+      this.$root.$emit('toggleDisplayEvent', o)
     },
     validateOrder() {}
   },
   created() {
-    this.getPurchaseOrder();
+    this.getPurchaseOrder()
   },
   beforeMount() {},
   computed: {}
-};
+}
 </script>
 
 <style lang="css">
-.a-dallas {
-    font-size: 28px;
-    color: red;
+.my-display {
+  padding: 0px !important;
+  border: none;
+  max-width: 800px !important;
+  margin-left: auto;
+  margin-right: auto;
 }
 .cart-list {
   background-color: grey;
