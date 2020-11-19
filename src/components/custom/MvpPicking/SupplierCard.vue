@@ -1,6 +1,6 @@
 <template>
-  <q-item class="q-pa-xs">
-    <q-card class="bg-white full-width">
+  <q-item class="q-pa-none">
+    <q-card square flat bordered class="bg-white full-width">
       <div class="row" clickable @click="onCardClick" v-ripple>
         <div class="col-xs-2 col-sm-1 text-center date q-pa-sm">
           {{ expected_date | dateShort }}
@@ -12,6 +12,7 @@
             </div>
             <div class="col-xs-12 col-sm-3 meta q-pa-sm">
               {{ status }}
+              <OrderTags />
             </div>
           </div>
         </div>
@@ -21,6 +22,11 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import OrderTags from 'components/custom/MvpPicking/OrderTags.vue'
+
+Vue.component('OrderTags', OrderTags)
+
 export default {
   name: 'SupplierCard',
   props: {
@@ -58,13 +64,13 @@ export default {
   },
   methods: {
     onCardClick() {
-      //console.log("clicked: ", this.id);
-      //console.log("clicked: ", this.index);
       var o = { id: this.id, index: this.index }
       this.$root.$emit('toggleDisplayEvent', o)
     }
   },
-  mounted() {}
+  mounted() {
+    console.log('trying to gets all props : ', this)
+  }
 }
 </script>
 

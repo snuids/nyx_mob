@@ -3,7 +3,6 @@
     <q-resize-observer @resize="onResize" debounce="500" />
     <div v-if="!isPurchaseOrderDisplayed" class="my-container full-width">
       <PurchaseOrdersList ref="PurchaseOrderListInstance" />
-      <!-- {{ showMe() }} -->
     </div>
     <div v-else class="my-container full-width">
       <PurchaseOrderDisplay @toggleDisplay="toggleDisplay" />
@@ -59,13 +58,15 @@ export default {
           }
         },
         getters: {
+          // exemple : this.$store.commit("targetDate", { dateObj: obj });
+          // exemple : this.$store.state.pickingModule.date
+          // exemple : this.$store.getters.targetDate
+          // exemple : this.$store.getters.screenSize.windowHeight
           targetDate: state => state.targetDate,
           currentOrder: state => state.currentOrder,
           getOrderDetails: state => state.currentOrder.details,
           allPurchaseOrders: state => state.allPurchaseOrders,
           screenSize: state => state.screenSize
-          // screenHeight: state => state.screenSize.height,
-          // screenWidth: state => state.screenSize.width
         },
         mutations: {
           mutate_screenSize(state, payload) {
@@ -91,11 +92,6 @@ export default {
     removeEventListener() {
       this.$root.$off('toggleDisplayEvent')
     },
-    showMe() {
-      console.log('#### testest : ', this.$store.state.pickingModule.date)
-      console.log('testest getter: ', this.$store.getters.date)
-      return this.$store.getters.date
-    },
     toggleDisplay(event) {
       this.currentOrderMeta = event
       this.$store.commit('mutate_currentOrder', {
@@ -120,8 +116,27 @@ export default {
       })
     }
   },
-  beforeCreate() {},
+  beforeCreate() {
+    if (this.$q.platform.is.mobile) {
+      this.$q.fullscreen
+        .request()
+        .then(() => {
+          console.log('Successfully going fullscreen')
+        })
+        .catch(err => {
+          console.log('Unable to go fullscreen')
+        })
+    }
+  },
   created() {
+    console.log('Slack token is in : ', this.$store.getters.activeApp) // SLACK TOKEN
+    console.log('User is : ', this.$store.getters.creds.user.id)
+    console.log(
+      'User is : ',
+      this.$store.getters.creds.user.firstname +
+        ' ' +
+        this.$store.getters.creds.user.lastname
+    )
     this.createCustomStore()
     this.addEventListener()
   },
@@ -133,7 +148,14 @@ export default {
     this.removeEventListener()
     this.$store.unregisterModule('pickingModule')
   },
-  destroyed() {},
+  destroyed() {
+    if (this.$q.platform.is.mobile) {
+      this.$q.fullscreen
+        .exit()
+        .then(() => {})
+        .catch(err => {})
+    }
+  },
   computed: {}
 }
 </script>

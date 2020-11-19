@@ -1,8 +1,7 @@
 <template>
   <div class="">
     <TargetDate ref="TargetDateInstance" />
-
-    <div class="q-pa-xs">
+    <div class="q-pa-none">
       <q-list class="supplier-list">
         <SupplierCard
           v-for="order in allPurchaseOrders"
@@ -10,10 +9,6 @@
           v-bind="order"
         />
       </q-list>
-    </div>
-
-    <div>
-      <FloatingMenu ref="FloatingMenuInstance" />
     </div>
   </div>
 </template>
@@ -24,18 +19,15 @@ import moment from 'moment'
 import axios from 'axios'
 import TargetDate from 'components/custom/MvpPicking/TargetDate.vue'
 import SupplierCard from 'components/custom/MvpPicking/SupplierCard.vue'
-import FloatingMenu from 'components/custom/MvpPicking/FloatingMenu.vue'
 
 Vue.component('TargetDate', TargetDate)
 Vue.component('SupplierCard', SupplierCard)
-Vue.component('FloatingMenu', FloatingMenu)
 
 export default {
   name: 'PurchaseOrdersList',
   components: {
     TargetDate,
-    SupplierCard,
-    FloatingMenu
+    SupplierCard
   },
   data() {
     return {
@@ -86,9 +78,8 @@ export default {
   },
   methods: {
     getPoList() {
-      //this.isDateCorrect();
-      this.queryList.query.bool.must[0].range.expected_date.gte = this.$refs.TargetDateInstance.dateFrom
-      this.queryList.query.bool.must[0].range.expected_date.lte = this.$refs.TargetDateInstance.dateTo
+      this.queryList.query.bool.must[0].range.expected_date.gte = this.$store.getters.targetDate.dateFrom
+      this.queryList.query.bool.must[0].range.expected_date.lte = this.$store.getters.targetDate.dateTo
 
       var url =
         this.$store.getters.apiurl +
@@ -96,14 +87,13 @@ export default {
         this.indice +
         '?token=' +
         this.$store.getters.creds.token
-      //console.log("url : ", url);
 
-      // this.$q.loading.show();
+      this.$q.loading.show()
       axios
         .post(url, this.queryList)
         .then(response => {
           this.fullResponse = response
-          console.log('getPoList() full response : ', response)
+          //console.log('getPoList() full response : ', response)
 
           this.allPurchaseOrders = []
           for (var i = 0; i < response.data.records.length; i++) {
@@ -111,10 +101,10 @@ export default {
             this.allPurchaseOrders[i].id = response.data.records[i]._id
             this.allPurchaseOrders[i].index = response.data.records[i]._index
           }
-          console.log(
-            'getPoList()::allPurchaseOrders: ',
-            this.allPurchaseOrders
-          )
+          // console.log(
+          //   'getPoList()::allPurchaseOrders: ',
+          //   this.allPurchaseOrders
+          // )
           this.$store.commit('mutate_allPurchaseOrders', {
             data: this.allPurchaseOrders
           })
@@ -127,7 +117,7 @@ export default {
           this.$q.loading.hide()
         })
         .catch(error => {
-          console.log('|getPoList()::POST| UN PROBLEME EST SURVENU : ', error)
+          //console.log('|getPoList()::POST| UN PROBLEME EST SURVENU : ', error)
           this.$q.loading.hide()
         })
     }

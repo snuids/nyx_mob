@@ -63,9 +63,17 @@ module.exports = function(ctx) {
       ],
       directives: ['Ripple'],
       // Quasar plugins
-      plugins: ['Notify', 'Dialog', 'Loading'],
+      plugins: ['Notify', 'Dialog', 'Loading', 'AppFullscreen'],
       config: {
-        loading: { delay: 400 }
+        loading: { delay: 400 },
+        capacitor: {
+          backButtonExit: false,
+          backButton: false
+        },
+        cordova: {
+          backButtonExit: false,
+          backButton: false
+        }
       }
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'
       // i18n: 'de' // Quasar language

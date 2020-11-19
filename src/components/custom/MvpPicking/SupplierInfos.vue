@@ -1,124 +1,75 @@
 <template>
   <div class="">
     <q-card flat bordered class="bg-white q-ma-xs q-pa-xs">
-      <q-expansion-item icon="perm_identity" :label="currentOrder.name">
+      <q-expansion-item
+        icon="perm_identity"
+        :label="currentOrder.name | uppercaseFirst"
+      >
         <q-card class="q-pa-xs">
           <div class="row flex-center">
             <div>
-              <h5>{{ currentOrder.name }}</h5>
+              <h5>{{ currentOrder.name | uppercaseFirst }}</h5>
             </div>
           </div>
           <q-separator />
           <!-- INFOS COMMANDES -->
           <div class="row commande q-pa-xs">
             <div class="col-xs-12 col-sm-6 date-cde q-pa-sm">
-              Date commande : 1
+              Date commande : {{ currentOrder.expected_date | dateFrench }}
             </div>
             <div class="col-xs-12 col-sm-6 num-cde q-pa-sm">
-              Numéro de commande : 2
+              Numéro de commande : {{ orderNumber(currentOrder.number) }}
             </div>
 
             <div class="col-xs-12 col-sm-6 statut-actuel q-pa-sm">
-              Statut actuel : 3
+              Statut actuel : {{ currentOrder.status }}
             </div>
             <div class="col-xs-12 col-sm-6 type-bon q-pa-sm">
-              Type de bon : 4
+              Type de bon : {{ currentOrder.type }}
             </div>
-
-            <!-- <div class="col-xs-12 col-6">
-              <div>
-                <span class="caption">Date commande : </span>
-                <b>
-                  date
-                </b>
-              </div>
-              <div>
-                <span class="caption">Statut actuel : </span>
-                <b>status</b>
-              </div>
-            </div>
-            <div class="col-6">
-              <div>
-                <span class="caption">Numéro de commande : </span>
-                <b>number</b>
-              </div>
-              <div>
-                <span class="caption">Type de bon : </span>
-                <b>type de bon</b>
-              </div>
-            </div> -->
           </div>
           <q-separator />
           <!-- INFOS CONTACT -->
           <div class="row q-pa-sm q-mb-md contact">
             <div class="col-xs-12 col-sm-6">
               <div class="col cta-name q-pa-sm">
-                Contact : 1
+                Contact : {{ currentOrder.contact_name }}
               </div>
               <div class="col cta-tel q-pa-sm">
-                Téléphone : 2
+                Téléphone : {{ currentOrder.contact_phone }}
               </div>
               <div class="col cta-ema q-pa-sm">
-                Email : 3
+                Email : {{ currentOrder.contact_email }}
               </div>
             </div>
-            <div class="col-xs-12 col-sm-6 full-height">
-              <div class="add-mai q-pa-sm">Adresse : 4<br />ZIP Ville</div>
+            <div class="col-xs-12 col-sm-6 full-height justify-between">
+              <div class="add-mai flex">
+                <div class="col-xs-3 bg-green q-pa-xs">Adresse :</div>
+                <div class="col-xs-9 bg-blue q-pa-xs text-right">
+                  {{ currentOrder.address_line_1 }}<br />
+                  {{ currentOrder.post_code }} {{ currentOrder.city }}
+                </div>
+              </div>
+              <!-- <div class="add-mai q-pa-sm">
+                Adresse : <br />{{ currentOrder.address_line_1 }}<br />{{
+                  currentOrder.post_code
+                }}
+                {{ currentOrder.city }}
+              </div> -->
               <div class="add-cmp q-pa-sm justify-end">
-                Complément : 6
+                Complément d'adresse : {{ currentOrder.address_line_2 }}
               </div>
             </div>
-
-            <!-- <div class="col-6">
-              <div>
-                <span class="caption">Contact : </span>
-                <b>contact name</b>
-              </div>
-              <div>
-                <span class="caption">Téléphone : </span>
-                <b>contact tel</b>
-              </div>
-              <div>
-                <span class="caption">Email : </span>
-                <b>contact mail</b>
-              </div>
-            </div>
-            <div class="col-6">
-              <div>
-                <span class="caption">Adresse : </span>
-                <b>adresse 1</b>
-              </div>
-              <div>
-                <b>zip code ville</b>
-              </div>
-              <div>
-                <span class="caption">Complément : </span>
-                <b>adresse 2</b>
-              </div>
-            </div> -->
           </div>
           <q-separator />
           <!-- INFOS DIVERSES -->
           <div class="row q-pa-xs q-mb-sm divers">
             <div class="col-xs-12 col-sm-6 div-ite q-pa-sm">
-              Nb d'items : 1
+              Nb d'items : {{ currentOrder.total_items }}
             </div>
             <div class="col-xs-12 col-sm-6 div-tot q-pa-sm">
-              Nb total de produits : 2
+              Nb total de produits : {{ currentOrder.total_products }}
             </div>
-
-            <!-- <div class="col-6">
-              <div>
-                <span class="caption">Nb d'items : </span>
-                <b>nb items</b>
-              </div>
-            </div>
-            <div class="col-6">
-              <div>
-                <span class="caption">Nb total de produits : </span>
-                <b>total prod</b>
-              </div>
-            </div> -->
           </div>
           <q-separator />
           <q-btn
@@ -153,31 +104,17 @@ export default {
   name: 'SupplierInfos',
   data() {
     return {
-      //   name: "",
-      //   expected_date: "",
-      //   number: "",
-      //   picker: "",
-      //   address_line_1: "",
-      //   address_line_2: "",
-      //   city: "",
-      //   post_code: "",
-      //   contact_mail: "",
-      //   contact_name: "",
-      //   contact_phone: "",
-      //   status: "",
-      //   type: "",
-      //   supplier_id: ""
       currentOrder: null
     }
   },
-  methods: {},
+  methods: {
+    orderNumber(number) {
+      if (number == 'CREATED_BY_NYX') return 'n/a'
+    }
+  },
   created() {},
   mounted() {
-    console.log('Zorglub is here')
-    // this.$store.getters.screenSize.appWidth
     this.currentOrder = this.$store.getters.currentOrder.details
-
-    console.log('bulgroZ was here : ', this.currentOrder)
   },
   updated() {},
   computed: {}
