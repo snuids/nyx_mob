@@ -68,9 +68,7 @@ export default {
       this.$root.$emit('toggleDisplayEvent', o)
     }
   },
-  mounted() {
-    console.log('trying to gets all props : ', this)
-  }
+  mounted() {}
 }
 </script>
 

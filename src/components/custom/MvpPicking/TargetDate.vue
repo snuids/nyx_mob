@@ -70,7 +70,7 @@ export default {
     }
   },
   created() {
-    this.onToday()
+    if (this.$store.getters.targetDate.dateFrom == '') this.onToday()
   },
   mounted() {},
   beforeDestroy() {

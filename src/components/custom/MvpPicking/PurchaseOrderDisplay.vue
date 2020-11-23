@@ -1,10 +1,19 @@
 <template>
   <div class="my-display">
-    <div v-if="loaded" class="q-px-xs">
+    <div v-if="loaded" class="">
       <SupplierInfos ref="SupplierInfoInstance" />
+
+      <div>
+        <Comment
+          v-for="comment in allComments"
+          :key="comment.id"
+          :comment="comment"
+          class="q-mb-xs"
+        />
+      </div>
     </div>
 
-    <q-list v-if="loaded" class="cart-list q-pa-xs">
+    <q-list v-if="loaded">
       <CartItem v-for="item in allItems" :key="item.id" :item="item" />
     </q-list>
 
@@ -38,9 +47,11 @@ import Vue from 'vue'
 import axios from 'axios'
 import SupplierInfos from 'components/custom/MvpPicking/SupplierInfos.vue'
 import CartItem from 'components/custom/MvpPicking/CartItem.vue'
+import Comment from 'components/custom/MvpPicking/Comment.vue'
 
 Vue.component('SupplierInfos', SupplierInfos)
 Vue.component('CartItem', CartItem)
+Vue.component('Comment', Comment)
 
 export default {
   name: 'PurchaseOrderDisplay',
@@ -51,6 +62,7 @@ export default {
   data() {
     return {
       allItems: [],
+      allComments: [],
       disableValidate: true,
       loaded: false
     }
@@ -72,6 +84,8 @@ export default {
       axios
         .get(url)
         .then(response => {
+          console.log('FULL RESPONSE : ', response)
+
           var currentOrder = this.$store.state.pickingModule.currentOrder
 
           var cart = Array.from(
@@ -84,6 +98,14 @@ export default {
             totProducts += cart[i].quantity
           }
           this.allItems = cart
+
+          this.allComments = []
+          if (response.data.data._source.hasOwnProperty('comments')) {
+            this.allComments = Array.from(
+              JSON.parse(response.data.data._source.comments)
+            )
+          }
+          console.log('allComments POST TRAITEMENT ', this.allComments)
 
           this.$store.commit('mutate_currentOrder', {
             order: {
@@ -107,7 +129,8 @@ export default {
                 picker: response.data.data._source.picker,
                 expected_date: response.data.data._source.expected_date,
                 total_items: totItems,
-                total_products: totProducts
+                total_products: totProducts,
+                comments: this.allComments
               },
               cart: {
                 line_items: cart
@@ -115,10 +138,14 @@ export default {
             }
           })
 
-          console.log(
-            '#### POST COMMIT : ',
-            this.$store.state.pickingModule.currentOrder
-          )
+          // console.log(
+          //   '#### POST COMMIT : ',
+          //   this.$store.state.pickingModule.currentOrder
+          // )
+
+          this.timer = setTimeout(() => {
+            this.timer = void 0
+          }, 50)
           this.loaded = true
 
           this.$q.loading.hide()
@@ -134,6 +161,23 @@ export default {
     backToList() {
       var o = { id: '', index: '' }
       this.$root.$emit('toggleDisplayEvent', o)
+    },
+    modifyQuantityReceived(item_tit, item_qty) {
+      for (var i = 0; i < this.allItems.length; i++) {
+        if (this.allItems[i].full_title == item_tit) {
+          console.log('FOUND')
+          this.allItems[i].received = item_qty
+          console.log('DONE : ', this.allItems[i].received)
+
+          this.$store.commit('mutate_currentOrder', {
+            order: {
+              cart: {
+                line_items: this.allItems
+              }
+            }
+          })
+        }
+      }
     },
     validateOrder() {}
   },
@@ -152,8 +196,5 @@ export default {
   max-width: 800px !important;
   margin-left: auto;
   margin-right: auto;
-}
-.cart-list {
-  background-color: grey;
 }
 </style>

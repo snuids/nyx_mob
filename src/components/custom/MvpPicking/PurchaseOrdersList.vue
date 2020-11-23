@@ -1,5 +1,22 @@
 <template>
-  <div class="">
+  <q-page-container>
+    <q-page>
+      <div class="q-pa-none">
+        <q-list class="supplier-list">
+          <SupplierCard
+            v-for="order in allPurchaseOrders"
+            :key="order.id"
+            v-bind="order"
+          />
+        </q-list>
+      </div>
+      <q-page-sticky expand position="top">
+        <TargetDate ref="TargetDateInstance" />
+      </q-page-sticky>
+    </q-page>
+  </q-page-container>
+
+  <!-- <div class="">
     <TargetDate ref="TargetDateInstance" />
     <div class="q-pa-none">
       <q-list class="supplier-list">
@@ -10,7 +27,7 @@
         />
       </q-list>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>

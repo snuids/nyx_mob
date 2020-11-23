@@ -93,7 +93,7 @@ export default {
       this.$root.$off('toggleDisplayEvent')
     },
     toggleDisplay(event) {
-      this.currentOrderMeta = event
+      // this.currentOrderMeta = event
       this.$store.commit('mutate_currentOrder', {
         order: {
           meta: {

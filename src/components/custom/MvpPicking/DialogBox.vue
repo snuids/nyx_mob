@@ -14,13 +14,23 @@
         <q-date
           v-if="target == 'date'"
           v-model="selection"
+          :locale="myLocale"
+          mask="dddd DD MMM YYYY"
           :landscape="isLandscape"
         />
         <q-date
           v-if="target == 'range'"
           v-model="selection"
+          :locale="myLocale"
+          mask="dddd DD MMM YYYY"
           range
           :landscape="isLandscape"
+        />
+        <q-input
+          v-if="target == 'comment'"
+          v-model="selection"
+          filled
+          type="textarea"
         />
         <QuantityAdjust v-if="target == 'other'" v-model="selection" />
       </q-card-section>
@@ -46,7 +56,19 @@ export default {
   data() {
     return {
       selection: null,
-      maximizedToggle: true
+      maximizedToggle: true,
+      myLocale: {
+        /* starting with Sunday */
+        days: 'Dimanche_Lundi_Mardi_Mercredi_Jeudi_Vendredi_Samedi'.split('_'),
+        daysShort: 'Dim_Lun_Mar_Mer_Jeu_Ven_Sam'.split('_'),
+        months: 'Janvier_Février_Mars_Avril_Mai_Juin_Juillet_Août_Septembre_Octobre_Novembre_Décembre'.split(
+          '_'
+        ),
+        monthsShort: 'Jan_Fév_Mar_Avr_Mai_Jui_Jui_Aoû_Sep_Oct_Nov_Déc'.split(
+          '_'
+        ),
+        firstDayOfWeek: 1
+      }
     }
   },
   props: {
@@ -78,6 +100,9 @@ export default {
         )
         var o = { fr: cleanF, to: cleanT }
       }
+      if (this.target == 'comment') {
+        var o = { msg: this.selection }
+      }
 
       this.$emit('ok', { data: o })
       // or with payload: this.$emit('ok', { ... })
@@ -87,10 +112,8 @@ export default {
       this.hide()
     }
   },
-  created() {
-  },
-  mounted() {
-  },
+  created() {},
+  mounted() {},
   computed: {
     isLandscape: function() {
       if (this.$store.state.pickingModule.screenSize.windowWidth > 1000)
