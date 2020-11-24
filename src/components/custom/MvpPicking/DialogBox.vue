@@ -15,14 +15,12 @@
           v-if="target == 'date'"
           v-model="selection"
           :locale="myLocale"
-          mask="dddd DD MMM YYYY"
           :landscape="isLandscape"
         />
         <q-date
           v-if="target == 'range'"
           v-model="selection"
           :locale="myLocale"
-          mask="dddd DD MMM YYYY"
           range
           :landscape="isLandscape"
         />
@@ -88,14 +86,16 @@ export default {
     },
     onOKClick() {
       if (this.target == 'date') {
-        var clean = moment(this.selection).format('YYYY-MM-DDTHH:mm:ss+01:mm')
+        var clean = moment(this.selection, 'YYYY/MM/DD').format(
+          'YYYY-MM-DDTHH:mm:ss+01:mm'
+        )
         var o = { fr: clean, to: clean }
       }
       if (this.target == 'range') {
-        var cleanF = moment(this.selection.from).format(
+        var cleanF = moment(this.selection.from, 'YYYY/MM/DD').format(
           'YYYY-MM-DDTHH:mm:ss+01:mm'
         )
-        var cleanT = moment(this.selection.to).format(
+        var cleanT = moment(this.selection.to, 'YYYY/MM/DD').format(
           'YYYY-MM-DDTHH:mm:ss+01:mm'
         )
         var o = { fr: cleanF, to: cleanT }

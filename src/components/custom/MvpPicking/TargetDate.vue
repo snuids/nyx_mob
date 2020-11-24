@@ -52,6 +52,7 @@ export default {
         dateFromShort: this.dateFromShort,
         dateToShort: this.dateToShort
       }
+      console.log(' ****** /////// ******** ', obj)
       this.$store.commit('mutate_targetDate', { dateObj: obj })
       this.$parent.getPoList()
     },

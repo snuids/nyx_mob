@@ -58,7 +58,10 @@ export default {
   },
   methods: {
     checkForFields() {
-      if (!this.item.hasOwnProperty('received')) this.item.received = null
+      if (!this.item.hasOwnProperty('received')) {
+        console.log('own property == false')
+        this.item.received = null
+      }
     },
     displayReceivedQuantity(ir, iq) {
       if (ir == null) {

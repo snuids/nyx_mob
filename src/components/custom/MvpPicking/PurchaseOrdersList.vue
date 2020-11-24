@@ -110,7 +110,7 @@ export default {
         .post(url, this.queryList)
         .then(response => {
           this.fullResponse = response
-          //console.log('getPoList() full response : ', response)
+          console.log('getPoList() full response : ', response)
 
           this.allPurchaseOrders = []
           for (var i = 0; i < response.data.records.length; i++) {
@@ -126,6 +126,12 @@ export default {
             data: this.allPurchaseOrders
           })
 
+          // A FAIRE
+          // 1. Checker que tous les champs des po soient presents
+          this.checkPurchaseOrderModel()
+
+          // 2. Dans 1. Checker que tous les champs de chaque item de line_items soient presents
+
           // UPDATING DISPLAY TRICK
           // var tmp = this.allPurchaseOrders;
           // this.allPurchaseOrders = null;
@@ -137,7 +143,48 @@ export default {
           //console.log('|getPoList()::POST| UN PROBLEME EST SURVENU : ', error)
           this.$q.loading.hide()
         })
-    }
+    },
+    saveToServer() {
+      // todo
+    },
+    checkPurchaseOrderModel() {
+      console.log('<============<< poList | checkPOmodel() >>============>')
+      for (var i = 0; i < this.allPurchaseOrders.length; i++) {
+        // debug purposes
+        console.log(
+          'Checking po[' + i + '] (start): ',
+          this.allPurchaseOrders[i]
+        )
+
+        // specifics po fields
+
+        // line items
+        var cart = Array.from(JSON.parse(this.allPurchaseOrders[i].line_items))
+        for (var j = 0; j < cart.length; j++) {
+          if (cart[j].hasOwnProperty('received')) {
+            // console.log(
+            //   'po[' +
+            //     i +
+            //     '] > item [' +
+            //     cart[j].full_title +
+            //     '] has property /received/'
+            // )
+          } else {
+            // console.log(
+            //   'po[' +
+            //     i +
+            //     '] > item [' +
+            //     cart[j].full_title +
+            //     '] has NOT property /received/'
+            // )
+            cart[j].received = ''
+          }
+        }
+        this.allPurchaseOrders[i].line_items = JSON.stringify(cart)
+        console.log('Checking po[' + i + '] (end): ', this.allPurchaseOrders[i])
+      }
+    },
+    checkItemsModel() {}
   },
   mounted() {
     //this.onToday();
