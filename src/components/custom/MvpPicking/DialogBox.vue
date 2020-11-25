@@ -6,7 +6,7 @@
     transition-show="slide-up"
     transition-hide="slide-down"
   >
-    <q-card class="q-dialog-plugin my-card">
+    <q-card class="q-dialog-plugin">
       <q-card-section class="q-pt-xs">
         <div class="text-h6">{{ title }}</div>
       </q-card-section>
@@ -101,7 +101,12 @@ export default {
         var o = { fr: cleanF, to: cleanT }
       }
       if (this.target == 'comment') {
-        var o = { msg: this.selection }
+        var datDate = moment()
+        var datUser =
+          this.$store.getters.creds.user.firstname +
+          ' ' +
+          this.$store.getters.creds.user.lastname
+        var o = { date: datDate, user: datUser, msg: this.selection }
       }
 
       this.$emit('ok', { data: o })
@@ -129,9 +134,4 @@ export default {
 }
 </script>
 
-<style>
-.my-card {
-  /* width: 1000px;
-  max-width: 1500; */
-}
-</style>
+<style></style>

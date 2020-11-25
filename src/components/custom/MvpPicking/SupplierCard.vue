@@ -1,18 +1,31 @@
 <template>
   <q-item class="q-pa-none">
-    <q-card square flat bordered class="bg-white full-width">
-      <div class="row" clickable @click="onCardClick" v-ripple>
+    <q-card
+      square
+      flat
+      bordered
+      :color="bgColor"
+      :text-color="textColor"
+      class="full-width"
+    >
+      <div class="row full-height" clickable @click="onCardClick" v-ripple>
         <div class="col-xs-2 col-sm-1 text-center date q-pa-sm">
           {{ expected_date | dateShort }}
         </div>
         <div class="col">
-          <div class="row justify-between">
-            <div class="col-xs-12 col-sm-9 name q-pa-sm">
+          <div class="row full-heigth justify-between">
+            <div class="col-xs-12 col-sm-9 name q-pa-sm full-heigth">
               {{ supplier | uppercaseFirst }}
             </div>
-            <div class="col-xs-12 col-sm-3 meta q-pa-sm">
-              {{ status }}
-              <OrderTags />
+            <div class="col-xs-12 col-sm-3 meta q-pa-sm full-heigth">
+              <!-- {{ status }} -->
+              <OrderTags
+                :closed="closed"
+                :cart_complete="cart_complete"
+                :has_dlc="has_dlc"
+                :picking_state="picking_state"
+                :comments="anyComments"
+              />
             </div>
           </div>
         </div>
@@ -57,18 +70,64 @@ export default {
     index: {
       type: String,
       required: true
+    },
+    closed: {
+      type: Boolean,
+      required: true
+    },
+    cart_complete: {
+      type: Number,
+      required: true
+    },
+    has_dlc: {
+      type: Boolean,
+      required: true
+    },
+    picking_state: {
+      type: Number,
+      required: true
+    },
+    comments: {
+      type: Array,
+      required: true
     }
   },
   data() {
-    return {}
+    return {
+      anyComments: false
+    }
   },
   methods: {
     onCardClick() {
       var o = { id: this.id, index: this.index }
-      this.$root.$emit('toggleDisplayEvent', o)
+      // this.$root.$emit('toggleDisplayEvent', o)
+      this.$root.$emit('displayOrderEvent', o)
+    },
+    bgColor() {
+      if (this.cart_complete === 0) {
+        // cart_complete = 0 >>> missing item(s) in order
+        return 'green'
+      } else if (this.cart_complete === 1) {
+        // cart_complete = 1 >>> order is fulfil
+        return 'orange'
+      } else if (this.cart_complete === 2) {
+        // cart_complete = 2 >>> no information about order
+        return 'white'
+      }
+    },
+    textColor() {
+      if (this.cart_complete === 2) {
+        return 'white'
+      } else {
+        return 'black'
+      }
     }
   },
-  mounted() {}
+  mounted() {
+    if (this.comments.length > 0) {
+      this.anyComments = true
+    }
+  }
 }
 </script>
 

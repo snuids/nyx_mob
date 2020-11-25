@@ -6,12 +6,12 @@
         :label="currentOrder.name | uppercaseFirst"
       >
         <q-card class="q-pa-xs">
-          <div class="row flex-center">
+          <div class="row flex-center bg-light-blue-1">
             <div>
               <h5>{{ currentOrder.name | uppercaseFirst }}</h5>
             </div>
           </div>
-          <q-separator />
+
           <!-- INFOS COMMANDES -->
           <div class="row q-pa-xs">
             <div class="col-xs-12 col-sm-6 q-pa-sm">
@@ -117,16 +117,7 @@ export default {
           title: 'Ajouter un commentaire à la commande'
         })
         .onOk(event => {
-          //console.log('Dialog() => OK ', event.data)
-          console.log('je veux faire un truc avec : ', event.data.msg)
-          if (!this.currentOrder.hasOwnProperty('comments')) {
-            console.log(
-              'supplieriNfo => currentOrder n a pas de property comments, on la cree !'
-            )
-            this.currentOrder.comments = []
-          }
-          this.currentOrder.comments.push(event.data.msg)
-          console.log(' post commentaire ', this.currentOrder)
+          this.$emit('addComment', event.data)
         })
         .onCancel(() => {
           //console.log('Dialog() => Cancel')
@@ -138,7 +129,7 @@ export default {
   },
   created() {
     this.currentOrder = this.$store.getters.currentOrder.details
-    console.log('debug created !! ', this.currentOrder)
+    // console.log('debug created !! ', this.currentOrder)
   },
   mounted() {},
   updated() {},

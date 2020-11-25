@@ -2,10 +2,10 @@
   <q-page class="flex bg-grey-5 row">
     <q-resize-observer @resize="onResize" debounce="500" />
     <div v-if="!isPurchaseOrderDisplayed" class="my-container full-width">
-      <PurchaseOrdersList ref="PurchaseOrderListInstance" />
+      <PurchaseOrdersList />
     </div>
     <div v-else class="my-container full-width">
-      <PurchaseOrderDisplay @toggleDisplay="toggleDisplay" />
+      <PurchaseOrderDisplay />
     </div>
   </q-page>
 </template>
@@ -85,15 +85,34 @@ export default {
       })
     },
     addEventListener() {
-      this.$root.$on('toggleDisplayEvent', event => {
-        this.toggleDisplay(event)
+      // this.$root.$on('toggleDisplayEvent', event => {
+      //   this.toggleDisplay(event)
+      // })
+      this.$root.$on('displayOrderEvent', event => {
+        this.displayOrderEvent(event)
+      })
+      this.$root.$on('displayListEvent', event => {
+        this.displayListEvent(event)
       })
     },
     removeEventListener() {
-      this.$root.$off('toggleDisplayEvent')
+      // this.$root.$off('toggleDisplayEvent')
+      this.$root.$off('displayOrderEvent')
+      this.$root.$off('displayListEvent')
     },
-    toggleDisplay(event) {
-      // this.currentOrderMeta = event
+    // toggleDisplay(event) {
+    //   // this.currentOrderMeta = event
+    //   this.$store.commit('mutate_currentOrder', {
+    //     order: {
+    //       meta: {
+    //         id: event.id,
+    //         index: event.index
+    //       }
+    //     }
+    //   })
+    //   this.isPurchaseOrderDisplayed = !this.isPurchaseOrderDisplayed
+    // },
+    displayOrderEvent(event) {
       this.$store.commit('mutate_currentOrder', {
         order: {
           meta: {
@@ -102,7 +121,18 @@ export default {
           }
         }
       })
-      this.isPurchaseOrderDisplayed = !this.isPurchaseOrderDisplayed
+      this.isPurchaseOrderDisplayed = true
+    },
+    displayListEvent(event) {
+      this.$store.commit('mutate_currentOrder', {
+        order: {
+          meta: {
+            id: '',
+            index: ''
+          }
+        }
+      })
+      this.isPurchaseOrderDisplayed = false
     },
     onResize(size) {
       var o = {
@@ -141,9 +171,9 @@ export default {
     this.addEventListener()
   },
   beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
+  mounted() {
+    
+  },
   beforeDestroy() {
     this.removeEventListener()
     this.$store.unregisterModule('pickingModule')

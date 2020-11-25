@@ -2,7 +2,7 @@
   <div class="bg-grey-8 full-width grey-banner">
     <div class="whole-container">
       <div class="text-white date-banner">
-        <div v-if="dateFromShort == dateToShort" class="text-center">
+        <div v-if="dateFromShort === dateToShort" class="text-center">
           Date : <b>{{ dateFrom | dateFrench }}</b>
         </div>
         <div v-else class="text-center">
@@ -36,10 +36,14 @@ export default {
   },
   methods: {
     setNewDates(inFrom, inTo) {
-      // trust the format whatever come in
+      // trust the format whatever comes in
       /* 2020-11-06T00:00:00+01:00 */
-      this.dateFrom = moment(inFrom).format('YYYY-MM-DDTHH:mm:ss+01:mm')
-      this.dateTo = moment(inTo).format('YYYY-MM-DDTHH:mm:ss+01:mm')
+      this.dateFrom = moment(inFrom)
+        .startOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss+01:mm')
+      this.dateTo = moment(inTo)
+        .endOf('day')
+        .format('YYYY-MM-DDTHH:mm:ss+01:mm')
 
       // properly format short version of dates
       this.dateFromShort = moment(this.dateFrom).format('DD-MM-YYYY')
@@ -52,9 +56,9 @@ export default {
         dateFromShort: this.dateFromShort,
         dateToShort: this.dateToShort
       }
-      console.log(' ****** /////// ******** ', obj)
       this.$store.commit('mutate_targetDate', { dateObj: obj })
-      this.$parent.getPoList()
+
+      this.$emit('dateChanged', obj)
     },
     onToday() {
       var from =
@@ -73,7 +77,12 @@ export default {
   created() {
     if (this.$store.getters.targetDate.dateFrom == '') this.onToday()
   },
-  mounted() {},
+  mounted() {
+    this.dateFrom = this.$store.getters.targetDate.dateFrom
+    this.dateTo = this.$store.getters.targetDate.dateTo
+    this.dateFromShort = this.$store.getters.targetDate.dateFromShort
+    this.dateToShort = this.$store.getters.targetDate.dateToShort
+  },
   beforeDestroy() {
     this.dateFrom = null
     this.dateTo = null

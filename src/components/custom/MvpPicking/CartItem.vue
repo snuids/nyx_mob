@@ -1,87 +1,102 @@
 <template>
-  <div class="">
-    <q-card flat bordered class="bg-white">
-      <div class="row">
-        <div class="col-xs-12 col-sm-7 ite-nam q-pa-xs">
-          {{ item.full_title }}
-        </div>
-        <div class="col-xs-12 col-sm-5 ite-ico flex justify-end ">
-          <q-btn flat square color="primary" label="DLC" />
-          <!-- <QuantityItem :quantity="item.quantity" :received="item.received" /> -->
-          <div class="row full-height items-center">
-            <q-chip
-              color="primary"
-              text-color="white"
-              class="quantity-chip"
-              size="16px"
-            >
-              <div class="text-center full-width">
-                <!-- {{ displayReceivedQuantity(item.received, item.quantity) }} -->
-                {{ item.received }} / {{ item.quantity }}
-              </div>
-              <!-- 666 / 666 -->
-              <!-- 85px -->
-            </q-chip>
-          </div>
-
-          <q-btn flat square color="primary" icon="priority_high" />
-          <q-btn
-            flat
-            square
-            color="primary"
-            icon="check"
-            @click="quantityIsFulfil"
-          />
-        </div>
+  <q-card flat bordered :class="bgColor">
+    <div class="row">
+      <div class="col-xs-12 col-sm-7 ite-nam q-pa-xs" :style="textColor">
+        {{ item.full_title }}
       </div>
-      <!-- {{ item.full_title }} - {{ item.quantity }} -
-      {{ item.received }} -->
-    </q-card>
-  </div>
+      <div class="col-xs-12 col-sm-5 ite-ico flex justify-end ">
+        <q-btn flat square color="primary" label="DLC" />
+        <div class="row full-height items-center">
+          <q-chip
+            color="primary"
+            text-color="white"
+            class="quantity-chip"
+            size="16px"
+          >
+            <div class="text-center full-width">
+              <!-- {{ item.received }} / {{ item.quantity }} -->
+              {{ chipText }}
+            </div>
+            <!-- 666 / 666 -->
+            <!-- 85px -->
+          </q-chip>
+        </div>
+
+        <q-btn
+          flat
+          square
+          color="primary"
+          icon="priority_high"
+          @click="quantityProblem"
+        />
+        <q-btn
+          flat
+          square
+          color="primary"
+          icon="check"
+          @click="quantityIsFulfil"
+        />
+      </div>
+    </div>
+  </q-card>
 </template>
 
 <script>
-import Vue from 'vue'
-import QuantityItem from 'components/custom/MvpPicking/QuantityItem.vue'
-
-Vue.component('QuantityItem', QuantityItem)
-
 export default {
   name: 'CartItem',
   data() {
-    return {}
+    return {
+      chipText: null,
+      bgColor: 'white',
+      textColor: 'primary'
+    }
   },
   props: {
     item: {
-      type: Object
+      type: Object,
+      required: true
+    },
+    item_index: {
+      type: Number,
+      required: true
     }
   },
   methods: {
-    checkForFields() {
-      if (!this.item.hasOwnProperty('received')) {
-        console.log('own property == false')
-        this.item.received = null
-      }
-    },
-    displayReceivedQuantity(ir, iq) {
-      if (ir == null) {
-        return '. / ' + iq
-      } else if (ir == iq) {
-        return iq
-      } else {
-        return ir + ' / ' + iq
-      }
-    },
     quantityIsFulfil() {
-      this.$parent.$parent.modifyQuantityReceived(
-        this.item.full_title,
-        this.item.quantity
-      )
+      // this.$parent.$parent.modifyQuantityReceived(
+      //   this.item.full_title,
+      //   this.item.quantity
+      // )
+      console.log('tu peux pas test : ', this.item_index)
+      var o = { new_received: this.item.quantity, index: this.item_index }
+      this.$emit('modifyReceived', o)
+    },
+    quantityProblem() {
+      console.log('we need a box  for the quantity problem')
+    },
+    setChip() {
+      if (this.item.received === '') {
+        this.chipText = this.item.quantity
+        this.bgColor = 'bg-white'
+        this.textColor = 'color: #33F;'
+      } else if (this.item.received === this.item.quantity) {
+        // this.chipText = this.item.quantity
+        this.chipText = this.item.received + '=' + this.item.quantity
+        this.bgColor = 'bg-green'
+        this.textColor = 'color: white;'
+      } else {
+        this.chipText = this.item.received + ' / ' + this.item.quantity
+        this.bgColor = 'bg-orange'
+        this.textColor = 'color: white;'
+      }
     }
   },
   created() {},
   mounted() {
-    this.checkForFields()
+    this.setChip()
+  },
+  updated() {
+    this.setChip()
   },
   computed: {}
 }
@@ -98,5 +113,9 @@ export default {
   top: 50%;
   position: relative;
   margin-top: -20px;
+}
+.quantity-chip {
+  min-width: 75px;
+  width: 75px;
 }
 </style>
