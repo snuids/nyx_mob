@@ -151,7 +151,7 @@ export default {
       return axios
         .get(url)
         .then(response => {
-          console.log('getPurchaseOrder() full response : ', response)
+          // console.log('getPurchaseOrder() full response : ', response)
 
           // saving original order for later comparison,
           // and current order to work with
@@ -190,10 +190,10 @@ export default {
         _id: this.$store.state.pickingModule.currentOrder.meta.id
       }
 
-      console.log(
-        'updatedPurchaseOrder debug pre-send : ',
-        updatedPurchaseOrder
-      )
+      // console.log(
+      //   'updatedPurchaseOrder debug pre-send : ',
+      //   updatedPurchaseOrder
+      // )
 
       /* UNCOMMENT TO COMMIT REAL SAVES*/
       // send the update request
@@ -209,7 +209,7 @@ export default {
         color: 'green'
       })
     },
-    backToList() {
+    async backToList() {
       // console.log('<<<!! back to list !!>>>')
       // console.log('original:', this.originalOrder)
       // console.log('current:', this.currentOrder)
@@ -217,19 +217,18 @@ export default {
       // has something changed ?
       if (this.hasPurchaseOrderChanged()) {
         // submit updated data to server
-        console.log('!!! WE WANT TO SAVE UPDATED DATA TO SERVER !!!')
         this.sendOrderToServer()
       }
       // then switch component
       this.$root.$emit('displayListEvent')
     },
     onReceivedModified(event) {
-      console.log(
-        'onReceivedModified => je veux modifier une quantité recue !',
-        event
-      )
+      // console.log(
+      //   'onReceivedModified => je veux modifier une quantité recue !',
+      //   event
+      // )
       this.allItems[event.index].received = event.new_received
-      console.log('after qty updated : ', this.allItems[event.index].received)
+      // console.log('after qty updated : ', this.allItems[event.index].received)
 
       // QUICK REFRESH FIX
       var tmp = JSON.parse(JSON.stringify(this.allItems))
@@ -338,7 +337,8 @@ export default {
   mounted() {
     this.getPurchaseOrder()
   },
-  computed: {}
+  computed: {
+  }
 }
 </script>
 

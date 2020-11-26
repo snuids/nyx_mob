@@ -10,18 +10,26 @@
         </q-item>
         <q-separator />
         <q-item clickable @click="openDialogBox('other')" v-close-popup>
-          <q-item-section style="text-align:right;font-size:1.2em;"
-            >open w/ slug</q-item-section
-          >
+          <q-item-section style="text-align:right;font-size:1.2em;">
+            open w/ slug
+          </q-item-section>
           <q-item-section side>
             <q-icon name="new_releases" />
           </q-item-section>
         </q-item>
+        <q-item clickable @click="openDialogBox('slackDirect')" v-close-popup>
+          <q-item-section style="text-align:right;font-size:1.2em;">
+            Message slack
+          </q-item-section>
+          <q-item-section side>
+            <q-icon name="email" />
+          </q-item-section>
+        </q-item>
         <q-separator />
         <q-item clickable @click="openDialogBox('range')" v-close-popup>
-          <q-item-section style="text-align:right;font-size:1.2em;"
-            >Periode</q-item-section
-          >
+          <q-item-section style="text-align:right;font-size:1.2em;">
+            Periode
+          </q-item-section>
           <q-item-section side>
             <q-icon name="date_range" />
           </q-item-section>
@@ -63,7 +71,8 @@ export default {
       var titles = {
         date: 'Choisir une date',
         range: 'Choisir une période',
-        other: 'Modifier la quantité'
+        other: 'Modifier la quantité',
+        slackDirect: 'Envoyer un message sur slack'
       }
 
       this.$q
@@ -75,8 +84,32 @@ export default {
         })
         .onOk(event => {
           //console.log('Dialog() => OK ', event.data)
-          if (slug == 'date' || slug == 'range') {
+          if (slug === 'date' || slug === 'range') {
             this.$parent.setNewDates(event.data.fr, event.data.to)
+          } else if (
+            slug === 'slackDirect' ||
+            slug === 'slackProblem' ||
+            slug === 'slackPo'
+          ) {
+            // console.log(
+            //   'je suis MainMenu.vue et je veux envoyer un message sur slack : ',
+            //   event.data
+            // )
+            this.doStuff(event.data)
+            // if (this.$store.commit('sendMessageToSlack', event.data)) {
+            //   this.$q.notify({
+            //     message: 'Message envoyé !',
+            //     timeout: 5000,
+            //     color: 'green'
+            //   })
+            // } else {
+            //   this.$q.notify({
+            //     message:
+            //       'Un problème est survenu, veuillez re-essayer plus tard.',
+            //     timeout: 5000,
+            //     color: 'red'
+            //   })
+            // }
           }
         })
         .onCancel(() => {
@@ -89,6 +122,23 @@ export default {
     today() {
       //console.log('Hello, i am today')
       this.$parent.onToday()
+    },
+    async doStuff(data) {
+      try {
+        await this.$store.dispatch('sendMessageToSlack', data)
+        this.$q.notify({
+          message: 'Message envoyé !',
+          timeout: 5000,
+          color: 'green'
+        })
+      } catch (ex) {
+        console.log('Something goes wrong when posting to slack : ', ex)
+        this.$q.notify({
+          message: 'Un problème est survenu, veuillez re-essayer plus tard.',
+          timeout: 5000,
+          color: 'red'
+        })
+      }
     }
   },
   mounted() {

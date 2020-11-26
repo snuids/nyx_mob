@@ -32,8 +32,8 @@
 
 <script>
 import Vue from 'vue'
-import moment from 'moment'
 import axios from 'axios'
+import moment from 'moment'
 import TargetDate from 'components/custom/MvpPicking/TargetDate.vue'
 import SupplierCard from 'components/custom/MvpPicking/SupplierCard.vue'
 

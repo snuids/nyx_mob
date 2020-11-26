@@ -30,6 +30,12 @@ Vue.filter('dateShort', function(value) {
   }
 })
 
+Vue.filter('dateClassic', function(value) {
+  if (value) {
+    return moment(String(value)).format('DD/MM/YYYY')
+  }
+})
+
 Vue.filter('dateFrench', function(value) {
   if (value) {
     moment.locale('fr')

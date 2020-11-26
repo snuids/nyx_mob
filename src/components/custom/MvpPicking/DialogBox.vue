@@ -30,6 +30,12 @@
           filled
           type="textarea"
         />
+        <q-input
+          v-if="target == 'slackDirect'"
+          v-model="selection"
+          filled
+          type="textarea"
+        />
         <QuantityAdjust v-if="target == 'other'" v-model="selection" />
       </q-card-section>
 
@@ -107,6 +113,31 @@ export default {
           ' ' +
           this.$store.getters.creds.user.lastname
         var o = { date: datDate, user: datUser, msg: this.selection }
+      }
+      if (
+        this.target === 'slackDirect' ||
+        this.target === 'slackProblem' ||
+        this.target === 'slackPo'
+      ) {
+        var o = {}
+        o.date = moment()
+        o.user = this.$store.getters.creds.user.firstname
+        o.msg = this.selection
+        o.apiUrl = this.$store.getters.apiurl
+        o.apiKey = this.$store.getters.activeApp.config.restApiKey
+        // specifics
+        if (this.target === 'slackDirect') {
+          o.type = 'direct'
+        } else if (this.target === 'slackPo') {
+          o.type = 'po'
+          o.supplier = ''
+          o.poType = ''
+        } else if (this.target === 'slackProblem') {
+          o.type = 'problem'
+          o.supplier = ''
+          o.problems = []
+          o.poType = ''
+        }
       }
 
       this.$emit('ok', { data: o })

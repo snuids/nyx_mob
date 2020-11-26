@@ -1,14 +1,14 @@
 <template>
-  <q-card flat bordered :class="bgColor">
+  <q-card flat square bordered :class="bgColor">
     <div class="row">
       <div class="col-xs-12 col-sm-7 ite-nam q-pa-xs" :style="textColor">
         {{ item.full_title }}
       </div>
       <div class="col-xs-12 col-sm-5 ite-ico flex justify-end ">
-        <q-btn flat square color="primary" label="DLC" />
+        <q-btn flat square label="DLC" :style="textColor" />
         <div class="row full-height items-center">
           <q-chip
-            color="primary"
+            :color="bgChip"
             text-color="white"
             class="quantity-chip"
             size="16px"
@@ -25,16 +25,16 @@
         <q-btn
           flat
           square
-          color="primary"
           icon="priority_high"
           @click="quantityProblem"
+          :style="textColor"
         />
         <q-btn
           flat
           square
-          color="primary"
           icon="check"
           @click="quantityIsFulfil"
+          :style="textColor"
         />
       </div>
     </div>
@@ -48,7 +48,8 @@ export default {
     return {
       chipText: null,
       bgColor: 'white',
-      textColor: 'primary'
+      textColor: 'primary',
+      bgChip: 'primary'
     }
   },
   props: {
@@ -67,7 +68,7 @@ export default {
       //   this.item.full_title,
       //   this.item.quantity
       // )
-      console.log('tu peux pas test : ', this.item_index)
+      // console.log('tu peux pas test : ', this.item_index)
       var o = { new_received: this.item.quantity, index: this.item_index }
       this.$emit('modifyReceived', o)
     },
@@ -78,17 +79,21 @@ export default {
       if (this.item.received === '') {
         this.chipText = this.item.quantity
         this.bgColor = 'bg-white'
-        this.textColor = 'color: #33F;'
+        this.textColor = 'color: #027be3;'
+        this.bgChip = 'primary'
       } else if (this.item.received === this.item.quantity) {
         // this.chipText = this.item.quantity
         this.chipText = this.item.received + '=' + this.item.quantity
         this.bgColor = 'bg-green'
         this.textColor = 'color: white;'
+        this.bgChip = 'green-8'
       } else {
         this.chipText = this.item.received + ' / ' + this.item.quantity
         this.bgColor = 'bg-orange'
         this.textColor = 'color: white;'
+        this.bgChip = 'orange-9'
       }
+      ;-12
     }
   },
   created() {},
