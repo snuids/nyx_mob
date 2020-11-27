@@ -71,7 +71,7 @@ export default {
       var titles = {
         date: 'Choisir une date',
         range: 'Choisir une période',
-        other: 'Modifier la quantité',
+        other: 'other / testing purpose',
         slackDirect: 'Envoyer un message sur slack'
       }
 
@@ -110,6 +110,8 @@ export default {
             //     color: 'red'
             //   })
             // }
+          } else if (slug === 'other') {
+            console.log('i am the callback of other. Fear my anger !')
           }
         })
         .onCancel(() => {

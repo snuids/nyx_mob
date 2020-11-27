@@ -1,8 +1,6 @@
 <template>
   <div class="my-display">
     <div v-if="loaded" class="">
-      <SupplierInfos @addComment="onAddComment" />
-
       <div>
         <Comment
           v-for="comment in allComments"
@@ -46,6 +44,97 @@
         />
       </div>
     </div>
+
+    <q-page-sticky expand position="top">
+      <div
+        v-if="loaded"
+        class="full-width"
+        style="max-width:800px; background-color: yellow;"
+      >
+        <div class="row">
+          <div class="col-3 b-c">
+            <q-btn
+              unelevated
+              class="full-width my-btn"
+              padding="md lg"
+              color="primary"
+              icon="arrow_back_ios"
+              label="retour"
+            />
+          </div>
+          <div class="col-6 b-c">
+            <SupplierInfos @addComment="onAddComment" />
+            <!-- <q-btn
+              unelevated
+              class="full-width full-height my-btn"
+              padding="md lg"
+              color="secondary"
+              icon="eco"
+            /> -->
+          </div>
+          <div class="col-3 b-c">
+            <q-btn
+              unelevated
+              class="full-width my-btn"
+              padding="md lg"
+              color="primary"
+              icon-right="arrow_forward_ios"
+              label="valider"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- nouveau expansion item -->
+      <!-- <div
+        v-if="loaded"
+        class="full-width"
+        style="max-width:800px; background-color: blue;"
+      >
+        <div
+          class="row justify-between q-py-xs"
+          style="background-color: #f5f5f5;"
+        >
+          <div class="col-1" style="background-color: pink;">
+            <div>
+              <q-btn
+                square
+                color="primary"
+                icon="arrow_back_ios"
+                class="full-width"
+              />
+            </div>
+          </div>
+          <div class="col" style="background-color: yellow;">
+            <div class="">
+              <SupplierInfos @addComment="onAddComment" />
+            </div>
+          </div>
+          <div class="col-1" style="background-color: red;">
+            <div>
+              <q-btn square color="primary" icon="send" class="full-width" />
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- ancien expansion item -->
+      <!-- <div
+        v-if="loaded"
+        class="row justify-between full-width gologolo q-mt-xs"
+        style="max-width:800px;"
+      >
+        <div class="col-12">
+          <SupplierInfos @addComment="onAddComment" />
+        </div>
+        <div class="col-6">
+          <q-btn color="primary" icon="arrow_back_ios" class="" />
+        </div>
+        <div class="col-6">
+          <q-btn color="primary" icon="send" class="" />
+        </div>
+      </div> -->
+    </q-page-sticky>
   </div>
 </template>
 
@@ -227,7 +316,29 @@ export default {
       //   'onReceivedModified => je veux modifier une quantité recue !',
       //   event
       // )
-      this.allItems[event.index].received = event.new_received
+      if (event.new_received > this.allItems[event.index].quantity) {
+        this.$q
+          .dialog({
+            title: 'Attention',
+            message:
+              'La quantité reçue est supérieure à la quantité commandée. Veuillez valider cette action.',
+            cancel: true,
+            persistent: true
+          })
+          .onOk(() => {
+            this.allItems[event.index].received = event.new_received
+          })
+          .onCancel(() => {
+            this.allItems[event.index].received = ''
+          })
+          .onDismiss(() => {
+            var tmp = JSON.parse(JSON.stringify(this.allItems))
+            this.allItems = null
+            this.allItems = tmp
+          })
+      } else {
+        this.allItems[event.index].received = event.new_received
+      }
       // console.log('after qty updated : ', this.allItems[event.index].received)
 
       // QUICK REFRESH FIX
@@ -337,8 +448,7 @@ export default {
   mounted() {
     this.getPurchaseOrder()
   },
-  computed: {
-  }
+  computed: {}
 }
 </script>
 
@@ -349,5 +459,12 @@ export default {
   max-width: 800px !important;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 58px;
+}
+.b-c {
+  text-align: center;
+}
+.my-btn {
+  border-radius: 0px !important;
 }
 </style>

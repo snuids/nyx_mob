@@ -1,9 +1,12 @@
 <template>
   <div class="">
-    <q-card flat bordered class="bg-white q-ma-xs q-pa-xs">
+    <q-card flat bordered class="bg-white">
       <q-expansion-item
-        icon="perm_identity"
+        icon="face"
+        expanded-icon=""
+        expand-icon=""
         :label="currentOrder.name | uppercaseFirst"
+        class="full-height"
       >
         <q-card class="q-pa-xs">
           <div class="row flex-center bg-light-blue-1">

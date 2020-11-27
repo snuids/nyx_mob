@@ -3,10 +3,10 @@
     ref="dialog"
     @hide="onDialogHide"
     :maximized="$q.platform.is.mobile ? maximizedToggle : false"
-    transition-show="slide-up"
+    transition-show="slide-down"
     transition-hide="slide-down"
   >
-    <q-card class="q-dialog-plugin">
+    <q-card class="q-dialog-plugin" :style="cardStyle">
       <q-card-section class="q-pt-xs">
         <div class="text-h6">{{ title }}</div>
       </q-card-section>
@@ -36,7 +36,14 @@
           filled
           type="textarea"
         />
-        <QuantityAdjust v-if="target == 'other'" v-model="selection" />
+        <q-banner v-if="target == 'other'">
+          This the other thing...
+        </q-banner>
+        <QuantityAdjust
+          v-if="target == 'qtyProblem'"
+          :quantity="quantity"
+          @quantityModified="onQuantityModified"
+        />
       </q-card-section>
 
       <!-- buttons example -->
@@ -72,12 +79,17 @@ export default {
           '_'
         ),
         firstDayOfWeek: 1
-      }
+      },
+      cardStyle: null
     }
   },
   props: {
     target: String,
-    title: String
+    title: String,
+    quantity: {
+      type: Number,
+      required: false
+    }
   },
 
   methods: {
@@ -139,6 +151,9 @@ export default {
           o.poType = ''
         }
       }
+      if (this.target === 'qtyProblem') {
+        var o = this.selection
+      }
 
       this.$emit('ok', { data: o })
       // or with payload: this.$emit('ok', { ... })
@@ -146,10 +161,19 @@ export default {
     },
     onCancelClick() {
       this.hide()
+    },
+    onQuantityModified(event) {
+      this.selection = event.data
     }
   },
   created() {},
-  mounted() {},
+  mounted() {
+    if ($q.platform.is.mobile) {
+      this.cardStyle = 'height:100% !important;min-height:100% !important;'
+    } else {
+      this.cardStyle = ''
+    }
+  },
   computed: {
     isLandscape: function() {
       if (this.$store.state.pickingModule.screenSize.windowWidth > 1000)

@@ -12,6 +12,9 @@
             text-color="white"
             class="quantity-chip"
             size="16px"
+            :style="outlineRed"
+            @click="quantityProblem"
+            clickable
           >
             <div class="text-center full-width">
               <!-- {{ item.received }} / {{ item.quantity }} -->
@@ -22,19 +25,20 @@
           </q-chip>
         </div>
 
-        <q-btn
+        <!-- <q-btn
           flat
           square
           icon="priority_high"
           @click="quantityProblem"
           :style="textColor"
-        />
+        /> -->
         <q-btn
           flat
           square
-          icon="check"
+          :icon="checkIcon"
           @click="quantityIsFulfil"
           :style="textColor"
+          :disable="isDisable"
         />
       </div>
     </div>
@@ -42,6 +46,8 @@
 </template>
 
 <script>
+import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
+
 export default {
   name: 'CartItem',
   data() {
@@ -49,7 +55,10 @@ export default {
       chipText: null,
       bgColor: 'white',
       textColor: 'primary',
-      bgChip: 'primary'
+      bgChip: 'primary',
+      oulinedRed: '',
+      checkIcon: 'check',
+      isDisable: false
     }
   },
   props: {
@@ -73,7 +82,33 @@ export default {
       this.$emit('modifyReceived', o)
     },
     quantityProblem() {
-      console.log('we need a box  for the quantity problem')
+      var slug = 'qtyProblem'
+      var titles = {
+        qtyProblem: 'Modifier la quantité'
+      }
+
+      this.$q
+        .dialog({
+          component: DialogBox,
+          parent: this,
+          target: slug,
+          title: titles[slug],
+          quantity: this.item.quantity
+        })
+        .onOk(event => {
+          //console.log('Dialog() => OK ', event.data)
+          if (slug === 'qtyProblem') {
+            //console.log('retour de qty problem', event)
+            var o = { new_received: event.data, index: this.item_index }
+            this.$emit('modifyReceived', o)
+          }
+        })
+        .onCancel(() => {
+          //console.log('Dialog() => Cancel')
+        })
+        .onDismiss(() => {
+          //console.log('Dialog() => I am triggered on both OK and Cancel')
+        })
     },
     setChip() {
       if (this.item.received === '') {
@@ -81,19 +116,35 @@ export default {
         this.bgColor = 'bg-white'
         this.textColor = 'color: #027be3;'
         this.bgChip = 'primary'
+        this.outlineRed = ''
+        this.checkIcon = 'check'
+        this.isDisable = false
       } else if (this.item.received === this.item.quantity) {
         // this.chipText = this.item.quantity
-        this.chipText = this.item.received + '=' + this.item.quantity
+        this.chipText = this.item.received
         this.bgColor = 'bg-green'
         this.textColor = 'color: white;'
         this.bgChip = 'green-8'
-      } else {
+        this.outlineRed = ''
+        this.checkIcon = 'check_circle_outline'
+        this.isDisable = true
+      } else if (this.item.received < this.item.quantity) {
         this.chipText = this.item.received + ' / ' + this.item.quantity
-        this.bgColor = 'bg-orange'
+        this.bgColor = 'bg-red'
         this.textColor = 'color: white;'
-        this.bgChip = 'orange-9'
+        this.bgChip = 'red-9'
+        this.outlineRed = ''
+        this.checkIcon = 'cancel'
+        this.isDisable = true
+      } else if (this.item.received > this.item.quantity) {
+        this.chipText = this.item.received + ' / ' + this.item.quantity
+        this.bgColor = 'bg-green'
+        this.textColor = 'color: white;'
+        this.bgChip = 'green-8'
+        this.outlineRed = 'border:solid #f44336 2px;'
+        this.checkIcon = 'check_circle_outline'
+        this.isDisable = true
       }
-      ;-12
     }
   },
   created() {},
