@@ -73,7 +73,12 @@ export default {
             'units_ordered',
             'units_received',
             'updated_at',
-            'validated'
+            'validated',
+            'closed',
+            'cart_complete',
+            'has_dlc',
+            'picking_state',
+            'comments'
           ]
         },
         query: {
@@ -118,7 +123,7 @@ export default {
         .post(url, this.queryList)
         .then(response => {
           // var fullResponse = response
-          // console.log('getPoList() full response : ', response)
+          console.log('getPoList() FULL RESPONSE : ', response)
 
           this.allPurchaseOrders = []
           for (var i = 0; i < response.data.records.length; i++) {
@@ -129,13 +134,14 @@ export default {
           // saving purchase orders list for later comparison
           this.original_allPurchaseOrders = this.allPurchaseOrders
 
-          // console.log(
-          //   'getPoList()::allPurchaseOrders: ',
-          //   this.allPurchaseOrders
-          // )
+          console.log(
+            'getPoList()::allPurchaseOrders: ',
+            this.allPurchaseOrders
+          )
 
           // Checking for missing fields
           this.checkPurchaseOrderModel()
+          this.orderTheOrders()
 
           // Saving in store
           this.$store.commit('mutate_allPurchaseOrders', {
@@ -163,28 +169,45 @@ export default {
     checkPurchaseOrderModel() {
       //console.log('<============<< poList | checkPOmodel() >>============>')
       for (var i = 0; i < this.allPurchaseOrders.length; i++) {
-        // console.log('Checking po[' + i + '] (start): ')
+        // console.log(
+        //   'Checking po[' + i + '] (start): ',
+        //   this.allPurchaseOrders[i]
+        // )
 
         // specifics po fields
         if (!this.allPurchaseOrders[i].hasOwnProperty('closed')) {
-          // console.log("PO hasn't closed property. It's now created !")
+          // console.log('Test hasOwn : ')
           this.allPurchaseOrders[i].closed = false
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('cart_complete')) {
-          // console.log("PO hasn't cart_complete property. It's now created !")
+          // console.log(
+          //   'PO[' + i + "] hasn't cart_complete property. It's now created !"
+          // )
           this.allPurchaseOrders[i].cart_complete = 2
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('has_dlc')) {
-          // console.log("PO hasn't has_dlc property. It's now created !")
+          // console.log(
+          //   'PO[' + i + "] hasn't has_dlc property. It's now created !"
+          // )
           this.allPurchaseOrders[i].has_dlc = false
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('picking_state')) {
-          // console.log("PO hasn't picking_state property. It's now created !")
+          // console.log(
+          //   'PO[' + i + "] hasn't picking_state property. It's now created !"
+          // )
           this.allPurchaseOrders[i].picking_state = 0
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('comments')) {
-          // console.log("PO hasn't comments property. It's now created !")
-          this.allPurchaseOrders[i].comments = []
+          // console.log(
+          //   'PO[' + i + "] hasn't comments property. It's now created !"
+          // )
+          this.allPurchaseOrders[i].comments = JSON.stringify(new Array())
+        }
+        if (!this.allPurchaseOrders[i].hasOwnProperty('has_direct_product')) {
+          // console.log(
+          //   'PO[' + i + "] hasn't comments property. It's now created !"
+          // )
+          this.allPurchaseOrders[i].has_direct_product = false
         }
 
         // line items fields check
@@ -207,12 +230,85 @@ export default {
           // console.log(
           //   'Item has a dlc property. We need to create the dlc_date !'
           // )
-          cart[j].dlc_date = ''
+          if (!cart[j].hasOwnProperty('dlc_date')) {
+            cart[j].dlc_date = ''
+          }
+        }
+
+        if (cart[j].hasOwnProperty('direct_product')) {
+          this.allPurchaseOrders[id].has_direct_product = true
         }
       }
 
       // rebuild allPurchaseOrders array
       this.allPurchaseOrders[id].line_items = JSON.stringify(cart)
+    },
+    orderTheOrders() {
+      // console.log('Entering TWILIGHT ZONE')
+      // console.log('AVANT : ', this.allPurchaseOrders)
+      // take all orders with cart_complete 2
+      var array_2 = []
+      for (var i = 0; i < this.allPurchaseOrders.length; i++) {
+        if (this.allPurchaseOrders[i].cart_complete === 2)
+          array_2.push(this.allPurchaseOrders[i])
+      }
+      // console.log(' DEBUG array_2 : ', array_2)
+      // then order them ascending
+      array_2.sort(function(a, b) {
+        var nameA = a.supplier.toLowerCase()
+        var nameB = b.supplier.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+
+      // take all orders with cart_complete 0
+      var array_0 = []
+      for (var j = 0; j < this.allPurchaseOrders.length; j++) {
+        if (this.allPurchaseOrders[j].cart_complete === 0)
+          array_0.push(this.allPurchaseOrders[j])
+      }
+      // console.log(' DEBUG array_0 : ', array_0)
+      // then order them ascending
+      array_0.sort(function(a, b) {
+        var nameA = a.supplier.toLowerCase()
+        var nameB = b.supplier.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+
+      // take all orders with cart_complete 1
+      var array_1 = []
+      for (var k = 0; k < this.allPurchaseOrders.length; k++) {
+        if (this.allPurchaseOrders[k].cart_complete === 1)
+          array_1.push(this.allPurchaseOrders[k])
+      }
+      // console.log(' DEBUG array_1 : ', array_1)
+      // then order them ascending
+      array_1.sort(function(a, b) {
+        var nameA = a.supplier.toLowerCase()
+        var nameB = b.supplier.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+
+      // re assemble all orders with c_c 2 => c_c 0 => c_c 1
+      this.allPurchaseOrders = []
+      array_2.forEach(element => {
+        this.allPurchaseOrders.push(element)
+      })
+      array_0.forEach(element => {
+        this.allPurchaseOrders.push(element)
+      })
+      array_1.forEach(element => {
+        this.allPurchaseOrders.push(element)
+      })
+
+      // done
+      // console.log('APRES : ', this.allPurchaseOrders)
+      // console.log('Exiting TWILIGHT ZONE')
     }
   },
   mounted() {

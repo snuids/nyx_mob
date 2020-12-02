@@ -1,6 +1,6 @@
 <template>
   <q-dialog
-    ref="dialog"
+    ref="dialogBox"
     @hide="onDialogHide"
     :maximized="$q.platform.is.mobile ? maximizedToggle : false"
     transition-show="slide-down"
@@ -12,37 +12,50 @@
       </q-card-section>
       <q-card-section class="q-pt-xs">
         <q-date
-          v-if="target == 'date'"
+          v-if="target === 'date'"
           v-model="selection"
           :locale="myLocale"
           :landscape="isLandscape"
         />
         <q-date
-          v-if="target == 'range'"
+          v-if="target === 'range'"
           v-model="selection"
           :locale="myLocale"
           range
           :landscape="isLandscape"
         />
         <q-input
-          v-if="target == 'comment'"
+          v-if="target === 'comment'"
           v-model="selection"
           filled
           type="textarea"
         />
         <q-input
-          v-if="target == 'slackDirect'"
+          v-if="target === 'slackDirect'"
           v-model="selection"
           filled
           type="textarea"
         />
-        <q-banner v-if="target == 'other'">
+        <q-input
+          v-if="target === 'slackPo'"
+          v-model="selection"
+          filled
+          type="textarea"
+        />
+        <q-banner v-if="target === 'other'">
           This the other thing...
         </q-banner>
         <QuantityAdjust
-          v-if="target == 'qtyProblem'"
+          v-if="target === 'qtyProblem'"
           :quantity="quantity"
           @quantityModified="onQuantityModified"
+        />
+        <AddItem
+          v-if="target === 'add'"
+          :supplierName="supplier"
+          @addProduct="onProductAdded"
+          :selectRef="selection"
+          ref="addItemInstance"
         />
       </q-card-section>
 
@@ -58,6 +71,8 @@
 <script>
 import Vue from 'vue'
 import moment from 'moment'
+import AddItem from 'components/custom/MvpPicking/AddItem.vue'
+import AddQuantity from 'components/custom/MvpPicking/AddQuantity.vue'
 import QuantityAdjust from 'components/custom/MvpPicking/QuantityAdjust.vue'
 
 Vue.component('QuantityAdjust', QuantityAdjust)
@@ -89,27 +104,38 @@ export default {
     quantity: {
       type: Number,
       required: false
+    },
+    supplier: {
+      type: String,
+      required: false
+    },
+    poType: {
+      type: String,
+      required: false
     }
   },
 
   methods: {
     show() {
-      this.$refs.dialog.show()
+      this.$refs.dialogBox.show()
     },
     hide() {
-      this.$refs.dialog.hide()
+      this.$refs.dialogBox.hide()
     },
     onDialogHide() {
       this.$emit('hide')
     },
-    onOKClick() {
-      if (this.target == 'date') {
+    async onOKClick() {
+      // single date case
+      if (this.target === 'date') {
         var clean = moment(this.selection, 'YYYY/MM/DD').format(
           'YYYY-MM-DDTHH:mm:ss+01:mm'
         )
         var o = { fr: clean, to: clean }
       }
-      if (this.target == 'range') {
+
+      // ranged date case
+      if (this.target === 'range') {
         var cleanF = moment(this.selection.from, 'YYYY/MM/DD').format(
           'YYYY-MM-DDTHH:mm:ss+01:mm'
         )
@@ -118,7 +144,9 @@ export default {
         )
         var o = { fr: cleanF, to: cleanT }
       }
-      if (this.target == 'comment') {
+
+      // comment case
+      if (this.target === 'comment') {
         var datDate = moment()
         var datUser =
           this.$store.getters.creds.user.firstname +
@@ -126,11 +154,9 @@ export default {
           this.$store.getters.creds.user.lastname
         var o = { date: datDate, user: datUser, msg: this.selection }
       }
-      if (
-        this.target === 'slackDirect' ||
-        this.target === 'slackProblem' ||
-        this.target === 'slackPo'
-      ) {
+
+      // slack messages case
+      if (this.target === 'slackDirect' || this.target === 'slackPo') {
         var o = {}
         o.date = moment()
         o.user = this.$store.getters.creds.user.firstname
@@ -142,21 +168,23 @@ export default {
           o.type = 'direct'
         } else if (this.target === 'slackPo') {
           o.type = 'po'
-          o.supplier = ''
-          o.poType = ''
-        } else if (this.target === 'slackProblem') {
-          o.type = 'problem'
-          o.supplier = ''
-          o.problems = []
-          o.poType = ''
+          o.supplier = this.supplier
+          o.poType = this.poType
         }
       }
+
+      // Quantity problem case
       if (this.target === 'qtyProblem') {
         var o = this.selection
       }
 
+      // add (for quantity) case
+      if (this.target === 'add') {
+        let o = await this.askForQuantity(this.$refs.addItemInstance.inputText)
+      }
+
+      // then proceed
       this.$emit('ok', { data: o })
-      // or with payload: this.$emit('ok', { ... })
       this.hide()
     },
     onCancelClick() {
@@ -165,10 +193,37 @@ export default {
     onQuantityModified(event) {
       this.selection = event.data
     }
+    // ,
+    // onProductAdded(event) {
+    //   this.askForQuantity(event.data)
+    // },
+    // askForQuantity(name) {
+    //   // demander la quantité
+    //   this.$q
+    //     .dialog({
+    //       title: 'Indiquer la quantité reçue',
+    //       component: AddQuantity,
+    //       parent: this,
+    //       cancel: true,
+    //       persistent: true,
+    //       quantity: 0
+    //     })
+    //     .onOk(event => {
+    //       //console.log('Dialog() => OK ', event.data)
+    //     })
+    //     .onCancel(() => {
+    //       //console.log('Dialog() => Cancel')
+    //     })
+    //     .onDismiss(() => {
+    //       //console.log('Dialog() => I am triggered on both OK and Cancel')
+    //     })
+
+    //   // puis renvoyer
+    // }
   },
   created() {},
   mounted() {
-    if ($q.platform.is.mobile) {
+    if (this.$q.platform.is.mobile) {
       this.cardStyle = 'height:100% !important;min-height:100% !important;'
     } else {
       this.cardStyle = ''

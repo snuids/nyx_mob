@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="menu-banner float-right">
-        <MainMenu />
+        <MainMenu @today="onToday" />
       </div>
     </div>
   </div>

@@ -1,16 +1,23 @@
 <template>
   <div>
     <div class="row justify-end items-center">
-      <q-badge v-if="comments" color="primary">
+      <q-badge
+        v-if="has_direct"
+        :color="badgeColor"
+        class="icon-spacer q-pa-xs"
+      >
+        DIRECT
+      </q-badge>
+      <q-badge v-if="comments" :color="badgeColor" class="icon-spacer q-pa-xs">
         <q-icon name="notes" color="white" />
       </q-badge>
-      <q-badge v-if="has_dlc" color="primary">
+      <q-badge v-if="has_dlc" :color="badgeColor" class="icon-spacer q-pa-xs">
         DLC
       </q-badge>
-      <q-badge v-if="closed" color="primary">
+      <q-badge v-if="closed" :color="badgeColor" class="icon-spacer q-pa-xs">
         <q-icon name="lock" color="white" />
       </q-badge>
-      <q-badge color="primary">
+      <q-badge :color="badgeColor" class="icon-spacer text-uppercase q-pa-xs">
         {{ currentStatus() }}
       </q-badge>
     </div>
@@ -40,11 +47,18 @@ export default {
     comments: {
       type: Boolean,
       required: true
+    },
+    has_direct: {
+      type: Boolean,
+      required: true
     }
   },
   components: {},
   data() {
-    return {}
+    return {
+      badgeColor: 'primary',
+      textStatus: 'en attente'
+    }
   },
   methods: {
     currentStatus() {
@@ -59,11 +73,27 @@ export default {
         return 'en attente'
       }
     }
+  },
+  mounted() {
+    if (this.cart_complete === 0) {
+      // missing items
+      this.badgeColor = 'orange-9'
+      this.textStatus = 'commande incomplète'
+    } else if (this.cart_complete === 1) {
+      // nothing missing
+      this.badgeColor = 'green-9'
+      this.textStatus = 'commande complète'
+    } else if (this.cart_complete === 2) {
+      // waiting to be processed
+      this.badgeColor = 'primary'
+      this.textStatus = 'en attente'
+    }
   }
 }
 </script>
 
-<style></style>
-
-:closed="closed" :cart_complete="cart_complete" :has_dlc="has_dlc"
-:pickin_state="picking_state" :comments="comments"
+<style>
+.icon-spacer {
+  margin: 1px;
+}
+</style>

@@ -1,13 +1,6 @@
 <template>
   <q-item class="q-pa-none">
-    <q-card
-      square
-      flat
-      bordered
-      :color="bgColor"
-      :text-color="textColor"
-      class="full-width"
-    >
+    <q-card square flat bordered :class="cardConfig()">
       <div class="row full-height" clickable @click="onCardClick" v-ripple>
         <div class="col-xs-2 col-sm-1 text-center date q-pa-sm">
           {{ expected_date | dateShort }}
@@ -25,6 +18,7 @@
                 :has_dlc="has_dlc"
                 :picking_state="picking_state"
                 :comments="anyComments"
+                :has_direct="has_direct_product"
               />
             </div>
           </div>
@@ -88,7 +82,11 @@ export default {
       required: true
     },
     comments: {
-      type: Array,
+      type: String,
+      required: true
+    },
+    has_direct_product: {
+      type: Boolean,
       required: true
     }
   },
@@ -103,28 +101,22 @@ export default {
       // this.$root.$emit('toggleDisplayEvent', o)
       this.$root.$emit('displayOrderEvent', o)
     },
-    bgColor() {
+    cardConfig() {
       if (this.cart_complete === 0) {
-        // cart_complete = 0 >>> missing item(s) in order
-        return 'green'
+        // cart_complete = 0 >>> missing item(s) in order or too much items
+        return 'full-width q-py-sm bg-orange text-white'
       } else if (this.cart_complete === 1) {
         // cart_complete = 1 >>> order is fulfil
-        return 'orange'
+        return 'full-width q-py-sm bg-green text-white'
       } else if (this.cart_complete === 2) {
         // cart_complete = 2 >>> no information about order
-        return 'white'
-      }
-    },
-    textColor() {
-      if (this.cart_complete === 2) {
-        return 'white'
-      } else {
-        return 'black'
+        return 'full-width q-py-sm bg-white text-primary'
       }
     }
   },
   mounted() {
-    if (this.comments.length > 0) {
+    var coms = Array.from(JSON.parse(this.comments))
+    if (coms.length > 0) {
       this.anyComments = true
     }
   }

@@ -1,11 +1,19 @@
 <template>
   <q-card flat square bordered :class="bgColor">
-    <div class="row">
-      <div class="col-xs-12 col-sm-7 ite-nam q-pa-xs" :style="textColor">
+    <div class="row q-py-sm">
+      <div class="col-xs-12 col-sm-6 ite-nam q-pa-xs" :style="textColor">
         {{ item.full_title }}
       </div>
-      <div class="col-xs-12 col-sm-5 ite-ico flex justify-end ">
-        <q-btn flat square label="DLC" :style="textColor" />
+      <div class="col-xs-12 col-sm-6 ite-ico flex justify-end ">
+        <q-btn
+          disable
+          flat
+          square
+          label="ajout"
+          v-if="item.direct_product"
+          :style="textColor"
+        />
+        <q-btn flat square label="DLC" :style="textColor" :disable="closed" />
         <div class="row full-height items-center">
           <q-chip
             :color="bgChip"
@@ -14,7 +22,7 @@
             size="16px"
             :style="outlineRed"
             @click="quantityProblem"
-            clickable
+            :clickable="!closed"
           >
             <div class="text-center full-width">
               <!-- {{ item.received }} / {{ item.quantity }} -->
@@ -33,10 +41,20 @@
           :style="textColor"
         /> -->
         <q-btn
+          v-if="!item.direct_product"
           flat
           square
           :icon="checkIcon"
           @click="quantityIsFulfil"
+          :style="textColor"
+          :disable="isDisable"
+        />
+        <q-btn
+          v-else
+          flat
+          square
+          :icon="checkIcon"
+          @click="deleteItem"
           :style="textColor"
           :disable="isDisable"
         />
@@ -56,7 +74,7 @@ export default {
       bgColor: 'white',
       textColor: 'primary',
       bgChip: 'primary',
-      oulinedRed: '',
+      outlineRed: 'border:none;',
       checkIcon: 'check',
       isDisable: false
     }
@@ -68,6 +86,10 @@ export default {
     },
     item_index: {
       type: Number,
+      required: true
+    },
+    closed: {
+      type: Boolean,
       required: true
     }
   },
@@ -87,13 +109,16 @@ export default {
         qtyProblem: 'Modifier la quantité'
       }
 
+      // received already set ?
+      if (this.item.received !== '') var qty = this.item.received
+      else var qty = this.item.quantity
       this.$q
         .dialog({
           component: DialogBox,
           parent: this,
           target: slug,
           title: titles[slug],
-          quantity: this.item.quantity
+          quantity: qty
         })
         .onOk(event => {
           //console.log('Dialog() => OK ', event.data)
@@ -116,24 +141,35 @@ export default {
         this.bgColor = 'bg-white'
         this.textColor = 'color: #027be3;'
         this.bgChip = 'primary'
-        this.outlineRed = ''
+        this.outlineRed = 'border:none;'
         this.checkIcon = 'check'
         this.isDisable = false
       } else if (this.item.received === this.item.quantity) {
         // this.chipText = this.item.quantity
         this.chipText = this.item.received
-        this.bgColor = 'bg-green'
-        this.textColor = 'color: white;'
-        this.bgChip = 'green-8'
-        this.outlineRed = ''
-        this.checkIcon = 'check_circle_outline'
-        this.isDisable = true
+        this.outlineRed = 'border:none;'
+        if (this.item.direct_product === true) {
+          this.bgColor = 'bg-white'
+          this.textColor = 'color: #027be3;'
+          this.bgChip = 'primary'
+          this.checkIcon = 'backspace'
+          if (this.closed) this.isDisable = true
+          else this.isDisable = false
+        } else {
+          this.bgColor = 'bg-green'
+          this.textColor = 'color: white;'
+          this.bgChip = 'green-8'
+          this.checkIcon = 'check_circle_outline'
+          this.isDisable = true
+        }
+        // this.checkIcon = 'check_circle_outline'
+        // this.isDisable = true
       } else if (this.item.received < this.item.quantity) {
         this.chipText = this.item.received + ' / ' + this.item.quantity
         this.bgColor = 'bg-red'
         this.textColor = 'color: white;'
         this.bgChip = 'red-9'
-        this.outlineRed = ''
+        this.outlineRed = 'border:none;'
         this.checkIcon = 'cancel'
         this.isDisable = true
       } else if (this.item.received > this.item.quantity) {
@@ -142,9 +178,22 @@ export default {
         this.textColor = 'color: white;'
         this.bgChip = 'green-8'
         this.outlineRed = 'border:solid #f44336 2px;'
-        this.checkIcon = 'check_circle_outline'
-        this.isDisable = true
+        if (this.item.direct_product === true) {
+          this.checkIcon = 'backspace'
+          if (this.closed) this.isDisable = true
+          else this.isDisable = false
+        } else {
+          this.checkIcon = 'check_circle_outline'
+          this.isDisable = true
+        }
+        // this.checkIcon = 'check_circle_outline'
+        // this.isDisable = true
       }
+    },
+    deleteItem() {
+      console.log('deleteeeeeeeeee')
+      var o = { index: this.item_index }
+      this.$emit('deleteItem', o)
     }
   },
   created() {},

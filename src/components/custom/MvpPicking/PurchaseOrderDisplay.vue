@@ -18,31 +18,17 @@
         :key="item.id"
         :item_index="index"
         :item="item"
+        :closed="isClosed"
         @modifyReceived="onReceivedModified"
+        @deleteItem="onDeleteItem"
       />
     </q-list>
 
-    <div>
-      <div class="q-my-md text-center">
-        <q-btn
-          label="Retour"
-          icon="arrow_back_ios"
-          color="primary"
-          class="q-mx-md q-my-md"
-          @click="backToList"
-          size="md"
-        />
-        <q-btn
-          v-if="loaded"
-          label="Valider"
-          icon-right="send"
-          color="primary"
-          class="q-mx-md q-my-md"
-          @click="validateOrder"
-          size="md"
-          :disable="disableValidate"
-        />
-      </div>
+    <div v-if="loaded" class="flex-center tppt">
+      <AddItem
+        :supplierName="currentOrder.supplier"
+        @addProduct="onProductAdded"
+      />
     </div>
 
     <q-page-sticky expand position="top">
@@ -57,83 +43,49 @@
               unelevated
               class="full-width my-btn"
               padding="md lg"
-              color="primary"
+              color="secondary"
               icon="arrow_back_ios"
               label="retour"
+              @click="backToList"
             />
           </div>
           <div class="col-6 b-c">
-            <SupplierInfos @addComment="onAddComment" />
-            <!-- <q-btn
-              unelevated
-              class="full-width full-height my-btn"
-              padding="md lg"
-              color="secondary"
-              icon="eco"
-            /> -->
-          </div>
-          <div class="col-3 b-c">
+            <!-- <SupplierInfos @addComment="onAddComment" /> -->
             <q-btn
               unelevated
               class="full-width my-btn"
               padding="md lg"
               color="primary"
+              icon="face"
+              :label="currentOrder.name | uppercaseFirst"
+              @click="openWindow"
+            />
+          </div>
+          <div class="col-3 b-c">
+            <q-btn
+              v-if="!isClosed"
+              unelevated
+              class="full-width my-btn"
+              padding="md lg"
+              color="secondary"
               icon-right="arrow_forward_ios"
               label="valider"
+              @click="validateOrder"
+              :disable="isValidateDisabled"
+            />
+            <q-btn
+              v-else
+              unelevated
+              class="full-width my-btn"
+              padding="md lg"
+              color="secondary"
+              icon-right="arrow_forward_ios"
+              label="modifier"
+              @click="modifyClosed"
             />
           </div>
         </div>
       </div>
-
-      <!-- nouveau expansion item -->
-      <!-- <div
-        v-if="loaded"
-        class="full-width"
-        style="max-width:800px; background-color: blue;"
-      >
-        <div
-          class="row justify-between q-py-xs"
-          style="background-color: #f5f5f5;"
-        >
-          <div class="col-1" style="background-color: pink;">
-            <div>
-              <q-btn
-                square
-                color="primary"
-                icon="arrow_back_ios"
-                class="full-width"
-              />
-            </div>
-          </div>
-          <div class="col" style="background-color: yellow;">
-            <div class="">
-              <SupplierInfos @addComment="onAddComment" />
-            </div>
-          </div>
-          <div class="col-1" style="background-color: red;">
-            <div>
-              <q-btn square color="primary" icon="send" class="full-width" />
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- ancien expansion item -->
-      <!-- <div
-        v-if="loaded"
-        class="row justify-between full-width gologolo q-mt-xs"
-        style="max-width:800px;"
-      >
-        <div class="col-12">
-          <SupplierInfos @addComment="onAddComment" />
-        </div>
-        <div class="col-6">
-          <q-btn color="primary" icon="arrow_back_ios" class="" />
-        </div>
-        <div class="col-6">
-          <q-btn color="primary" icon="send" class="" />
-        </div>
-      </div> -->
     </q-page-sticky>
   </div>
 </template>
@@ -142,19 +94,24 @@
 import Vue from 'vue'
 import axios from 'axios'
 import moment from 'moment'
+import AddItem from 'components/custom/MvpPicking/AddItem.vue'
 import Comment from 'components/custom/MvpPicking/Comment.vue'
 import CartItem from 'components/custom/MvpPicking/CartItem.vue'
+import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
 import SupplierInfos from 'components/custom/MvpPicking/SupplierInfos.vue'
 
 Vue.component('SupplierInfos', SupplierInfos)
 Vue.component('CartItem', CartItem)
 Vue.component('Comment', Comment)
+Vue.component('AddItem', AddItem)
 
 export default {
   name: 'PurchaseOrderDisplay',
   components: {
     SupplierInfos,
-    CartItem
+    CartItem,
+    AddItem,
+    Comment
   },
   data() {
     return {
@@ -163,7 +120,10 @@ export default {
       allItems: [],
       allComments: [],
       disableValidate: true,
-      loaded: false
+      loaded: false,
+      isValidateDisabled: true,
+      reportObject: null,
+      isClosed: false
     }
   },
   methods: {
@@ -189,6 +149,11 @@ export default {
       this.allComments = []
       if (this.currentOrder.hasOwnProperty('comments')) {
         this.allComments = Array.from(JSON.parse(this.currentOrder.comments))
+      }
+
+      // is this purchase order already closed ?
+      if (this.currentOrder.closed) {
+        this.isClosed = true
       }
 
       // update the store
@@ -258,11 +223,6 @@ export default {
       // Change order status ?
       this.checkOrderStatus()
 
-      // do we need to send a message on slack ?
-      if (this.currentOrder.cart_complete === 0) {
-        console.log('>> STILL TO DO << a message to slack')
-      }
-
       // Update "updated_at" field (2020-10-21T01:00:01.408567+02:00)
       this.currentOrder.updated_at = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
@@ -279,17 +239,17 @@ export default {
         _id: this.$store.state.pickingModule.currentOrder.meta.id
       }
 
-      // console.log(
-      //   'updatedPurchaseOrder debug pre-send : ',
-      //   updatedPurchaseOrder
-      // )
+      console.log(
+        'updatedPurchaseOrder debug pre-send : ',
+        updatedPurchaseOrder
+      )
 
       /* UNCOMMENT TO COMMIT REAL SAVES*/
       // send the update request
-      // this.$store.commit({
-      //   type: 'updateRecord',
-      //   data: updatedPurchaseOrder
-      // })
+      this.$store.commit({
+        type: 'updateRecord',
+        data: updatedPurchaseOrder
+      })
 
       // notify user
       this.$q.notify({
@@ -297,45 +257,56 @@ export default {
         timeout: 2000,
         color: 'green'
       })
+
+      return true
     },
     async backToList() {
       // console.log('<<<!! back to list !!>>>')
       // console.log('original:', this.originalOrder)
       // console.log('current:', this.currentOrder)
+      var timer = 50
 
       // has something changed ?
       if (this.hasPurchaseOrderChanged()) {
         // submit updated data to server
-        this.sendOrderToServer()
+        await this.sendOrderToServer()
+        timer = 500
       }
       // then switch component
-      this.$root.$emit('displayListEvent')
+      setTimeout(() => {
+        this.$root.$emit('displayListEvent')
+      }, timer)
     },
-    onReceivedModified(event) {
+    async onReceivedModified(event) {
       // console.log(
       //   'onReceivedModified => je veux modifier une quantité recue !',
       //   event
       // )
       if (event.new_received > this.allItems[event.index].quantity) {
-        this.$q
-          .dialog({
-            title: 'Attention',
-            message:
-              'La quantité reçue est supérieure à la quantité commandée. Veuillez valider cette action.',
-            cancel: true,
-            persistent: true
-          })
-          .onOk(() => {
-            this.allItems[event.index].received = event.new_received
-          })
-          .onCancel(() => {
-            this.allItems[event.index].received = ''
-          })
-          .onDismiss(() => {
-            var tmp = JSON.parse(JSON.stringify(this.allItems))
-            this.allItems = null
-            this.allItems = tmp
-          })
+        if (
+          await new Promise(resolve =>
+            this.$q
+              .dialog({
+                title: 'Attention',
+                message:
+                  'La quantité reçue est supérieure à la quantité commandée. Veuillez valider cette action.',
+                cancel: true,
+                persistent: true
+              })
+              .onOk(() => resolve(true))
+              .onCancel(() => resolve(false))
+          )
+        ) {
+          this.allItems[event.index].received = event.new_received
+          var tmp = JSON.parse(JSON.stringify(this.allItems))
+          this.allItems = null
+          this.allItems = tmp
+        } else {
+          this.allItems[event.index].received = ''
+          var tmp = JSON.parse(JSON.stringify(this.allItems))
+          this.allItems = null
+          this.allItems = tmp
+        }
       } else {
         this.allItems[event.index].received = event.new_received
       }
@@ -345,8 +316,42 @@ export default {
       var tmp = JSON.parse(JSON.stringify(this.allItems))
       this.allItems = null
       this.allItems = tmp
+
+      // an item has just received a quantity, we need to check
+      // if the order is complete or not
+      this.isOrderComplete()
     },
-    validateOrder() {},
+    async validateOrder() {
+      // console.log('ValidateOrder() - starting function')
+
+      // checking if something is missing. If so, send a message on slack
+      let rez = await this.isThereSomethingToReport()
+
+      if (rez) {
+        this.prepareForSlack()
+        // console.log('need to report on slack ::=>> ', this.reportObject)
+      }
+      // mark the current order as "closed"
+      this.currentOrder.closed = true
+
+      // send order to server
+      await this.sendOrderToServer()
+
+      // notify user
+      this.$q.notify({
+        message: 'Bon de commande validé',
+        timeout: 3000,
+        color: 'green'
+      })
+
+      // then switch component
+      // console.log('ValidateOrder() - ending function')
+
+      // artificial waiting
+      setTimeout(() => {
+        this.$root.$emit('displayListEvent')
+      }, 500)
+    },
     hasPurchaseOrderChanged() {
       // rebuild currentPurchaseOrder
       this.currentOrder.line_items = JSON.stringify(this.allItems)
@@ -441,6 +446,190 @@ export default {
       }
       // console.log(' checkOrderStatus() - END')
       // console.log(' currentOrder END checkOrderStatus=> ', this.currentOrder)
+    },
+    isOrderComplete() {
+      var flag = false
+      for (var i = 0; i < this.allItems.length; i++) {
+        // console.log('<===<< isOrderComplete >>===> ', this.allItems[i].received)
+        if (this.allItems[i].received === '') {
+          // console.log(
+          //   '<===<< isOrderComplete :: item vide trouvé(' +
+          //     i +
+          //     '), on quitte >>===>',
+          //   this.allItems[i]
+          // )
+          flag = true
+          return
+        }
+      }
+      // console.log(
+      //   '<===<< isOrderComplete :: ALL ITEM HAS A QTY, WE NEED TO ENABLE VALIDATE BUTTON >>===> '
+      // )
+      this.isValidateDisabled = false
+    },
+    openDialogBox(slug) {
+      var titles = {
+        add: 'Ajouter un produit'
+      }
+
+      this.$q
+        .dialog({
+          component: DialogBox,
+          parent: this,
+          target: slug,
+          title: titles[slug],
+          supplier: this.currentOrder.supplier
+        })
+        .onOk(event => {
+          //console.log('Dialog() => OK ', event.data)
+          if (slug === 'add') {
+            console.log(
+              'je suis poDisplay.vue -> openDialogBox().onOk() :: ',
+              event
+            )
+          }
+        })
+        .onCancel(() => {
+          //console.log('Dialog() => Cancel')
+        })
+        .onDismiss(() => {
+          //console.log('Dialog() => I am triggered on both OK and Cancel')
+        })
+    },
+    onProductAdded(event) {
+      console.log('Je suis purchaseOrderDisplay.vue -> onProductAdded ', event)
+      console.log('DEBUG all Items ', this.allItems)
+
+      // check if product isn't already in cart
+      var flag = false
+      for (var i = 0; i < this.allItems.length; i++) {
+        if (this.allItems[i].full_title === event.data) flag = true
+      }
+
+      if (!flag) {
+        var o = {
+          full_title: event.data,
+          product_id: null,
+          quantity: 0,
+          received: 0,
+          variant_id: null,
+          direct_product: true
+        }
+        this.allItems.push(o)
+      } else {
+        console.log(
+          '!!! Cet item est deja dans la liste des produits !!! Ajout impossible'
+        )
+      }
+    },
+    onDeleteItem(event) {
+      this.allItems.splice(event.index, 1)
+    },
+    isThereSomethingToReport() {
+      var needReport = false
+      this.reportObject = { less: [], more: [], new: [] }
+
+      // 1. is there less products than expected
+      for (var i = 0; i < this.allItems.length; i++) {
+        if (this.allItems[i].received < this.allItems[i].quantity) {
+          this.reportObject.less.push({
+            title: this.allItems[i].full_title,
+            quantity: this.allItems[i].quantity,
+            received: this.allItems[i].received,
+            sku_code: this.allItems[i].sku
+          })
+          needReport = true
+        }
+      }
+
+      // 2. is there more products than expected
+      for (var i = 0; i < this.allItems.length; i++) {
+        if (this.allItems[i].received > this.allItems[i].quantity) {
+          // reject any product created directly
+          if (this.allItems[i].direct_product !== true) {
+            this.reportObject.more.push({
+              title: this.allItems[i].full_title,
+              quantity: this.allItems[i].quantity,
+              received: this.allItems[i].received,
+              sku_code: this.allItems[i].sku
+            })
+            needReport = true
+          }
+        }
+      }
+
+      // 3. is there any products added directly on purchase order
+      for (var i = 0; i < this.allItems.length; i++) {
+        if (this.allItems[i].received > this.allItems[i].quantity) {
+          // reject any product created directly
+          if (this.allItems[i].direct_product === true) {
+            this.reportObject.new.push({
+              title: this.allItems[i].full_title,
+              quantity: this.allItems[i].quantity,
+              received: this.allItems[i].received
+            })
+            needReport = true
+          }
+        }
+      }
+
+      // return result
+      return needReport
+    },
+    prepareForSlack() {
+      var o = {}
+      o.date = moment()
+      o.user = this.$store.getters.creds.user.firstname
+      o.apiUrl = this.$store.getters.apiurl
+      o.apiKey = this.$store.getters.activeApp.config.restApiKey
+
+      // specifics
+      o.type = 'problem'
+      o.supplier = this.currentOrder.supplier
+      o.problems = this.reportObject
+      o.poType = this.currentOrder.type
+
+      this.sendToSlack(o)
+    },
+    async sendToSlack(data) {
+      try {
+        await this.$store.dispatch('sendMessageToSlack', data)
+        this.$q.notify({
+          message: 'Message envoyé !',
+          timeout: 5000,
+          color: 'green'
+        })
+      } catch (er) {
+        console.log('Something goes wrong when posting to slack : ', er)
+        this.$q.notify({
+          message: 'Un problème est survenu, veuillez re-essayer plus tard.',
+          timeout: 5000,
+          color: 'red'
+        })
+      }
+    },
+    modifyClosed() {
+      this.$q
+        .dialog({
+          title: 'Confirmez svp',
+          message: 'Voulez-vous vraiment modifier ce bon déjà validé ?',
+          cancel: true,
+          persistent: true
+        })
+        .onOk(() => {
+          // console.log('>>>> OK')
+          this.currentOrder.closed = false
+          this.isClosed = false
+          this.isValidateDisabled = false
+        })
+    },
+    openWindow() {
+      this.$q.dialog({
+        component: SupplierInfos,
+        parent: this,
+        position: 'top',
+        order: this.currentOrder
+      })
     }
   },
   created() {},
@@ -466,5 +655,9 @@ export default {
 }
 .my-btn {
   border-radius: 0px !important;
+}
+.tppt {
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

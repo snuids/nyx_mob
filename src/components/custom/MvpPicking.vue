@@ -88,7 +88,7 @@ export default {
         },
         actions: {
           async sendMessageToSlack({ commit }, payload) {
-            console.log(payload)
+            // console.log(payload)
             var firstLine = ''
             var mentionned = ''
             var title = ''
@@ -111,7 +111,7 @@ export default {
             if (payload.type === 'direct') {
               // building direct slack message
               channel = '#appro'
-              title = "Message d'un ramasseur"
+              title = 'Message de ' + payload.user
               firstLine =
                 '[ ' +
                 payload.user +
@@ -167,25 +167,106 @@ export default {
             // if payload.type = 'problem' we need to append the list of items
             // with problems
             if (payload.type === 'problem') {
-              msg2send.push({ type: 'divider' })
-              for (var i = 0; i < payload.problems.length; i++) {
-                var toAdd = {
+              // if less > 0
+              if (payload.problems.less.length > 0) {
+                // add header text
+                msg2send.push({ type: 'divider' })
+                var head = {
                   type: 'section',
                   text: {
                     type: 'mrkdwn',
-                    text:
-                      '*Produit :* ' +
-                      payload.problems[i].title +
-                      '\n*Variant id :* ' +
-                      payload.problems[i].variant +
-                      '\n*Quantité reçue:* ' +
-                      payload.problems[i].received +
-                      ' / ' +
-                      payload.problems[i].quantity
+                    text: '*Il manque des produits :*'
                   }
                 }
-                msg2send.push(toAdd)
+                msg2send.push(head)
+
+                // then add all items
+                for (var i = 0; i < payload.problems.less.length; i++) {
+                  var toAdd = {
+                    type: 'section',
+                    text: {
+                      type: 'mrkdwn',
+                      text:
+                        '*Produit :* ' +
+                        payload.problems.less[i].title +
+                        '\n*SKU :* ' +
+                        payload.problems.less[i].sku +
+                        '\n*Quantité reçue :* ' +
+                        payload.problems.less[i].received +
+                        ' / ' +
+                        payload.problems.less[i].quantity
+                    }
+                  }
+                  msg2send.push(toAdd)
+                }
               }
+
+              // if more > 0
+              if (payload.problems.more.length > 0) {
+                // add header text
+                msg2send.push({ type: 'divider' })
+                var head = {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: '*Il a des produits en surplus :*'
+                  }
+                }
+                msg2send.push(head)
+
+                // then add all items
+                for (var i = 0; i < payload.problems.more.length; i++) {
+                  var toAdd = {
+                    type: 'section',
+                    text: {
+                      type: 'mrkdwn',
+                      text:
+                        '*Produit :* ' +
+                        payload.problems.more[i].title +
+                        '\n*SKU :* ' +
+                        payload.problems.more[i].sku +
+                        '\n*Quantité reçue :* ' +
+                        payload.problems.more[i].received +
+                        ' / ' +
+                        payload.problems.more[i].quantity
+                    }
+                  }
+                  msg2send.push(toAdd)
+                }
+              }
+
+              // if new > 0
+              if (payload.problems.new.length > 0) {
+                // add header text
+                msg2send.push({ type: 'divider' })
+                var head = {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: '*Il y a des produits non commandé :*'
+                  }
+                }
+                msg2send.push(head)
+
+                // then add all items
+                for (var i = 0; i < payload.problems.new.length; i++) {
+                  var toAdd = {
+                    type: 'section',
+                    text: {
+                      type: 'mrkdwn',
+                      text:
+                        '*Produit :* ' +
+                        payload.problems.new[i].title +
+                        '\n*Quantité reçue :* ' +
+                        payload.problems.new[i].received +
+                        ' / ' +
+                        payload.problems.new[i].quantity
+                    }
+                  }
+                  msg2send.push(toAdd)
+                }
+              }
+
               msg2send.push({ type: 'divider' })
             }
 
@@ -226,29 +307,7 @@ export default {
 
             console.log('SLACK URL PRE SEND', slackUrl)
             console.log('SLACK OBJ PRE SEND', slackObject)
-            var result = axios.post(slackUrl, slackObject)
-            // .then(response => {
-            //   //console.log("SLACK MESSAGE PUSH response : ", response);
-            //   // this.$q.notify({
-            //   //   message: 'Message envoyé !',
-            //   //   timeout: 5000,
-            //   //   color: 'green'
-            //   // })
-            // })
-            // .catch(error => {
-            //   console.log(
-            //     '| SLACK MESSAGE PUSH / POST | UN PROBLEME EST SURVENU : ',
-            //     error
-            //   )
-            //   // this.$q.notify({
-            //   //   message:
-            //   //     'Un problème est survenu, veuillez re-essayer plus tard.',
-            //   //   timeout: 5000,
-            //   //   color: 'red'
-            //   // })
-            // })
-
-            return result
+            return axios.post(slackUrl, slackObject)
           }
         }
       })

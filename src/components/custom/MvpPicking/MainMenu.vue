@@ -91,25 +91,7 @@ export default {
             slug === 'slackProblem' ||
             slug === 'slackPo'
           ) {
-            // console.log(
-            //   'je suis MainMenu.vue et je veux envoyer un message sur slack : ',
-            //   event.data
-            // )
-            this.doStuff(event.data)
-            // if (this.$store.commit('sendMessageToSlack', event.data)) {
-            //   this.$q.notify({
-            //     message: 'Message envoyé !',
-            //     timeout: 5000,
-            //     color: 'green'
-            //   })
-            // } else {
-            //   this.$q.notify({
-            //     message:
-            //       'Un problème est survenu, veuillez re-essayer plus tard.',
-            //     timeout: 5000,
-            //     color: 'red'
-            //   })
-            // }
+            this.sendToSlack(event.data)
           } else if (slug === 'other') {
             console.log('i am the callback of other. Fear my anger !')
           }
@@ -122,10 +104,9 @@ export default {
         })
     },
     today() {
-      //console.log('Hello, i am today')
-      this.$parent.onToday()
+      this.$emit('today')
     },
-    async doStuff(data) {
+    async sendToSlack(data) {
       try {
         await this.$store.dispatch('sendMessageToSlack', data)
         this.$q.notify({
