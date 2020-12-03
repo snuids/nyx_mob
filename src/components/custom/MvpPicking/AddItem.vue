@@ -13,9 +13,6 @@
         @input="selectedValue"
         @filter-abort="abortFilterFn"
       >
-        <!-- 
-        
-         -->
         <template v-slot:no-option>
           <q-item>
             <q-item-section class="text-grey">
@@ -23,8 +20,8 @@
               <q-btn
                 v-if="showAddBtn"
                 color="primary"
-                label="Creer ce produit"
-                @click="createValue"
+                label="Ajouter ce produit"
+                @click="addProduct"
               />
             </q-item-section>
           </q-item>
@@ -48,6 +45,7 @@ export default {
   data() {
     return {
       model: '',
+      otherModel: '',
       options: [],
       queryProductsList: {
         size: 500,
@@ -91,6 +89,7 @@ export default {
           )
           if (this.options.length === 0 && val.length > 2) {
             this.showAddBtn = true
+            this.otherModel = val
           } else {
             this.showAddBtn = false
           }
@@ -106,12 +105,20 @@ export default {
       console.log('delayed filter aborted')
     },
     createValue(val, done) {
+      console.log('allo', val)
+
       if (val.length > 0) {
         if (!this.options.includes(val)) {
           //done(val, 'add-unique')
+          console.log('a l huile')
           this.addThisProduct(val)
         }
       }
+    },
+    addProduct() {
+      console.log('Foi de morue ', this.otherModel)
+      this.addThisProduct(this.otherModel)
+      this.otherModel = ''
     },
     selectedValue(val) {
       console.log('TU PEUX PAS TEST')

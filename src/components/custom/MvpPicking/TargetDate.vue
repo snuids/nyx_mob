@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="menu-banner float-right">
-        <MainMenu @today="onToday" />
+        <MainMenu @today="onToday" @newDates="onNewDates" />
       </div>
     </div>
   </div>
@@ -35,15 +35,9 @@ export default {
     }
   },
   methods: {
-    setNewDates(inFrom, inTo) {
-      // trust the format whatever comes in
-      /* 2020-11-06T00:00:00+01:00 */
-      this.dateFrom = moment(inFrom)
-        .startOf('day')
-        .format('YYYY-MM-DDTHH:mm:ss+01:mm')
-      this.dateTo = moment(inTo)
-        .endOf('day')
-        .format('YYYY-MM-DDTHH:mm:ss+01:mm')
+    setNewDates(fr, to) {
+      this.dateFrom = fr
+      this.dateTo = to
 
       // properly format short version of dates
       this.dateFromShort = moment(this.dateFrom).format('DD-MM-YYYY')
@@ -61,21 +55,22 @@ export default {
       this.$emit('dateChanged', obj)
     },
     onToday() {
-      var from =
-        moment()
-          .startOf('day')
-          .unix() * 1000
+      var from = moment().startOf('day')
+      // .unix() * 1000
 
-      var to =
-        moment()
-          .endOf('day')
-          .unix() * 1000
+      var to = moment().endOf('day')
+      // .unix() * 1000
 
       this.setNewDates(from, to)
+    },
+    onNewDates(event) {
+      // console.log('//////////////////////////', event)
+      // console.log('//////////////////////////', event.data.fr.format())
+      this.setNewDates(event.data.fr, event.data.to)
     }
   },
   created() {
-    if (this.$store.getters.targetDate.dateFrom == '') this.onToday()
+    if (this.$store.getters.targetDate.dateFrom === '') this.onToday()
   },
   mounted() {
     this.dateFrom = this.$store.getters.targetDate.dateFrom

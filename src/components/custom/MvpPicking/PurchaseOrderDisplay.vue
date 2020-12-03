@@ -21,6 +21,8 @@
         :closed="isClosed"
         @modifyReceived="onReceivedModified"
         @deleteItem="onDeleteItem"
+        @modifyDlc="onDlcModified"
+        @deleteDlc="onDlcDeleted"
       />
     </q-list>
 
@@ -57,8 +59,8 @@
               padding="md lg"
               color="primary"
               icon="face"
-              :label="currentOrder.name | uppercaseFirst"
-              @click="openWindow"
+              :label="currentOrder.clean_name | uppercaseFirst"
+              @click="supplierInfoBox = true"
             />
           </div>
           <div class="col-3 b-c">
@@ -87,6 +89,15 @@
         </div>
       </div>
     </q-page-sticky>
+
+    <!--  DIALOG BOX [ SupplierInfo ]  -->
+    <q-dialog v-model="supplierInfoBox" maximized>
+      <SupplierInfos
+        :order="currentOrder"
+        @addComment="onAddComment"
+        @closeSupplier="onCloseWindow"
+      />
+    </q-dialog>
   </div>
 </template>
 
@@ -97,7 +108,7 @@ import moment from 'moment'
 import AddItem from 'components/custom/MvpPicking/AddItem.vue'
 import Comment from 'components/custom/MvpPicking/Comment.vue'
 import CartItem from 'components/custom/MvpPicking/CartItem.vue'
-import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
+// import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
 import SupplierInfos from 'components/custom/MvpPicking/SupplierInfos.vue'
 
 Vue.component('SupplierInfos', SupplierInfos)
@@ -123,7 +134,8 @@ export default {
       loaded: false,
       isValidateDisabled: true,
       reportObject: null,
-      isClosed: false
+      isClosed: false,
+      supplierInfoBox: false
     }
   },
   methods: {
@@ -187,6 +199,8 @@ export default {
           }
         }
       })
+      // check if order is already complete (usefull for veeqo orders)
+      this.isOrderComplete()
 
       // set loaded to true to render component
       this.loaded = true
@@ -205,7 +219,7 @@ export default {
       return axios
         .get(url)
         .then(response => {
-          // console.log('getPurchaseOrder() full response : ', response)
+          console.log('getPurchaseOrder() full response : ', response)
 
           // saving original order for later comparison,
           // and current order to work with
@@ -244,7 +258,7 @@ export default {
         updatedPurchaseOrder
       )
 
-      /* UNCOMMENT TO COMMIT REAL SAVES*/
+      /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
       this.$store.commit({
         type: 'updateRecord',
@@ -258,6 +272,25 @@ export default {
         color: 'green'
       })
 
+      /* =========== LOGGING =========== */
+      var logObject = {
+        _index: 'pickupapp_log',
+        _source: {
+          id: this.$store.state.pickingModule.currentOrder.meta.id,
+          date: moment(),
+          user: this.$store.getters.creds.user.login,
+          current_order: this.currentOrder,
+          original_order: this.originalOrder
+        },
+        _id: ''
+      }
+      /* UNCOMMENT TO COMMIT REAL UPDATE */
+      // this.$store.commit({
+      //   type: 'updateRecord',
+      //   data: logObject
+      // })
+      /* =============================== */
+
       return true
     },
     async backToList() {
@@ -270,7 +303,7 @@ export default {
       if (this.hasPurchaseOrderChanged()) {
         // submit updated data to server
         await this.sendOrderToServer()
-        timer = 500
+        timer = 1500
       }
       // then switch component
       setTimeout(() => {
@@ -282,34 +315,37 @@ export default {
       //   'onReceivedModified => je veux modifier une quantité recue !',
       //   event
       // )
-      if (event.new_received > this.allItems[event.index].quantity) {
-        if (
-          await new Promise(resolve =>
-            this.$q
-              .dialog({
-                title: 'Attention',
-                message:
-                  'La quantité reçue est supérieure à la quantité commandée. Veuillez valider cette action.',
-                cancel: true,
-                persistent: true
-              })
-              .onOk(() => resolve(true))
-              .onCancel(() => resolve(false))
-          )
-        ) {
-          this.allItems[event.index].received = event.new_received
-          var tmp = JSON.parse(JSON.stringify(this.allItems))
-          this.allItems = null
-          this.allItems = tmp
-        } else {
-          this.allItems[event.index].received = ''
-          var tmp = JSON.parse(JSON.stringify(this.allItems))
-          this.allItems = null
-          this.allItems = tmp
-        }
-      } else {
-        this.allItems[event.index].received = event.new_received
-      }
+
+      // if (event.new_received > this.allItems[event.index].quantity) {
+      //   if (
+      //     await new Promise(resolve =>
+      //       this.$q
+      //         .dialog({
+      //           title: 'Attention',
+      //           message:
+      //             'La quantité reçue est supérieure à la quantité commandée. Veuillez valider cette action.',
+      //           cancel: true,
+      //           persistent: true
+      //         })
+      //         .onOk(() => resolve(true))
+      //         .onCancel(() => resolve(false))
+      //     )
+      //   ) {
+      //     this.allItems[event.index].received = event.new_received
+      //     var tmp = JSON.parse(JSON.stringify(this.allItems))
+      //     this.allItems = null
+      //     this.allItems = tmp
+      //   } else {
+      //     this.allItems[event.index].received = ''
+      //     var tmp = JSON.parse(JSON.stringify(this.allItems))
+      //     this.allItems = null
+      //     this.allItems = tmp
+      //   }
+      // } else {
+      //   this.allItems[event.index].received = event.new_received
+      // }
+
+      this.allItems[event.index].received = event.new_received
       // console.log('after qty updated : ', this.allItems[event.index].received)
 
       // QUICK REFRESH FIX
@@ -375,6 +411,10 @@ export default {
         // console.log("PO hasn't has_dlc property. It's now created !")
         this.currentOrder.has_dlc = false
       }
+      if (!this.currentOrder.hasOwnProperty('dlc_date')) {
+        // console.log("PO hasn't has_dlc_date property. It's now created !")
+        this.currentOrder.dlc_date = ''
+      }
       if (!this.currentOrder.hasOwnProperty('picking_state')) {
         // console.log("PO hasn't picking_state property. It's now created !")
         this.currentOrder.picking_state = 0
@@ -402,6 +442,7 @@ export default {
       }
     },
     onAddComment(event) {
+      console.log(' ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLO : ', event)
       this.allComments.push(event)
     },
     onDeleteComment(event) {
@@ -415,6 +456,7 @@ export default {
       // console.log(' currentOrder => ', this.currentOrder)
       // console.log(' checkOrderStatus() - START')
       var flag = null
+      var involvedItems = 0
       // check every items
       for (var k = 0; k < this.allItems.length; k++) {
         // console.log(
@@ -425,21 +467,30 @@ export default {
         //     '  rcv:' +
         //     this.allItems[k].received
         // )
-        if (this.allItems[k].received === '') {
-          flag += 0
-        } else if (this.allItems[k].received === this.allItems[k].quantity) {
-          flag += 1
-        } else {
-          flag += 2
+        if (this.allItems[k].direct_product === undefined) {
+          involvedItems++
+          if (this.allItems[k].received === '') {
+            flag += 0
+          } else if (this.allItems[k].received === this.allItems[k].quantity) {
+            flag += 1
+          } else if (this.allItems[k].received < this.allItems[k].quantity) {
+            flag += 2
+          } else if (this.allItems[k].received > this.allItems[k].quantity) {
+            flag += 1
+          }
         }
       }
+
       // results :
       // flag = 0   --> only empty strings -> picking has not started yet
       // flag = nb of items (k) -> every items has a good number
       // flag > nb of items -> there is some items with problems
+      console.log(' !!!!!!!!!!! flag !!!!!!!!!!! ' + flag)
+      console.log(' !!!!!!!!!!! involvedItems !!!!!!!!!!! ' + involvedItems)
+
       if (flag === 0) {
         this.currentOrder.cart_complete = 2
-      } else if (flag === this.allItems.length) {
+      } else if (flag === involvedItems) {
         this.currentOrder.cart_complete = 1
       } else {
         this.currentOrder.cart_complete = 0
@@ -623,13 +674,18 @@ export default {
           this.isValidateDisabled = false
         })
     },
-    openWindow() {
-      this.$q.dialog({
-        component: SupplierInfos,
-        parent: this,
-        position: 'top',
-        order: this.currentOrder
-      })
+    onDlcModified(event) {
+      this.allItems[event.index].dlc_date = event.new_dlcDate
+      this.allItems[event.index].has_dlc = true
+      this.currentOrder.has_dlc = true
+    },
+    onDlcDeleted(event) {
+      this.allItems[event.index].dlc_date = ''
+      this.allItems[event.index].has_dlc = false
+      this.currentOrder.has_dlc = false
+    },
+    onCloseWindow() {
+      this.supplierInfoBox = false
     }
   },
   created() {},

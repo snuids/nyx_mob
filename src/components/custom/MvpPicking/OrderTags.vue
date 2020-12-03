@@ -6,7 +6,7 @@
         :color="badgeColor"
         class="icon-spacer q-pa-xs"
       >
-        DIRECT
+        AJOUT(S)
       </q-badge>
       <q-badge v-if="comments" :color="badgeColor" class="icon-spacer q-pa-xs">
         <q-icon name="notes" color="white" />
@@ -18,7 +18,8 @@
         <q-icon name="lock" color="white" />
       </q-badge>
       <q-badge :color="badgeColor" class="icon-spacer text-uppercase q-pa-xs">
-        {{ currentStatus() }}
+        <!-- {{ currentStatus() }} -->
+        {{ textStatus }}
       </q-badge>
     </div>
   </div>
@@ -60,21 +61,9 @@ export default {
       textStatus: 'en attente'
     }
   },
-  methods: {
-    currentStatus() {
-      if (this.cart_complete === 0) {
-        // missing items
-        return 'commande incomplète'
-      } else if (this.cart_complete === 1) {
-        // nothing missing
-        return 'commande complète'
-      } else if (this.cart_complete === 2) {
-        // waiting to be processed
-        return 'en attente'
-      }
-    }
-  },
+  methods: {},
   mounted() {
+    console.log(' debug ordertags.vue >>> has_dlc >>> ', this.has_dlc)
     if (this.cart_complete === 0) {
       // missing items
       this.badgeColor = 'orange-9'

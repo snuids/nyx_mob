@@ -149,9 +149,9 @@ export default {
           })
 
           // UPDATING DISPLAY TRICK
-          // var tmp = this.allPurchaseOrders;
-          // this.allPurchaseOrders = null;
-          // this.allPurchaseOrders = tmp;
+          var tmp = this.allPurchaseOrders
+          this.allPurchaseOrders = null
+          this.allPurchaseOrders = tmp
 
           this.$q.loading.hide()
         })
@@ -163,15 +163,14 @@ export default {
     onDateChanged(obj) {
       this.getPoList(obj)
     },
-    saveToServer() {
-      // todo
-    },
     checkPurchaseOrderModel() {
       //console.log('<============<< poList | checkPOmodel() >>============>')
       for (var i = 0; i < this.allPurchaseOrders.length; i++) {
         // console.log(
-        //   'Checking po[' + i + '] (start): ',
-        //   this.allPurchaseOrders[i]
+        //   'Checking po[' +
+        //     i +
+        //     '] (start): ' +
+        //     this.allPurchaseOrders[i].supplier
         // )
 
         // specifics po fields
