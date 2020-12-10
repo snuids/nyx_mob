@@ -15,16 +15,14 @@ module.exports = {
     'standard'
   ],
   // required to lint *.vue files
-  plugins: [
-    'vue'
-  ],
+  plugins: ['vue'],
   globals: {
-    'ga': true, // Google Analytics
-    'cordova': true,
-    '__statics': true
+    ga: true, // Google Analytics
+    cordova: true,
+    __statics: true
   },
   // add your custom rules here
-  'rules': {
+  rules: {
     // allow async-await
     'generator-star-spacing': 'off',
 
@@ -42,6 +40,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 0,
 
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
+    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
+    'space-before-function-paren': 0
   }
 }
