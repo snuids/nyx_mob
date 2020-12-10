@@ -1,6 +1,6 @@
 # Mes Voisins Producteurs - Picking Application
 
-![Badge](https://img.shields.io/badge/version-0.0.5-orange)
+![Badge](https://img.shields.io/badge/version-1.0.0-green)
 ![Badge](https://img.shields.io/badge/made_with-vue.js-informational)
 ![Badge](https://img.shields.io/badge/made_with-Quasar-informational)
 
