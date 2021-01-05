@@ -13,7 +13,7 @@
   "dependencies": {
     "@quasar/app": "^2.1.6",
     "@quasar/extras": "^1.9.10",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "moment": "^2.23.0",
     "quasar": "^1.14.3",
     "vue-browser-geolocation": "^1.5.0",
