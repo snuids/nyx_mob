@@ -9,7 +9,7 @@
     <author email="dev@cordova.apache.org" href="http://cordova.io">
         Apache Cordova Team
     </author>
-    <content src="http://192.168.1.25:8888" />
+    <content src="http://192.168.43.106:8888" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -18,7 +18,7 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <allow-navigation href="about:*" />
-    <allow-navigation href="http://192.168.1.25:8888" />
+    <allow-navigation href="http://192.168.43.106:8888" />
     <allow-intent href="market:*" />
     <preference name="loglevel" value="DEBUG" />
 </widget>

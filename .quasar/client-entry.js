@@ -10,8 +10,6 @@
  * Boot files are your "main.js"
  **/
 
-import 'quasar/dist/quasar.ie.polyfills.js'
-
 
 
 import '@quasar/extras/roboto-font/roboto-font.css'
@@ -59,13 +57,13 @@ Vue.config.productionTip = false
 
 
 
-console.info('[Quasar] Running SPA.')
+console.info('[Quasar] Running CORDOVA.')
 
 
 
 
 
-const publicPath = `/`
+const publicPath = ``
 
 
 async function start () {
@@ -125,11 +123,16 @@ async function start () {
     
 
     
+    document.addEventListener('deviceready', () => {
+    Vue.prototype.$q.cordova = window.cordova
+    
 
     
       new Vue(app)
     
 
+    
+    }, false) // on deviceready
     
 
     
