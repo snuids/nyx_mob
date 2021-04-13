@@ -29,12 +29,12 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
-      isPurchaseOrderDisplayed: false
+      isPurchaseOrderDisplayed: false,
+      marker: false
     }
   },
   methods: {
     createCustomStore() {
-      //console.log("############ Creating a custom store ############");
       this.$store.registerModule('pickingModule', {
         state: {
           targetDate: {
@@ -88,14 +88,22 @@ export default {
         },
         actions: {
           async sendMessageToSlack({ commit }, payload) {
-            // console.log(payload)
             var firstLine = ''
             var mentionned = ''
             var title = ''
             var channel = ''
 
             // mentionned users string preparation
-            var mentionned_UserList = JSON.parse(process.env.SLACK_MENTION)
+            var slack = process.env.SLACK_MENTION
+            var mentionned_UserList = []
+
+            for (var i in  slack) {
+              mentionned_UserList.push({
+                'user': slack[i].split(':')[0],
+                'id': slack[i].split(':')[1],
+              })
+            }
+
             for (var i = 0; i < mentionned_UserList.length; i++) {
               if (i === mentionned_UserList.length - 1) {
                 mentionned += mentionned_UserList[i].id
@@ -103,7 +111,6 @@ export default {
                 mentionned += mentionned_UserList[i].id + ' '
               }
             }
-
             // message building by type
             var poType = null
             if (payload.poType !== 'PO-NYX') poType = payload.poType
@@ -270,31 +277,6 @@ export default {
               msg2send.push({ type: 'divider' })
             }
 
-            // >>>>>>>>>>>>>  msg depuis menu #appro
-            // Message d'un ramasseur
-            // [ Thierry | 17/11/2020 ]
-            // msg
-
-            // >>>>>>>>>>>>>  msg depuis un bon #appro
-            // Tournée de ramassage : Les serres des pres
-            // [ Thierry | Les serres des pres | PO-012 | 17/11/2020 ]
-            // msg
-
-            // >>>>>>>>>>>>>  msg auto si probleme de produit #ramassage
-            // Tournée de ramassage : problème
-            // [ Pierre | Faluch'truck | PO-NYX | 13/11/2020 ]
-            // Il manque des produits :
-            // ---------------------------------
-            // Produit : Faluche Chti'luch (450g) (31788880134199)
-            // Quantite reçue: 2 / 1
-            //
-            // Produit : Faluche Curry (450g) (31789190578231)
-            // Quantite reçue: 2 / 1
-            //
-            // Produit : Faluche Vergeoise (200g) (31858294915127)
-            // Quantite reçue: 1 / 0
-            // ---------------------------------
-
             var slackObject = {
               channel: channel,
               blocks: msg2send
@@ -305,17 +287,12 @@ export default {
               '?apikey=' +
               payload.apiKey
 
-            console.log('SLACK URL PRE SEND', slackUrl)
-            console.log('SLACK OBJ PRE SEND', slackObject)
             return axios.post(slackUrl, slackObject)
           }
         }
       })
     },
     addEventListener() {
-      // this.$root.$on('toggleDisplayEvent', event => {
-      //   this.toggleDisplay(event)
-      // })
       this.$root.$on('displayOrderEvent', event => {
         this.displayOrderEvent(event)
       })
@@ -324,22 +301,9 @@ export default {
       })
     },
     removeEventListener() {
-      // this.$root.$off('toggleDisplayEvent')
       this.$root.$off('displayOrderEvent')
       this.$root.$off('displayListEvent')
     },
-    // toggleDisplay(event) {
-    //   // this.currentOrderMeta = event
-    //   this.$store.commit('mutate_currentOrder', {
-    //     order: {
-    //       meta: {
-    //         id: event.id,
-    //         index: event.index
-    //       }
-    //     }
-    //   })
-    //   this.isPurchaseOrderDisplayed = !this.isPurchaseOrderDisplayed
-    // },
     displayOrderEvent(event) {
       this.$store.commit('mutate_currentOrder', {
         order: {
@@ -378,26 +342,11 @@ export default {
     if (this.$q.platform.is.mobile) {
       this.$q.fullscreen
         .request()
-        .then(() => {
-          console.log('Successfully going fullscreen')
-        })
-        .catch(err => {
-          console.log('Unable to go fullscreen')
-        })
+        .then(() => {})
+        .catch(err => {})
     }
   },
   created() {
-    console.log(
-      'Slack token is in : ',
-      this.$store.getters.activeApp.config.restApiKey
-    ) // SLACK TOKEN
-    console.log('User is : ', this.$store.getters.creds.user.id)
-    console.log(
-      'User is : ',
-      this.$store.getters.creds.user.firstname +
-        ' ' +
-        this.$store.getters.creds.user.lastname
-    )
     this.createCustomStore()
     this.addEventListener()
   },

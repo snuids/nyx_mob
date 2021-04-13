@@ -6,6 +6,7 @@
         Modifier la quantité
       </div>
     </q-card-section>
+
     <!-- +/- BUTTONS -->
     <q-card-section class="row flex-center">
       <q-btn
@@ -16,9 +17,9 @@
         icon="remove"
         v-touch-repeat:0:150.mouse.enter.space="removeQty"
       />
-      <!-- @click="removeQty" -->
-      <div class="bold text-h3 qty-nbr">{{ modifiedQuantity }}</div>
-      <!-- @click="addQty" -->
+      <div class="qty-nbr">
+        <h2>{{ modifiedQuantity }}</h2>
+      </div>
       <q-btn
         round
         color="primary"
@@ -28,6 +29,7 @@
         v-touch-repeat:0:150.mouse.enter.space="addQty"
       />
     </q-card-section>
+
     <!-- QUANTITY EXCEED BANNER-->
     <q-card-section v-if="warningBanner" class="row flex-center">
       <q-banner inline-actions class="text-white bg-red">
@@ -37,6 +39,7 @@
         <b>La quantité reçue est supérieure à la quantité commandée.</b>
       </q-banner>
     </q-card-section>
+
     <!-- BUTTONS -->
     <q-card-actions align="right">
       <q-btn flat label="Annuler" color="primary" v-close-popup />
@@ -66,18 +69,16 @@ export default {
   },
   data() {
     return {
-      modifiedQuantity: null
+      modifiedQuantity: 0
     }
   },
   methods: {
     addQty() {
       this.modifiedQuantity += 1
-      // this.updateData()
     },
     removeQty() {
       this.modifiedQuantity -= 1
       if (this.modifiedQuantity < 0) this.modifiedQuantity = 0
-      // this.updateData()
     },
     updateData() {
       this.$emit('quantityModified', { data: this.modifiedQuantity })
@@ -88,24 +89,20 @@ export default {
     }
   },
   mounted() {
-    //console.log(' je suis mounted() dans quantityAdjust.vue : ', this.quantity)
     this.modifiedQuantity = this.quantity
-    // this.$emit('quantityModified', { data: this.modifiedQuantity })
   },
   computed: {
     warningBanner: function() {
-      if (this.modifiedQuantity > this.ordered) return true
-      else return false
+      if (this.ordered > 0) {
+        if (this.modifiedQuantity > this.ordered) return true
+        else return false
+      }
     }
   }
 }
 </script>
 
 <style>
-.button-container {
-  /* width: 60%;
-  min-width: 60%; */
-}
 .qty-nbr {
   margin-left: 20px;
   margin-right: 20px;

@@ -8,7 +8,7 @@
   },
   "installed_plugins": {
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "io.cordova.mvp.ramassage"
+      "PACKAGE_NAME": "mvp.nyxmobile"
     }
   },
   "dependent_plugins": {}

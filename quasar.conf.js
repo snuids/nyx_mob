@@ -15,20 +15,20 @@ module.exports = function(ctx) {
     supportIE: true,
     build: {
       scopeHoisting: true,
-      publicPath: '/',
+      publicPath: '/'
       // vueRouterMode: 'history',
       // vueCompiler: true,
       // gzip: true,
       // analyze: true,
       // extractCSS: false,
-      extendWebpack(cfg) {
-        cfg.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /node_modules/
-        })
-      }
+      // extendWebpack(cfg) {
+      //   cfg.module.rules.push({
+      //     enforce: 'pre',
+      //     test: /\.(js|vue)$/,
+      //     loader: 'eslint-loader',
+      //     exclude: /node_modules/
+      //   })
+      // }
     },
     devServer: {
       // https: true,
@@ -72,7 +72,19 @@ module.exports = function(ctx) {
         },
         cordova: {
           backButtonExit: false,
-          backButton: false
+          backButton: true
+        },
+        brand: {
+          primary: '#409EFF',
+          secondary: '#26A69A',
+          accent: '#9C27B0',
+
+          dark: '#1d1d1d',
+
+          positive: '#67C23A',
+          negative: '#F56C6C',
+          info: '#909399',
+          warning: '#E6A23C'
         }
       }
       // iconSet: ctx.theme.mat ? 'material-icons' : 'ionicons'

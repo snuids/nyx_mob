@@ -1,5 +1,5 @@
 {
-  "name": "io.cordova.mvp.ramassage",
+  "name": "mvp.nyxmobile",
   "displayName": "nyx_mob",
   "version": "1.0.0",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",

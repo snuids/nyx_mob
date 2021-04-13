@@ -25,7 +25,7 @@ import MainMenu from 'components/custom/MvpPicking/MainMenu.vue'
 Vue.component('MainMenu', MainMenu)
 
 export default {
-  name: 'TargetDate',
+  name: 'StickyBanner',
   data() {
     return {
       dateFrom: null,
@@ -51,21 +51,13 @@ export default {
         dateToShort: this.dateToShort
       }
       this.$store.commit('mutate_targetDate', { dateObj: obj })
-
-      this.$emit('dateChanged', obj)
     },
     onToday() {
       var from = moment().startOf('day')
-      // .unix() * 1000
-
       var to = moment().endOf('day')
-      // .unix() * 1000
-
       this.setNewDates(from, to)
     },
     onNewDates(event) {
-      // console.log('//////////////////////////', event)
-      // console.log('//////////////////////////', event.data.fr.format())
       this.setNewDates(event.data.fr, event.data.to)
     }
   },

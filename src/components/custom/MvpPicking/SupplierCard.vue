@@ -11,12 +11,10 @@
               {{ supplier | uppercaseFirst }}
             </div>
             <div class="col-xs-12 col-sm-3 meta q-pa-sm full-heigth">
-              <!-- {{ status }} -->
               <OrderTags
                 :closed="closed"
                 :cart_complete="cart_complete"
                 :has_dlc="has_dlc"
-                :picking_state="picking_state"
                 :comments="anyComments"
                 :has_direct="has_direct_product"
               />
@@ -77,9 +75,13 @@ export default {
       type: Boolean,
       required: true
     },
-    picking_state: {
+    units_ordered: {
       type: Number,
-      required: true
+      required: false
+    },
+    units_received: {
+      type: Number,
+      required: false
     },
     comments: {
       type: String,
@@ -98,7 +100,6 @@ export default {
   methods: {
     onCardClick() {
       var o = { id: this.id, index: this.index }
-      // this.$root.$emit('toggleDisplayEvent', o)
       this.$root.$emit('displayOrderEvent', o)
     },
     cardConfig() {

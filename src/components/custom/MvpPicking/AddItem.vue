@@ -12,6 +12,7 @@
         @new-value="createValue"
         @input="selectedValue"
         @filter-abort="abortFilterFn"
+        ref="qselect"
       >
         <template v-slot:no-option>
           <q-item>
@@ -79,7 +80,6 @@ export default {
   },
   methods: {
     filterFn(val, update, abort) {
-      // console.log('coucou')
       if (this.cleanProductsList !== null) {
         // already loaded
         update(() => {
@@ -97,31 +97,24 @@ export default {
         return
       }
       update(() => {
-        // this.options = stringOptions
         this.getProductsList()
       })
     },
-    abortFilterFn() {
-      console.log('delayed filter aborted')
-    },
+    abortFilterFn() {},
     createValue(val, done) {
-      console.log('allo', val)
-
       if (val.length > 0) {
         if (!this.options.includes(val)) {
-          //done(val, 'add-unique')
-          console.log('a l huile')
           this.addThisProduct(val)
         }
       }
     },
     addProduct() {
-      console.log('Foi de morue ', this.otherModel)
       this.addThisProduct(this.otherModel)
       this.otherModel = ''
+      this.model = ''
+      this.$refs.qselect.hidePopup()
     },
     selectedValue(val) {
-      console.log('TU PEUX PAS TEST')
       this.addThisProduct(val)
       this.model = null
     },
@@ -135,7 +128,6 @@ export default {
         this.$store.getters.apiurl +
         'generic_search/product*?token=' +
         this.$store.getters.creds.token
-      console.log('url : ', url)
 
       this.queryProductsList.query.bool.filter[0].multi_match.query = this.supplierName
 
@@ -143,20 +135,15 @@ export default {
         .post(url, this.queryProductsList)
         .then(response => {
           this.fullProductsList = response.data.records
-          console.log(' recu liste de produits : ', this.fullProductsList)
           this.prepareProducts()
-          // console.log('debug post bazar : ', this.options)
         })
-        .catch(error => {
-          console.log(
-            '| requestProductsList / POST | UN PROBLEME EST SURVENU : ',
-            error
-          )
-        })
+        .catch(error => {})
     },
     prepareProducts() {
+      this.cleanProductsList = []
+      this.options = []
+
       if (this.fullProductsList.length == 0) {
-        // this.noProducts = true;
         return
       }
       var array = []
@@ -184,17 +171,12 @@ export default {
     },
     addThisProduct(product) {
       this.$emit('addProduct', { data: product })
-    },
-    activate(index) {
-      // addThisProduct(index)
-      console.log("coucou je tente d'activer une carte")
-      this.active = true
+      this.otherModel = ''
+      this.model = ''
     }
   },
   created() {},
-  mounted() {
-    //this.getProductsList()
-  },
+  mounted() {},
   updated() {},
   computed: {}
 }

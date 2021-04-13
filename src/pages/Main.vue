@@ -98,7 +98,7 @@ export default {
         cancel: true,
         //position: 'top',
       })
-        .then(() => {
+        .onOk(() => {
           this.logout()
         })
         .catch(() => {
@@ -131,8 +131,6 @@ export default {
     }
   },
   created: async function() {
-    console.log('Main created')
-
     var vars = {};
     window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         vars[key] = value;
@@ -142,9 +140,6 @@ export default {
     {  
       this.$store.state.apiurl=vars["api"].split('#')[0];
     }
-
-    // console.log(localStorage.authResponse)
-    // console.log(this.$store.getters.currentSubCategory)
 
     if (this.$store.getters.currentSubCategory == undefined && localStorage.authResponse) {
         var path = this.$route.path

@@ -26,7 +26,7 @@
       />
     </q-list>
 
-    <div v-if="loaded" class="flex-center tppt">
+    <div v-if="showAddItem" class="flex-center tppt">
       <AddItem
         :supplierName="currentOrder.supplier"
         @addProduct="onProductAdded"
@@ -36,53 +36,54 @@
     <q-page-sticky expand position="top">
       <div
         v-if="loaded"
-        class="full-width"
-        style="max-width:800px; background-color: yellow;"
+        class="full-width q-pa-xs bg-primary"
+        style="max-width:800px;"
       >
         <div class="row">
-          <div class="col-3 b-c">
+          <div class="col-3 b-c q-pa-xs">
             <q-btn
               unelevated
               class="full-width my-btn"
               padding="md lg"
-              color="secondary"
+              color="white"
+              text-color="primary"
               icon="arrow_back_ios"
-              label="retour"
+              :label="labelLeft"
               @click="backToList"
             />
           </div>
-          <div class="col-6 b-c">
-            <!-- <SupplierInfos @addComment="onAddComment" /> -->
+          <div class="col-6 b-c q-pa-xs">
             <q-btn
               unelevated
               class="full-width my-btn"
               padding="md lg"
-              color="primary"
+              color="white"
+              text-color="primary"
               icon="face"
-              :label="currentOrder.clean_name | uppercaseFirst"
+              :label="labelMenu"
               @click="supplierInfoBox = true"
             />
           </div>
-          <div class="col-3 b-c">
+          <div class="col-3 b-c q-pa-xs">
             <q-btn
               v-if="!isClosed"
               unelevated
               class="full-width my-btn"
               padding="md lg"
-              color="secondary"
-              icon-right="arrow_forward_ios"
-              label="valider"
+              color="positive"
+              icon-right="save"
+              :label="labelRight"
               @click="validateOrder"
-              :disable="isValidateDisabled"
             />
             <q-btn
               v-else
               unelevated
               class="full-width my-btn"
               padding="md lg"
-              color="secondary"
-              icon-right="arrow_forward_ios"
-              label="modifier"
+              color="white"
+              text-color="primary"
+              icon-right="create"
+              :label="labelRightM"
               @click="modifyClosed"
             />
           </div>
@@ -98,6 +99,31 @@
         @closeSupplier="onCloseWindow"
       />
     </q-dialog>
+
+    <!--  DIALOG BOX [ orderIsIncomplete ]  -->
+    <q-dialog v-model="orderIncomplete" full-width persistent>
+      <q-card class="q-pa-xs">
+        <q-card-section class="row items-center">
+          <div class="dialog-box-title">
+            Attention
+          </div>
+        </q-card-section>
+        <q-card-section class="row flex-center">
+          <q-banner inline-actions rounded class="bg-orange text-white">
+            <div class="text-weight-medium text-body1">
+              Vous ne pouvez pas encore valider ce bon de commande.
+            </div>
+            <div class="text-weight-medium text-body1">
+              Tous les produits doivent avoir une quantité avant de pouvoir
+              valider un bon.
+            </div>
+          </q-banner>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="j'ai compris" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -108,7 +134,6 @@ import moment from 'moment'
 import AddItem from 'components/custom/MvpPicking/AddItem.vue'
 import Comment from 'components/custom/MvpPicking/Comment.vue'
 import CartItem from 'components/custom/MvpPicking/CartItem.vue'
-// import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
 import SupplierInfos from 'components/custom/MvpPicking/SupplierInfos.vue'
 
 Vue.component('SupplierInfos', SupplierInfos)
@@ -132,10 +157,10 @@ export default {
       allComments: [],
       disableValidate: true,
       loaded: false,
-      isValidateDisabled: true,
       reportObject: null,
       isClosed: false,
-      supplierInfoBox: false
+      supplierInfoBox: false,
+      orderIncomplete: false
     }
   },
   methods: {
@@ -147,11 +172,20 @@ export default {
 
       // preparing items list
       this.allItems = Array.from(JSON.parse(this.currentOrder.line_items))
-      var totItems = this.currentOrder.line_items.length
+
+      // counting items & products (direct product aren't counted)
+      var totItems = 0
+      for (var j = 0; j < this.allItems.length; j++) {
+        if (this.allItems[j].direct_product === undefined) totItems += 1
+      }
       var totProducts = 0
       for (var i = 0; i < this.allItems.length; i++) {
-        totProducts += this.allItems[i].quantity
+        if (this.allItems[i].direct_product === undefined) {
+          totProducts += this.allItems[i].quantity
+        }
       }
+      this.currentOrder.total_items_ordered = totItems
+      this.currentOrder.total_products_ordered = totProducts
 
       // Checking for missing fields
       this.checkPoMissingFields()
@@ -190,8 +224,10 @@ export default {
             type: this.currentOrder.type,
             picker: this.currentOrder.picker,
             expected_date: this.currentOrder.expected_date,
-            total_items: totItems,
-            total_products: totProducts,
+            total_items_ordered: totItems,
+            total_products_ordered: totProducts,
+            total_items_received: this.currentOrder.total_items_received,
+            total_products_received: this.currentOrder.total_products_received,
             comments: this.allComments
           },
           cart: {
@@ -199,9 +235,6 @@ export default {
           }
         }
       })
-      // check if order is already complete (usefull for veeqo orders)
-      this.isOrderComplete()
-
       // set loaded to true to render component
       this.loaded = true
     },
@@ -214,24 +247,16 @@ export default {
         this.$store.state.pickingModule.currentOrder.meta.id +
         '?token=' +
         this.$store.getters.creds.token
-      //console.log('url: ', url)
 
       return axios
         .get(url)
         .then(response => {
-          console.log('getPurchaseOrder() full response : ', response)
-
           // saving original order for later comparison,
           // and current order to work with
           this.originalOrder = Object.assign({}, response.data.data._source)
           this.currentOrder = response.data.data._source
         })
-        .catch(error => {
-          console.log(
-            '[ [PurchaseOrderDisplay.vue] [requestOrder()] ] ::',
-            error
-          )
-        })
+        .catch(error => {})
     },
     sendOrderToServer() {
       // Change order status ?
@@ -252,11 +277,6 @@ export default {
         _source: this.currentOrder,
         _id: this.$store.state.pickingModule.currentOrder.meta.id
       }
-
-      console.log(
-        'updatedPurchaseOrder debug pre-send : ',
-        updatedPurchaseOrder
-      )
 
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
@@ -280,23 +300,24 @@ export default {
           date: moment(),
           user: this.$store.getters.creds.user.login,
           current_order: this.currentOrder,
-          original_order: this.originalOrder
+          original_order: this.originalOrder,
+          type: 'save_po'
         },
-        _id: ''
+        _id:
+          this.$store.state.pickingModule.currentOrder.meta.id +
+          '_' +
+          moment().unix()
       }
+
       /* UNCOMMENT TO COMMIT REAL UPDATE */
-      // this.$store.commit({
-      //   type: 'updateRecord',
-      //   data: logObject
-      // })
-      /* =============================== */
+      this.$store.commit({
+        type: 'updateRecord',
+        data: logObject
+      })
 
       return true
     },
     async backToList() {
-      // console.log('<<<!! back to list !!>>>')
-      // console.log('original:', this.originalOrder)
-      // console.log('current:', this.currentOrder)
       var timer = 50
 
       // has something changed ?
@@ -311,42 +332,7 @@ export default {
       }, timer)
     },
     async onReceivedModified(event) {
-      // console.log(
-      //   'onReceivedModified => je veux modifier une quantité recue !',
-      //   event
-      // )
-
-      // if (event.new_received > this.allItems[event.index].quantity) {
-      //   if (
-      //     await new Promise(resolve =>
-      //       this.$q
-      //         .dialog({
-      //           title: 'Attention',
-      //           message:
-      //             'La quantité reçue est supérieure à la quantité commandée. Veuillez valider cette action.',
-      //           cancel: true,
-      //           persistent: true
-      //         })
-      //         .onOk(() => resolve(true))
-      //         .onCancel(() => resolve(false))
-      //     )
-      //   ) {
-      //     this.allItems[event.index].received = event.new_received
-      //     var tmp = JSON.parse(JSON.stringify(this.allItems))
-      //     this.allItems = null
-      //     this.allItems = tmp
-      //   } else {
-      //     this.allItems[event.index].received = ''
-      //     var tmp = JSON.parse(JSON.stringify(this.allItems))
-      //     this.allItems = null
-      //     this.allItems = tmp
-      //   }
-      // } else {
-      //   this.allItems[event.index].received = event.new_received
-      // }
-
       this.allItems[event.index].received = event.new_received
-      // console.log('after qty updated : ', this.allItems[event.index].received)
 
       // QUICK REFRESH FIX
       var tmp = JSON.parse(JSON.stringify(this.allItems))
@@ -358,35 +344,52 @@ export default {
       this.isOrderComplete()
     },
     async validateOrder() {
-      // console.log('ValidateOrder() - starting function')
+      // check if order is complete. if not, open a dialog box to say it must be
+      // completed before saving data to  server.
+      if (!this.isOrderComplete()) {
+        this.orderIncomplete = true
+      } else {
+        // order is complete, we can proceed
+        this.currentOrder.status = 'fully_collected'
 
-      // checking if something is missing. If so, send a message on slack
-      let rez = await this.isThereSomethingToReport()
+        // count received items & products
+        var totItemsReceived = 0
+        for (var j = 0; j < this.allItems.length; j++) {
+          totItemsReceived += 1
+        }
+        var totProductsReceived = 0
+        for (var i = 0; i < this.allItems.length; i++) {
+          totProductsReceived += this.allItems[i].received
+        }
+        this.currentOrder.total_items_received = totItemsReceived
+        this.currentOrder.total_products_received = totProductsReceived
 
-      if (rez) {
-        this.prepareForSlack()
-        // console.log('need to report on slack ::=>> ', this.reportObject)
+        // checking if something is missing. If so, send a message on slack
+        let rez = await this.isThereSomethingToReport()
+
+        if (rez) {
+          this.prepareForSlack()
+        }
+
+        // mark the current order as "closed"
+        this.currentOrder.closed = true
+
+        // send order to server
+        await this.sendOrderToServer()
+
+        // notify user
+        this.$q.notify({
+          message: 'Bon de commande validé',
+          timeout: 3000,
+          color: 'green'
+        })
+
+        // then switch component
+        // after artificial waiting
+        setTimeout(() => {
+          this.$root.$emit('displayListEvent')
+        }, 500)
       }
-      // mark the current order as "closed"
-      this.currentOrder.closed = true
-
-      // send order to server
-      await this.sendOrderToServer()
-
-      // notify user
-      this.$q.notify({
-        message: 'Bon de commande validé',
-        timeout: 3000,
-        color: 'green'
-      })
-
-      // then switch component
-      // console.log('ValidateOrder() - ending function')
-
-      // artificial waiting
-      setTimeout(() => {
-        this.$root.$emit('displayListEvent')
-      }, 500)
     },
     hasPurchaseOrderChanged() {
       // rebuild currentPurchaseOrder
@@ -400,49 +403,41 @@ export default {
     checkPoMissingFields() {
       // specifics po fields
       if (!this.currentOrder.hasOwnProperty('closed')) {
-        // console.log("PO hasn't closed property. It's now created !")
         this.currentOrder.closed = false
       }
       if (!this.currentOrder.hasOwnProperty('cart_complete')) {
-        // console.log("PO hasn't cart_complete property. It's now created !")
         this.currentOrder.cart_complete = 2
       }
       if (!this.currentOrder.hasOwnProperty('has_dlc')) {
-        // console.log("PO hasn't has_dlc property. It's now created !")
         this.currentOrder.has_dlc = false
       }
       if (!this.currentOrder.hasOwnProperty('dlc_date')) {
-        // console.log("PO hasn't has_dlc_date property. It's now created !")
         this.currentOrder.dlc_date = ''
       }
-      if (!this.currentOrder.hasOwnProperty('picking_state')) {
-        // console.log("PO hasn't picking_state property. It's now created !")
-        this.currentOrder.picking_state = 0
-      }
       if (!this.currentOrder.hasOwnProperty('comments')) {
-        // console.log("PO hasn't comments property. It's now created !")
         this.currentOrder.comments = JSON.stringify(new Array())
+      }
+      if (!this.currentOrder.hasOwnProperty('total_items_received')) {
+        this.currentOrder.total_items_received = 0
+      }
+      if (!this.currentOrder.hasOwnProperty('total_products_received')) {
+        this.currentOrder.total_products_received = 0
       }
     },
     checkCartMissingFields() {
       for (var i = 0; i < this.allItems.length; i++) {
         // received property
         if (!this.allItems[i].hasOwnProperty('received')) {
-          // console.log("Item hasn't received property. It's now created !")
           this.allItems[i].received = ''
         }
 
         // dlc & dlc_date properties
         if (this.allItems[i].hasOwnProperty('dlc')) {
-          // console.log(
-          //   'Item has a dlc property. We need to create the dlc_date !'
-          // )
           this.allItems[i].dlc_date = ''
         }
       }
     },
     onAddComment(event) {
-      console.log(' ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLO : ', event)
       this.allComments.push(event)
     },
     onDeleteComment(event) {
@@ -453,20 +448,10 @@ export default {
       }
     },
     checkOrderStatus() {
-      // console.log(' currentOrder => ', this.currentOrder)
-      // console.log(' checkOrderStatus() - START')
       var flag = null
       var involvedItems = 0
       // check every items
       for (var k = 0; k < this.allItems.length; k++) {
-        // console.log(
-        //   'item[' +
-        //     k +
-        //     '] ==> qty:' +
-        //     this.allItems[k].quantity +
-        //     '  rcv:' +
-        //     this.allItems[k].received
-        // )
         if (this.allItems[k].direct_product === undefined) {
           involvedItems++
           if (this.allItems[k].received === '') {
@@ -480,77 +465,37 @@ export default {
           }
         }
       }
-
       // results :
       // flag = 0   --> only empty strings -> picking has not started yet
       // flag = nb of items (k) -> every items has a good number
       // flag > nb of items -> there is some items with problems
-      console.log(' !!!!!!!!!!! flag !!!!!!!!!!! ' + flag)
-      console.log(' !!!!!!!!!!! involvedItems !!!!!!!!!!! ' + involvedItems)
-
       if (flag === 0) {
         this.currentOrder.cart_complete = 2
+        this.currentOrder.status = 'to_be_collected'
       } else if (flag === involvedItems) {
         this.currentOrder.cart_complete = 1
+        this.currentOrder.status = 'fully_collected'
       } else {
         this.currentOrder.cart_complete = 0
+        this.currentOrder.status = 'partially_collected'
       }
-      // console.log(' checkOrderStatus() - END')
-      // console.log(' currentOrder END checkOrderStatus=> ', this.currentOrder)
     },
     isOrderComplete() {
-      var flag = false
+      var flag = true
+      var stat = false
       for (var i = 0; i < this.allItems.length; i++) {
-        // console.log('<===<< isOrderComplete >>===> ', this.allItems[i].received)
-        if (this.allItems[i].received === '') {
-          // console.log(
-          //   '<===<< isOrderComplete :: item vide trouvé(' +
-          //     i +
-          //     '), on quitte >>===>',
-          //   this.allItems[i]
-          // )
-          flag = true
-          return
+        if (this.allItems[i].direct_product === true) {
+          if (this.allItems[i].received === 0) {
+            // this directly added product hasn't been quantified yet
+            flag = false
+          }
+        } else if (this.allItems[i].received === '') {
+          flag = false
         }
       }
-      // console.log(
-      //   '<===<< isOrderComplete :: ALL ITEM HAS A QTY, WE NEED TO ENABLE VALIDATE BUTTON >>===> '
-      // )
-      this.isValidateDisabled = false
-    },
-    openDialogBox(slug) {
-      var titles = {
-        add: 'Ajouter un produit'
-      }
-
-      this.$q
-        .dialog({
-          component: DialogBox,
-          parent: this,
-          target: slug,
-          title: titles[slug],
-          supplier: this.currentOrder.supplier
-        })
-        .onOk(event => {
-          //console.log('Dialog() => OK ', event.data)
-          if (slug === 'add') {
-            console.log(
-              'je suis poDisplay.vue -> openDialogBox().onOk() :: ',
-              event
-            )
-          }
-        })
-        .onCancel(() => {
-          //console.log('Dialog() => Cancel')
-        })
-        .onDismiss(() => {
-          //console.log('Dialog() => I am triggered on both OK and Cancel')
-        })
+      return flag
     },
     onProductAdded(event) {
-      console.log('Je suis purchaseOrderDisplay.vue -> onProductAdded ', event)
-      console.log('DEBUG all Items ', this.allItems)
-
       // check if product isn't already in cart
       var flag = false
       for (var i = 0; i < this.allItems.length; i++) {
@@ -567,10 +512,6 @@ export default {
           direct_product: true
         }
         this.allItems.push(o)
-      } else {
-        console.log(
-          '!!! Cet item est deja dans la liste des produits !!! Ajout impossible'
-        )
       }
     },
     onDeleteItem(event) {
@@ -651,7 +592,6 @@ export default {
           color: 'green'
         })
       } catch (er) {
-        console.log('Something goes wrong when posting to slack : ', er)
         this.$q.notify({
           message: 'Un problème est survenu, veuillez re-essayer plus tard.',
           timeout: 5000,
@@ -668,10 +608,8 @@ export default {
           persistent: true
         })
         .onOk(() => {
-          // console.log('>>>> OK')
           this.currentOrder.closed = false
           this.isClosed = false
-          this.isValidateDisabled = false
         })
     },
     onDlcModified(event) {
@@ -693,7 +631,42 @@ export default {
   mounted() {
     this.getPurchaseOrder()
   },
-  computed: {}
+  computed: {
+    labelMenu: function() {
+      if (this.$store.getters.screenSize.windowWidth < 600) {
+        return ''
+      } else {
+        if (this.currentOrder.clean_name === undefined)
+          return this.currentOrder.supplier
+        else return this.currentOrder.clean_name
+      }
+    },
+    labelLeft: function() {
+      if (this.$store.getters.screenSize.windowWidth < 600) {
+        return ''
+      } else {
+        return 'retour'
+      }
+    },
+    labelRight: function() {
+      if (this.$store.getters.screenSize.windowWidth < 600) {
+        return ''
+      } else {
+        return 'valider'
+      }
+    },
+    labelRightM: function() {
+      if (this.$store.getters.screenSize.windowWidth < 600) {
+        return ''
+      } else {
+        return 'modifier'
+      }
+    },
+    showAddItem: function() {
+      if (this.loaded && !this.currentOrder.closed) return true
+      else return false
+    }
+  }
 }
 </script>
 
@@ -704,7 +677,7 @@ export default {
   max-width: 800px !important;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 58px;
+  margin-top: 75px;
 }
 .b-c {
   text-align: center;

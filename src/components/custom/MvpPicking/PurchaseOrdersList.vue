@@ -8,47 +8,44 @@
             :key="order.id"
             v-bind="order"
           />
+
+          <!-- if no order found -->
+          <template v-if="allPurchaseOrders.length === 0">
+            <q-card class="bg-white fixed-center card-aucun">
+              <q-card-section class="row">
+                <div class="text-italic text-caption aucun">
+                  Aucun bon de commande trouvé !
+                </div>
+              </q-card-section>
+            </q-card>
+          </template>
         </q-list>
       </div>
       <q-page-sticky expand position="top">
-        <TargetDate ref="TargetDateInstance" @dateChanged="onDateChanged" />
+        <StickyBanner ref="StickyBannerInstance"/>
       </q-page-sticky>
     </q-page>
   </q-page-container>
-
-  <!-- <div class="">
-    <TargetDate ref="TargetDateInstance" />
-    <div class="q-pa-none">
-      <q-list class="supplier-list">
-        <SupplierCard
-          v-for="order in allPurchaseOrders"
-          :key="order.id"
-          v-bind="order"
-        />
-      </q-list>
-    </div>
-  </div> -->
 </template>
 
 <script>
 import Vue from 'vue'
 import axios from 'axios'
 import moment from 'moment'
-import TargetDate from 'components/custom/MvpPicking/TargetDate.vue'
+import StickyBanner from 'components/custom/MvpPicking/StickyBanner.vue'
 import SupplierCard from 'components/custom/MvpPicking/SupplierCard.vue'
 
-Vue.component('TargetDate', TargetDate)
+Vue.component('StickyBanner', StickyBanner)
 Vue.component('SupplierCard', SupplierCard)
 
 export default {
   name: 'PurchaseOrdersList',
   components: {
-    TargetDate,
+    StickyBanner,
     SupplierCard
   },
   data() {
     return {
-      // fullResponse: null,
       original_allPurchaseOrders: [],
       allPurchaseOrders: [],
       queryList: {
@@ -77,7 +74,6 @@ export default {
             'closed',
             'cart_complete',
             'has_dlc',
-            'picking_state',
             'comments'
           ]
         },
@@ -96,14 +92,28 @@ export default {
           }
         }
       },
-      indice: 'purchase_order*'
+      indice: 'purchase_order*',
+      marker: false
+    }
+  },
+  computed: {
+    targetDate: function() {
+      return this.$store.getters.targetDate
+    }
+  },
+  watch: {
+    targetDate: {
+      handler: function() {
+        this.getPoList();
+      },
+      deep: true
     }
   },
   methods: {
     getPoList(dateObj = null) {
       if (dateObj === null) {
-        this.queryList.query.bool.must[0].range.expected_date.gte = this.$store.getters.targetDate.dateFrom
-        this.queryList.query.bool.must[0].range.expected_date.lte = this.$store.getters.targetDate.dateTo
+        this.queryList.query.bool.must[0].range.expected_date.gte = this.targetDate.dateFrom
+        this.queryList.query.bool.must[0].range.expected_date.lte = this.targetDate.dateTo
       } else {
         this.queryList.query.bool.must[0].range.expected_date.gte =
           dateObj.dateFrom
@@ -122,9 +132,6 @@ export default {
       axios
         .post(url, this.queryList)
         .then(response => {
-          // var fullResponse = response
-          console.log('getPoList() FULL RESPONSE : ', response)
-
           this.allPurchaseOrders = []
           for (var i = 0; i < response.data.records.length; i++) {
             this.allPurchaseOrders.push(response.data.records[i]._source)
@@ -134,13 +141,21 @@ export default {
           // saving purchase orders list for later comparison
           this.original_allPurchaseOrders = this.allPurchaseOrders
 
-          console.log(
-            'getPoList()::allPurchaseOrders: ',
-            this.allPurchaseOrders
-          )
-
           // Checking for missing fields
           this.checkPurchaseOrderModel()
+
+          this.allPurchaseOrders.forEach(element => {
+            if (element.units_ordered && element.units_received) {
+              
+              if(element.units_received == 0)
+                element.cart_complete = 0
+              else if(element.units_received < element.units_ordered)
+                element.cart_complete = 0
+              else if(element.units_received >= element.units_ordered)
+                element.cart_complete = 1
+            }
+          })
+
           this.orderTheOrders()
 
           // Saving in store
@@ -156,63 +171,30 @@ export default {
           this.$q.loading.hide()
         })
         .catch(error => {
-          //console.log('|getPoList()::POST| UN PROBLEME EST SURVENU : ', error)
           this.$q.loading.hide()
         })
     },
-    onDateChanged(obj) {
-      this.getPoList(obj)
-    },
     checkPurchaseOrderModel() {
-      //console.log('<============<< poList | checkPOmodel() >>============>')
       for (var i = 0; i < this.allPurchaseOrders.length; i++) {
-        // console.log(
-        //   'Checking po[' +
-        //     i +
-        //     '] (start): ' +
-        //     this.allPurchaseOrders[i].supplier
-        // )
-
         // specifics po fields
         if (!this.allPurchaseOrders[i].hasOwnProperty('closed')) {
-          // console.log('Test hasOwn : ')
           this.allPurchaseOrders[i].closed = false
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('cart_complete')) {
-          // console.log(
-          //   'PO[' + i + "] hasn't cart_complete property. It's now created !"
-          // )
           this.allPurchaseOrders[i].cart_complete = 2
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('has_dlc')) {
-          // console.log(
-          //   'PO[' + i + "] hasn't has_dlc property. It's now created !"
-          // )
           this.allPurchaseOrders[i].has_dlc = false
         }
-        if (!this.allPurchaseOrders[i].hasOwnProperty('picking_state')) {
-          // console.log(
-          //   'PO[' + i + "] hasn't picking_state property. It's now created !"
-          // )
-          this.allPurchaseOrders[i].picking_state = 0
-        }
         if (!this.allPurchaseOrders[i].hasOwnProperty('comments')) {
-          // console.log(
-          //   'PO[' + i + "] hasn't comments property. It's now created !"
-          // )
           this.allPurchaseOrders[i].comments = JSON.stringify(new Array())
         }
         if (!this.allPurchaseOrders[i].hasOwnProperty('has_direct_product')) {
-          // console.log(
-          //   'PO[' + i + "] hasn't comments property. It's now created !"
-          // )
           this.allPurchaseOrders[i].has_direct_product = false
         }
 
         // line items fields check
         this.checkItemsModel(i)
-
-        // console.log('Checking po[' + i + '] (end): ')
       }
     },
     checkItemsModel(id) {
@@ -220,15 +202,11 @@ export default {
       for (var j = 0; j < cart.length; j++) {
         // received property
         if (!cart[j].hasOwnProperty('received')) {
-          // console.log("Item hasn't received property. It's now created !")
           cart[j].received = ''
         }
 
         // dlc & dlc_date properties
         if (cart[j].hasOwnProperty('dlc')) {
-          // console.log(
-          //   'Item has a dlc property. We need to create the dlc_date !'
-          // )
           if (!cart[j].hasOwnProperty('dlc_date')) {
             cart[j].dlc_date = ''
           }
@@ -243,19 +221,24 @@ export default {
       this.allPurchaseOrders[id].line_items = JSON.stringify(cart)
     },
     orderTheOrders() {
-      // console.log('Entering TWILIGHT ZONE')
-      // console.log('AVANT : ', this.allPurchaseOrders)
       // take all orders with cart_complete 2
       var array_2 = []
       for (var i = 0; i < this.allPurchaseOrders.length; i++) {
         if (this.allPurchaseOrders[i].cart_complete === 2)
           array_2.push(this.allPurchaseOrders[i])
       }
-      // console.log(' DEBUG array_2 : ', array_2)
-      // then order them ascending
+      // ===> then order them by supplier name, ascending
       array_2.sort(function(a, b) {
         var nameA = a.supplier.toLowerCase()
         var nameB = b.supplier.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+      // ===> finally order them by expected_date, ascending
+      array_2.sort(function(a, b) {
+        var nameA = moment(a.expected_date).format('YYYY/MM/DD')
+        var nameB = moment(b.expected_date).format('YYYY/MM/DD')
         if (nameA < nameB) return -1
         if (nameA > nameB) return 1
         return 0
@@ -267,11 +250,18 @@ export default {
         if (this.allPurchaseOrders[j].cart_complete === 0)
           array_0.push(this.allPurchaseOrders[j])
       }
-      // console.log(' DEBUG array_0 : ', array_0)
-      // then order them ascending
+      // ===> then order them by supplier name, ascending
       array_0.sort(function(a, b) {
         var nameA = a.supplier.toLowerCase()
         var nameB = b.supplier.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+      // ===> finally order them by expected_date, ascending
+      array_0.sort(function(a, b) {
+        var nameA = moment(a.expected_date).format('YYYY/MM/DD')
+        var nameB = moment(b.expected_date).format('YYYY/MM/DD')
         if (nameA < nameB) return -1
         if (nameA > nameB) return 1
         return 0
@@ -283,11 +273,18 @@ export default {
         if (this.allPurchaseOrders[k].cart_complete === 1)
           array_1.push(this.allPurchaseOrders[k])
       }
-      // console.log(' DEBUG array_1 : ', array_1)
-      // then order them ascending
+      // ===> then order them by supplier name, ascending
       array_1.sort(function(a, b) {
         var nameA = a.supplier.toLowerCase()
         var nameB = b.supplier.toLowerCase()
+        if (nameA < nameB) return -1
+        if (nameA > nameB) return 1
+        return 0
+      })
+      // ===> finally order them by expected_date, ascending
+      array_1.sort(function(a, b) {
+        var nameA = moment(a.expected_date).format('YYYY/MM/DD')
+        var nameB = moment(b.expected_date).format('YYYY/MM/DD')
         if (nameA < nameB) return -1
         if (nameA > nameB) return 1
         return 0
@@ -304,14 +301,22 @@ export default {
       array_1.forEach(element => {
         this.allPurchaseOrders.push(element)
       })
-
-      // done
-      // console.log('APRES : ', this.allPurchaseOrders)
-      // console.log('Exiting TWILIGHT ZONE')
     }
   },
   mounted() {
     this.getPoList()
+    let timer = process.env.AUTO_REFRESH * 1000
+
+    // automatic refresh every X ms
+    this.interval = setInterval(
+      function() {
+        this.getPoList()
+      }.bind(this),
+      timer
+    )
+  },
+  beforeDestroy() {
+    clearInterval(this.interval)
   }
 }
 </script>
@@ -323,5 +328,12 @@ export default {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+}
+.aucun {
+  font-size: 1.3em;
+  margin: 15px;
+}
+.card-aucun {
+  width: 85%;
 }
 </style>

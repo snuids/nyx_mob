@@ -18,57 +18,162 @@
       <!-- INFOS COMMANDES -->
       <div class="row q-pa-xs">
         <div class="col-xs-12 col-sm-6 q-pa-sm">
-          Date commande : {{ currentOrder.expected_date | dateFrench }}
-        </div>
-        <div class="col-xs-12 col-sm-6 q-pa-sm">
-          Numéro de commande : {{ orderNumber(currentOrder.number) }}
+          <q-list bordered separator>
+            <q-item>
+              <q-item-section>
+                Date commande :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.expected_date | dateFrench }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Statut actuel :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                <q-chip dense :color="statusColor" text-color="white">
+                  {{ status }}
+                </q-chip>
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
 
         <div class="col-xs-12 col-sm-6 q-pa-sm">
-          Statut actuel : {{ currentOrder.status }}
-        </div>
-        <div class="col-xs-12 col-sm-6 q-pa-sm">
-          Type de bon : {{ currentOrder.type }}
+          <q-list bordered separator>
+            <q-item>
+              <q-item-section>
+                Numéro de commande :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ orderNumber(currentOrder.number) }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Type de bon :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.type }}
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
       </div>
-      <q-separator />
+
+      <!-- <q-separator /> -->
+
       <!-- INFOS CONTACT -->
-      <div class="row q-pa-sm q-mb-md">
-        <div class="col-xs-12 col-sm-6">
-          <div class="col q-pa-sm">
-            Contact : {{ currentOrder.contact_name }}
-          </div>
-          <div class="col q-pa-sm">
-            Téléphone : {{ currentOrder.contact_phone }}
-          </div>
-          <div class="col q-pa-sm">
-            Email : {{ currentOrder.contact_email }}
-          </div>
+      <div class="row q-pa-xs">
+        <div class="col-xs-12 col-sm-6 q-pa-sm">
+          <q-list bordered separator>
+            <q-item>
+              <q-item-section>
+                Contact :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.contact_name }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Téléphone :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ cleanPhone }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Email :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.contact_email }}
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
-        <div class="col-xs-12 col-sm-6 full-height justify-between">
-          <div class="flex">
-            <div class="col-xs-3 q-pa-xs">Adresse :</div>
-            <div class="col-xs-9 q-pa-xs text-right">
-              {{ currentOrder.address_line_1 }}<br />
-              {{ currentOrder.post_code }} {{ currentOrder.city }}
-            </div>
-          </div>
-          <div class="q-pa-sm justify-end">
-            Complément d'adresse : {{ currentOrder.address_line_2 }}
-          </div>
+
+        <div class="col-xs-12 col-sm-6 q-pa-sm">
+          <q-list bordered separator>
+            <q-item>
+              <q-item-section>
+                Adresse :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.address_line_1 }}<br />
+                {{ currentOrder.post_code }} {{ currentOrder.city }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Complément d'adresse :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.address_line_2 }}
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
       </div>
-      <q-separator />
-      <!-- INFOS DIVERSES -->
-      <div class="row q-pa-xs q-mb-sm">
+
+      <!-- <q-separator /> -->
+
+      <!-- INFOS COMMANDES -->
+      <div class="row q-pa-xs">
         <div class="col-xs-12 col-sm-6 q-pa-sm">
-          Nb d'items : {{ currentOrder.total_items }}
+          <q-list bordered separator>
+            <q-item>
+              <q-item-section>
+                Nb d'items commandés :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.total_items_ordered }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Nb d'items reçus :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.total_items_received }}
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
+
         <div class="col-xs-12 col-sm-6 q-pa-sm">
-          Nb total de produits : {{ currentOrder.total_products }}
+          <q-list bordered separator>
+            <q-item>
+              <q-item-section>
+                Nb total de produits commandés :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.total_products_ordered }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                Nb total de produits reçus :
+              </q-item-section>
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.total_products_received }}
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
       </div>
+
       <q-separator />
+
       <q-btn
         color="primary"
         class="full-width q-my-sm"
@@ -149,7 +254,6 @@
 
 <script>
 import moment from 'moment'
-// import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
 
 export default {
   name: 'SupplierInfos',
@@ -159,7 +263,8 @@ export default {
       slackPo: false,
       slackPoMsg: '',
       comment: false,
-      commentMsg: ''
+      commentMsg: '',
+      statusColor: 'grey'
     }
   },
   props: {
@@ -172,61 +277,6 @@ export default {
     orderNumber(number) {
       if (number == 'CREATED_BY_NYX') return 'n/a'
     },
-    addComment() {
-      this.$q
-        .dialog({
-          component: DialogBox,
-          parent: this,
-          target: 'comment',
-          title: 'Ajouter un commentaire à la commande'
-        })
-        .onOk(event => {
-          this.$emit('addComment', event.data)
-        })
-        .onCancel(() => {
-          //console.log('Dialog() => Cancel')
-        })
-        .onDismiss(() => {
-          //console.log('Dialog() => I am triggered on both OK and Cancel')
-        })
-    },
-    show() {
-      this.$refs.dialogSupInfo.show()
-    },
-    hide() {
-      this.$refs.dialogSupInfo.hide()
-    },
-    onDialogHide() {
-      this.$emit('hide')
-    },
-    openDialogBox() {
-      var slug = 'slackPo'
-      var titles = {
-        slackPo: 'Envoyer un message sur slack'
-      }
-      console.log(' :::::::::://///////::::::::::: ', this.order.supplier)
-      this.$q
-        .dialog({
-          component: DialogBox,
-          parent: this,
-          target: slug,
-          title: titles[slug],
-          supplier: this.order.supplier,
-          poType: this.order.type
-        })
-        .onOk(event => {
-          //console.log('Dialog() => OK ', event.data)
-          if (slug === 'slackPo') {
-            this.sendToSlack(event.data)
-          }
-        })
-        .onCancel(() => {
-          //console.log('Dialog() => Cancel')
-        })
-        .onDismiss(() => {
-          //console.log('Dialog() => Dismiss')
-        })
-    },
     async sendToSlack(data) {
       try {
         await this.$store.dispatch('sendMessageToSlack', data)
@@ -236,7 +286,6 @@ export default {
           color: 'green'
         })
       } catch (ex) {
-        console.log('Something goes wrong when posting to slack : ', ex)
         this.$q.notify({
           message: 'Un problème est survenu, veuillez re-essayer plus tard.',
           timeout: 5000,
@@ -244,9 +293,20 @@ export default {
         })
       }
     },
-    onSlackPo() {},
+    onSlackPo() {
+      var o = {}
+      o.date = moment()
+      o.user = this.$store.getters.creds.user.firstname
+      o.msg = this.slackPoMsg
+      o.apiUrl = this.$store.getters.apiurl
+      o.apiKey = this.$store.getters.activeApp.config.restApiKey
+      o.type = 'po'
+      o.supplier = this.currentOrder.name
+      o.poType = this.currentOrder.type
+
+      this.sendToSlack(o)
+    },
     onComment() {
-      console.log('onComment > emit something')
       var datDate = moment()
       var datUser =
         this.$store.getters.creds.user.firstname +
@@ -255,18 +315,37 @@ export default {
       var o = { date: datDate, user: datUser, msg: this.commentMsg }
 
       this.$emit('addComment', o)
+      this.commentMsg = ''
     },
     closeWindow() {
       this.$emit('closeSupplier')
     }
   },
   created() {
+    console.log('>>>>>>>>>>> ', this.order)
     this.currentOrder = this.$store.getters.currentOrder.details
-    // console.log('debug created !! ', this.currentOrder)
   },
   mounted() {},
   updated() {},
-  computed: {}
+  computed: {
+    status: function() {
+      if (this.currentOrder.status === 'to_be_collected') {
+        this.statusColor = 'primary'
+        return 'En attente de collecte'
+      } else if (this.currentOrder.status === 'partially_collected') {
+        this.statusColor = 'warning'
+        return 'En cours de collecte'
+      } else if (this.currentOrder.status === 'fully_collected') {
+        this.statusColor = 'positive'
+        return 'Terminée'
+      }
+    },
+    cleanPhone: function() {
+      var tmp = this.currentOrder.contact_phone
+      var tmpClean = tmp.replace(/\s+/g, '')
+      return tmpClean.toString().replace(/\d{2}(?=.)/g, '$& ')
+    }
+  }
 }
 </script>
 

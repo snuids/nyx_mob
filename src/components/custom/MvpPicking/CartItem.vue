@@ -34,21 +34,11 @@
               :clickable="!closed"
             >
               <div class="text-center full-width">
-                <!-- {{ item.received }} / {{ item.quantity }} -->
                 {{ chipText }}
               </div>
-              <!-- 666 / 666 -->
-              <!-- 85px -->
             </q-chip>
           </div>
 
-          <!-- <q-btn
-          flat
-          square
-          icon="priority_high"
-          @click="quantityProblem"
-          :style="textColor"
-        /> -->
           <q-btn
             v-if="!item.direct_product"
             flat
@@ -117,9 +107,11 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import moment from 'moment'
-// import DialogBox from 'components/custom/MvpPicking/DialogBox.vue'
-import QuantityAdjust from 'components/custom/MvpPicking/QuantityAdjust'
+import QuantityAdjust from 'components/custom/MvpPicking/QuantityAdjust.vue'
+
+Vue.component('QuantityAdjust', QuantityAdjust)
 
 export default {
   name: 'CartItem',
@@ -165,46 +157,9 @@ export default {
   },
   methods: {
     quantityIsFulfil() {
-      // this.$parent.$parent.modifyQuantityReceived(
-      //   this.item.full_title,
-      //   this.item.quantity
-      // )
-      // console.log('tu peux pas test : ', this.item_index)
       var o = { new_received: this.item.quantity, index: this.item_index }
       this.$emit('modifyReceived', o)
     },
-    // quantityProblem() {
-    //   var slug = 'qtyProblem'
-    //   var titles = {
-    //     qtyProblem: 'Modifier la quantité'
-    //   }
-
-    //   // received already set ?
-    //   if (this.item.received !== '') var qty = this.item.received
-    //   else var qty = this.item.quantity
-    //   this.$q
-    //     .dialog({
-    //       component: DialogBox,
-    //       parent: this,
-    //       target: slug,
-    //       title: titles[slug],
-    //       quantity: qty
-    //     })
-    //     .onOk(event => {
-    //       //console.log('Dialog() => OK ', event.data)
-    //       if (slug === 'qtyProblem') {
-    //         //console.log('retour de qty problem', event)
-    //         var o = { new_received: event.data, index: this.item_index }
-    //         this.$emit('modifyReceived', o)
-    //       }
-    //     })
-    //     .onCancel(() => {
-    //       //console.log('Dialog() => Cancel')
-    //     })
-    //     .onDismiss(() => {
-    //       //console.log('Dialog() => I am triggered on both OK and Cancel')
-    //     })
-    // },
     setChip() {
       if (this.item.received === '') {
         this.chipText = this.item.quantity
@@ -232,8 +187,6 @@ export default {
           this.checkIcon = 'check_circle_outline'
           this.isDisable = true
         }
-        // this.checkIcon = 'check_circle_outline'
-        // this.isDisable = true
       } else if (this.item.received < this.item.quantity) {
         this.chipText = this.item.received + ' / ' + this.item.quantity
         this.bgColor = 'bg-red'
@@ -256,27 +209,20 @@ export default {
           this.checkIcon = 'check_circle_outline'
           this.isDisable = true
         }
-        // this.checkIcon = 'check_circle_outline'
-        // this.isDisable = true
       }
     },
     setDlcLabel() {
       if (this.item.has_dlc) {
-        // console.log('DLC_DATE >>>> ', this.item.dlc_date)
         this.dlcLabel = moment(this.item.dlc_date).format('DD/MM/YY')
       } else {
-        // console.log('NO DLC_DATE >>>> ')
         this.dlcLabel = 'DLC'
       }
     },
     deleteItem() {
-      // console.log('deleteeeeeeeeee')
       var o = { index: this.item_index }
       this.$emit('deleteItem', o)
     },
     onDlcDate() {
-      // console.log('recuuuu DLC _DATE >>>> ', this.dlcDateSelection)
-
       var o = {
         new_dlcDate: moment(this.dlcDateSelection, 'YYYY/MM/DD'),
         index: this.item_index
@@ -284,7 +230,6 @@ export default {
       this.$emit('modifyDlc', o)
     },
     onDlcDelete() {
-      // console.log('DLC _DATE delete >>>> ')
       var o = { index: this.item_index }
       this.$emit('deleteDlc', o)
     },

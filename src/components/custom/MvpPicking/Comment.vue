@@ -19,12 +19,6 @@
           <span class="com-date">{{ comment.date | onlyTime }}</span
           >)
         </div>
-
-        <!-- <span class="com-name">{{ comment.user }}</span>
-        (le <span class="com-date">{{ comment.date | dateFrench }}</span> à
-        <span class="com-date">{{ comment.date | onlyTime }}</span
-        >)
-        <q-icon name="close" color="white" class="justify-end" /> -->
       </div>
       <div class="row text-caption com-msg">{{ comment.msg }}</div>
     </q-banner>

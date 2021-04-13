@@ -18,7 +18,6 @@
         <q-icon name="lock" color="white" />
       </q-badge>
       <q-badge :color="badgeColor" class="icon-spacer text-uppercase q-pa-xs">
-        <!-- {{ currentStatus() }} -->
         {{ textStatus }}
       </q-badge>
     </div>
@@ -41,10 +40,6 @@ export default {
       type: Boolean,
       required: true
     },
-    picking_state: {
-      type: Number,
-      required: true
-    },
     comments: {
       type: Boolean,
       required: true
@@ -57,26 +52,30 @@ export default {
   components: {},
   data() {
     return {
-      badgeColor: 'primary',
-      textStatus: 'en attente'
     }
   },
   methods: {},
+  computed: {
+    badgeColor: function() {
+      if (this.cart_complete === 0) {
+        return 'orange-9' 
+      } else if (this.cart_complete === 1) {
+        return 'green-9' 
+      } else if (this.cart_complete === 2) {
+        return 'primary' 
+      }
+    },
+    textStatus: function() {
+      if (this.cart_complete === 0) {
+        return 'commande incomplète' 
+      } else if (this.cart_complete === 1) {
+        return 'commande complète' 
+      } else if (this.cart_complete === 2) {
+        return 'en attente' 
+      }
+    },
+  },
   mounted() {
-    console.log(' debug ordertags.vue >>> has_dlc >>> ', this.has_dlc)
-    if (this.cart_complete === 0) {
-      // missing items
-      this.badgeColor = 'orange-9'
-      this.textStatus = 'commande incomplète'
-    } else if (this.cart_complete === 1) {
-      // nothing missing
-      this.badgeColor = 'green-9'
-      this.textStatus = 'commande complète'
-    } else if (this.cart_complete === 2) {
-      // waiting to be processed
-      this.badgeColor = 'primary'
-      this.textStatus = 'en attente'
-    }
   }
 }
 </script>
