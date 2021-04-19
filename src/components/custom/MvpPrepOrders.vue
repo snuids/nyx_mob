@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex bg-grey-5 row">
-   Prep Orders
+   Prep Orders again
   </q-page>
 </template>
 
@@ -53,36 +53,36 @@ export default {
     createCustomStore() {
       this.$store.registerModule('prepOrdersModule', {
         state: {
-          
+
         },
         getters: {
-         
+
         },
         mutations: {
-          
+
         },
         actions: {
 
         }
       })
     },
-    
+
   },
   beforeCreate() {
-    
+
   },
   created() {
-    
+
   },
   beforeMount() {},
   mounted() {
     console.log('mounted MvpPrepOrders')
   },
   beforeDestroy() {
-    
+
   },
   destroyed() {
-    
+
   },
   computed: {}
 }
