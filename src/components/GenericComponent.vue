@@ -44,16 +44,16 @@ export default {
   },
   watch: {
     $route(to, from) {
-      console.log('WATCHER ROUTE GENERIC COMPONENT')
+      // console.log('WATCHER ROUTE GENERIC COMPONENT')
       if(from.params.recid === to.params.recid) {
-        console.log('Same recid, no need to change app')
+        // console.log('Same recid, no need to change app')
         return
       }
 
-      console.log('from')
-      console.log(from)
-      console.log('to')
-      console.log(to)
+      // console.log('from')
+      // console.log(from)
+      // console.log('to')
+      // console.log(to)
 
       this.loading=true
       
