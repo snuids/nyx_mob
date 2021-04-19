@@ -31,7 +31,7 @@ export default {
       dateFrom: null,
       dateTo: null,
       dateFromShort: null,
-      dateToShort: null
+      dateToShort: null,
     }
   },
   methods: {
@@ -48,7 +48,7 @@ export default {
         dateFrom: this.dateFrom,
         dateTo: this.dateTo,
         dateFromShort: this.dateFromShort,
-        dateToShort: this.dateToShort
+        dateToShort: this.dateToShort,
       }
       this.$store.commit('mutate_targetDate', { dateObj: obj })
     },
@@ -59,7 +59,7 @@ export default {
     },
     onNewDates(event) {
       this.setNewDates(event.data.fr, event.data.to)
-    }
+    },
   },
   created() {
     if (this.$store.getters.targetDate.dateFrom === '') this.onToday()
@@ -76,7 +76,7 @@ export default {
     this.dateFromShort = null
     this.dateToShort = null
   },
-  computed: {}
+  computed: {},
 }
 </script>
 
