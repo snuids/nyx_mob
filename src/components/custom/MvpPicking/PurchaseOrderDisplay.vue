@@ -203,11 +203,11 @@ export default {
       }
 
       // update the store
-      this.$store.commit('mutate_currentOrder', {
+      this.$store.commit('mvp/mutate_currentOrder', {
         order: {
           meta: {
-            id: this.$store.state.pickingModule.currentOrder.meta.id,
-            index: this.$store.state.pickingModule.currentOrder.meta.index
+            id: this.$store.state.custom.mvp.currentOrder.meta.id,
+            index: this.$store.state.custom.mvp.currentOrder.meta.index
           },
           details: {
             name: this.currentOrder.clean_name,
@@ -242,9 +242,9 @@ export default {
       var url =
         this.$store.getters.apiurl +
         'generic/' +
-        this.$store.state.pickingModule.currentOrder.meta.index +
+        this.$store.state.custom.mvp.currentOrder.meta.index +
         '/' +
-        this.$store.state.pickingModule.currentOrder.meta.id +
+        this.$store.state.custom.mvp.currentOrder.meta.id +
         '?token=' +
         this.$store.getters.creds.token
 
@@ -273,9 +273,9 @@ export default {
 
       // forge the query
       var updatedPurchaseOrder = {
-        _index: this.$store.state.pickingModule.currentOrder.meta.index,
+        _index: this.$store.state.custom.mvp.currentOrder.meta.index,
         _source: this.currentOrder,
-        _id: this.$store.state.pickingModule.currentOrder.meta.id
+        _id: this.$store.state.custom.mvp.currentOrder.meta.id
       }
 
       /* UNCOMMENT TO COMMIT REAL UPDATE */
@@ -296,7 +296,7 @@ export default {
       var logObject = {
         _index: 'pickupapp_log',
         _source: {
-          id: this.$store.state.pickingModule.currentOrder.meta.id,
+          id: this.$store.state.custom.mvp.currentOrder.meta.id,
           date: moment(),
           user: this.$store.getters.creds.user.login,
           current_order: this.currentOrder,
@@ -304,7 +304,7 @@ export default {
           type: 'save_po'
         },
         _id:
-          this.$store.state.pickingModule.currentOrder.meta.id +
+          this.$store.state.custom.mvp.currentOrder.meta.id +
           '_' +
           moment().unix()
       }
@@ -585,7 +585,7 @@ export default {
     },
     async sendToSlack(data) {
       try {
-        await this.$store.dispatch('sendMessageToSlack', data)
+        await this.$store.dispatch('mvp/sendMessageToSlack', data)
         this.$q.notify({
           message: 'Message envoyé !',
           timeout: 5000,
@@ -633,7 +633,7 @@ export default {
   },
   computed: {
     labelMenu: function() {
-      if (this.$store.getters.screenSize.windowWidth < 600) {
+      if (this.$store.getters['mvp/screenSize'].windowWidth < 600) {
         return ''
       } else {
         if (this.currentOrder.clean_name === undefined)
@@ -642,21 +642,21 @@ export default {
       }
     },
     labelLeft: function() {
-      if (this.$store.getters.screenSize.windowWidth < 600) {
+      if (this.$store.getters['mvp/screenSize'].windowWidth < 600) {
         return ''
       } else {
         return 'retour'
       }
     },
     labelRight: function() {
-      if (this.$store.getters.screenSize.windowWidth < 600) {
+      if (this.$store.getters['mvp/screenSize'].windowWidth < 600) {
         return ''
       } else {
         return 'valider'
       }
     },
     labelRightM: function() {
-      if (this.$store.getters.screenSize.windowWidth < 600) {
+      if (this.$store.getters['mvp/screenSize'].windowWidth < 600) {
         return ''
       } else {
         return 'modifier'

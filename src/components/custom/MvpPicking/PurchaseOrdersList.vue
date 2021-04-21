@@ -98,7 +98,7 @@ export default {
   },
   computed: {
     targetDate: function() {
-      return this.$store.getters.targetDate
+      return this.$store.getters['mvp/targetDate']
     }
   },
   watch: {
@@ -159,7 +159,7 @@ export default {
           this.orderTheOrders()
 
           // Saving in store
-          this.$store.commit('mutate_allPurchaseOrders', {
+          this.$store.commit('mvp/mutate_allPurchaseOrders', {
             data: this.allPurchaseOrders
           })
 

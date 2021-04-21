@@ -20,14 +20,49 @@
 </template>
 
 <script>
-import moment from "moment"
+import Vue from 'vue'
+import axios from 'axios'
+import moment from 'moment'
+
+
 export default {
   name: 'MvpPrepOrders',
   computed: {
     today() {
       return moment();
     }
-  }
+  },
+  methods: {
+    getOrders() {
+      this.orders = [
+        {
+          'orderNumber': 12863,
+          'status': 'jhesgfjhd',
+          'hasSec': true,
+          'hasFrais': false,
+        },
+        {
+          'orderNumber': 12863,
+          'status': 'jhesgfjhd'
+        },
+        {
+          'orderNumber': 12863,
+          'status': 'jhesgfjhd'
+        },
+        {
+          'orderNumber': 12863,
+          'status': 'jhesgfjhd'
+        },
+        {
+          'orderNumber': 12863,
+          'status': 'jhesgfjhd'
+        },
+        {
+          'orderNumber': 12863,
+          'status': 'jhesgfjhd'
+        },
+      ]
+    },
 
 }
 </script>
@@ -42,8 +77,30 @@ export default {
   margin-top: 5px;
 }
 
-.menu-banner {
-  font-size: 1.1em;
+        }
+      })
+    },
+    
+  },
+  beforeCreate() {
+    // const { namespace } = registerStore(store, mvpStore, 'mvp');
+    // this.namespace = namespace;
+    
+  },
+  created() {
+    
+  },
+  beforeMount() {},
+  mounted() {
+    console.log('mounted MvpPrepOrders')
+  },
+  beforeDestroy() {
+    
+  },
+  destroyed() {
+    
+  },
+  computed: {}
 }
 
 .grey-banner {

@@ -4,6 +4,7 @@ import axios from "axios";
 import moment from "moment";
 
 import example from "./module-example";
+import custom from "./custom";
 Vue.use(Vuex);
 
 /*
@@ -13,6 +14,9 @@ Vue.use(Vuex);
 
 export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
+    modules: {
+      custom
+    },
     state: {
       version: "v1.0.3",
       apiurl: "/api/v1/",
