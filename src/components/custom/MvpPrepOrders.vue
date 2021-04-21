@@ -9,6 +9,7 @@ import Vue from 'vue'
 import axios from 'axios'
 import moment from 'moment'
 
+
 export default {
   name: 'MvpPrepOrders',
   components: {
@@ -23,7 +24,9 @@ export default {
       this.orders = [
         {
           'orderNumber': 12863,
-          'status': 'jhesgfjhd'
+          'status': 'jhesgfjhd',
+          'hasSec': true,
+          'hasFrais': false,
         },
         {
           'orderNumber': 12863,
@@ -69,6 +72,8 @@ export default {
     
   },
   beforeCreate() {
+    // const { namespace } = registerStore(store, mvpStore, 'mvp');
+    // this.namespace = namespace;
     
   },
   created() {
