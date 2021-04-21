@@ -184,11 +184,11 @@ export default {
   },
   computed: {
     isLandscape: function() {
-      if (this.$store.state.pickingModule.screenSize.windowWidth > 1000)
+      if (this.$store.state.custom.mvp.screenSize.windowWidth > 1000)
         return false
       else if (
-        this.$store.state.pickingModule.screenSize.windowWidth >
-        this.$store.state.pickingModule.screenSize.windowHeight
+        this.$store.state.custom.mvp.screenSize.windowWidth >
+        this.$store.state.custom.mvp.screenSize.windowHeight
       )
         return true
       else return false

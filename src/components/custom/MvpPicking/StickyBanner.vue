@@ -50,7 +50,7 @@ export default {
         dateFromShort: this.dateFromShort,
         dateToShort: this.dateToShort
       }
-      this.$store.commit('mutate_targetDate', { dateObj: obj })
+      this.$store.commit('mvp/mutate_targetDate', { dateObj: obj })
     },
     onToday() {
       var from = moment().startOf('day')
@@ -62,13 +62,13 @@ export default {
     }
   },
   created() {
-    if (this.$store.getters.targetDate.dateFrom === '') this.onToday()
+    if (this.$store.getters['mvp/targetDate'].dateFrom === '') this.onToday()
   },
   mounted() {
-    this.dateFrom = this.$store.getters.targetDate.dateFrom
-    this.dateTo = this.$store.getters.targetDate.dateTo
-    this.dateFromShort = this.$store.getters.targetDate.dateFromShort
-    this.dateToShort = this.$store.getters.targetDate.dateToShort
+    this.dateFrom = this.$store.getters['mvp/targetDate'].dateFrom
+    this.dateTo = this.$store.getters['mvp/targetDate'].dateTo
+    this.dateFromShort = this.$store.getters['mvp/targetDate'].dateFromShort
+    this.dateToShort = this.$store.getters['mvp/targetDate'].dateToShort
   },
   beforeDestroy() {
     this.dateFrom = null
