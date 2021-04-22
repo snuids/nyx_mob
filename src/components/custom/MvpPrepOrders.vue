@@ -13,14 +13,11 @@
       </div>
     </q-page-sticky>
   </q-page> -->
-  <div>
+  <q-page>
     <StickyBanner></StickyBanner>
     <div class="flex flex-center column">
       <div class="text-h6">Commandes</div>
-      <div
-        class="row bg-blue-grey-2"
-        style="min-height: 400px; width: 80%; padding: 24px;"
-      >
+      <div class="row " style="min-height: 400px; width: 80%; padding: 24px;">
         <div
           id="parent"
           class="fit row wrap justify-start items-start content-start"
@@ -32,28 +29,34 @@
           <div
             v-for="(order, idx) in orders"
             :key="idx"
-            class="q-ma-md      bg-grey-6"
+            class="q-ma-md      bg-blue-grey-2"
             style="overflow: auto;"
           >
-            <q-card>
-              <q-card-title> {{ order.orderNumber }}</q-card-title>
-
-              <q-card-separator />
-
-              <q-card-section> status : {{ order.status }}</q-card-section>
-              <q-card-section> Client: {{ order.last_name }}</q-card-section>
-              <q-card-section v-if="order.has_frais">
-                Contient du frais</q-card-section
+            <q-card class="my-card bg-blue-grey-2">
+              <q-card-section class="text-h6">
+                {{ order.orderNumber }}</q-card-section
               >
-              <q-card-section v-if="order.has_sec">
-                Contient du sec</q-card-section
-              >
+
+              <q-separator />
+
+              <q-card-section>
+                <ul>
+                  <li>status : {{ order.status }}</li>
+                  <li>Client: {{ order.last_name }}</li>
+                  <li v-if="order.has_frais">
+                    Contient du frais
+                  </li>
+                  <li v-if="order.has_sec">
+                    Contient du sec
+                  </li>
+                </ul>
+              </q-card-section>
             </q-card>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script>
@@ -176,5 +179,16 @@ export default {
   margin-right: auto;
   height: 100%;
   display: flex;
+}
+li {
+  list-style-type: none;
+}
+
+ul {
+  padding-left: 0;
+}
+
+my-card {
+  border-radius: 20px;
 }
 </style>

@@ -59,7 +59,10 @@ module.exports = function(ctx) {
         'QRating',
         'QToggle',
         'QDate',
-        'QTime'
+        'QTime',
+        'QCard',
+        'QCardSection',
+        'QSeparator'
       ],
       directives: ['Ripple'],
       // Quasar plugins
