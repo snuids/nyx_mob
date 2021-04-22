@@ -78,25 +78,24 @@
     </q-dialog>
 
     <!--  DIALOG BOX [ singleDate ]  -->
-    <q-dialog v-model="singleDate"  ref="singleDateDialog">
-          <q-date
-            v-model="dateSelection"
-            :locale="myLocale"
-            @input="onDateSelect"
-            :landscape="isLandscape"
-          />
+    <q-dialog v-model="singleDate" ref="singleDateDialog">
+      <q-date
+        v-model="dateSelection"
+        :locale="myLocale"
+        @input="onDateSelect"
+        :landscape="isLandscape"
+      />
     </q-dialog>
 
     <!--  DIALOG BOX [ rangeDate ]  -->
     <q-dialog v-model="rangeDate" ref="rangeDateDialog">
-      
-          <q-date
-            v-model="dateSelection"
-            :locale="myLocale"
-            range
-            @input="onRangeSelect"
-            :landscape="isLandscape"
-          />
+      <q-date
+        v-model="dateSelection"
+        :locale="myLocale"
+        range
+        @input="onRangeSelect"
+        :landscape="isLandscape"
+      />
     </q-dialog>
   </div>
 </template>
@@ -184,11 +183,10 @@ export default {
   },
   computed: {
     isLandscape: function() {
-      if (this.$store.state.custom.mvp.screenSize.windowWidth > 1000)
-        return false
+      if (this.$store.state.mvp.screenSize.windowWidth > 1000) return false
       else if (
-        this.$store.state.custom.mvp.screenSize.windowWidth >
-        this.$store.state.custom.mvp.screenSize.windowHeight
+        this.$store.state.mvp.screenSize.windowWidth >
+        this.$store.state.mvp.screenSize.windowHeight
       )
         return true
       else return false
