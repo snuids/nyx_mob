@@ -206,8 +206,8 @@ export default {
       this.$store.commit('mvp/mutate_currentOrder', {
         order: {
           meta: {
-            id: this.$store.state.custom.mvp.currentOrder.meta.id,
-            index: this.$store.state.custom.mvp.currentOrder.meta.index
+            id: this.$store.state.mvp.currentOrder.meta.id,
+            index: this.$store.state.mvp.currentOrder.meta.index
           },
           details: {
             name: this.currentOrder.clean_name,
@@ -242,9 +242,9 @@ export default {
       var url =
         this.$store.getters.apiurl +
         'generic/' +
-        this.$store.state.custom.mvp.currentOrder.meta.index +
+        this.$store.state.mvp.currentOrder.meta.index +
         '/' +
-        this.$store.state.custom.mvp.currentOrder.meta.id +
+        this.$store.state.mvp.currentOrder.meta.id +
         '?token=' +
         this.$store.getters.creds.token
 
@@ -273,9 +273,9 @@ export default {
 
       // forge the query
       var updatedPurchaseOrder = {
-        _index: this.$store.state.custom.mvp.currentOrder.meta.index,
+        _index: this.$store.state.mvp.currentOrder.meta.index,
         _source: this.currentOrder,
-        _id: this.$store.state.custom.mvp.currentOrder.meta.id
+        _id: this.$store.state.mvp.currentOrder.meta.id
       }
 
       /* UNCOMMENT TO COMMIT REAL UPDATE */
@@ -296,17 +296,14 @@ export default {
       var logObject = {
         _index: 'pickupapp_log',
         _source: {
-          id: this.$store.state.custom.mvp.currentOrder.meta.id,
+          id: this.$store.state.mvp.currentOrder.meta.id,
           date: moment(),
           user: this.$store.getters.creds.user.login,
           current_order: this.currentOrder,
           original_order: this.originalOrder,
           type: 'save_po'
         },
-        _id:
-          this.$store.state.custom.mvp.currentOrder.meta.id +
-          '_' +
-          moment().unix()
+        _id: this.$store.state.mvp.currentOrder.meta.id + '_' + moment().unix()
       }
 
       /* UNCOMMENT TO COMMIT REAL UPDATE */
