@@ -31,7 +31,11 @@
             class="q-ma-md      bg-blue-grey-2"
             style="overflow: auto;"
           >
-            <q-card class="my-card bg-blue-grey-2">
+            <q-card
+              v-ripple
+              class="my-card bg-blue-grey-2 cursor-pointer q-hoverable"
+            >
+              <span class="q-focus-helper"></span>
               <q-card-section class="text-h6">
                 {{ order.orderNumber }}</q-card-section
               >
@@ -77,7 +81,7 @@ export default {
     return {
       orders: [],
       filterHasSec: true,
-      filterHasFrais: false,
+      filterHasFrais: true,
       queryList: {
         size: 5000,
         sort: [
@@ -160,6 +164,7 @@ export default {
         .post(url, this.queryList)
         .then(response => {
           this.orders = []
+          console.log(response.data.records)
           for (let record of response.data.records) {
             let data = {
               id: record._id,
@@ -167,7 +172,8 @@ export default {
               has_frais: record._source.has_frais,
               has_sec: record._source.has_sec,
               last_name: record._source.last_name,
-              status: record._source.financial_status
+              status: record._source.financial_status,
+              product_items: record._source.product_list
             }
 
             this.orders.push(data)
