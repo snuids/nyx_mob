@@ -14,7 +14,6 @@
     </q-page-sticky>
   </q-page> -->
   <q-page>
-    <StickyBanner></StickyBanner>
     <div class="flex flex-center column">
       <div class="text-h6">Commandes</div>
       <div class="row " style="min-height: 400px; width: 80%; padding: 24px;">
@@ -27,7 +26,7 @@
             Pas de commandes ce jour ci
           </p>
           <div
-            v-for="(order, idx) in orders"
+            v-for="(order, idx) in ordersToDisplay"
             :key="idx"
             class="q-ma-md      bg-blue-grey-2"
             style="overflow: auto;"
@@ -56,6 +55,9 @@
         </div>
       </div>
     </div>
+    <q-page-sticky expand position="top">
+      <StickyBanner class=""></StickyBanner>
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -74,6 +76,8 @@ export default {
   data() {
     return {
       orders: [],
+      filterHasSec: true,
+      filterHasFrais: false,
       queryList: {
         size: 5000,
         sort: [
@@ -106,6 +110,24 @@ export default {
   computed: {
     targetDate: function() {
       return this.$store.getters['mvp/targetDate']
+    },
+    ordersToDisplay: function() {
+      let orderList
+      if (!this.filterHasFrais) {
+        orderList = this.orders.filter(order => !order.has_frais)
+        if (!this.filterHasSec) {
+          orderList = orderList.filter(order => !order.has_sec)
+        }
+      } else if (!this.filterHasSec) {
+        orderList = this.orders.filter(order => !order.has_sec)
+      } else if (this.filterHasFrais && this.filterHasSec) {
+        orderList = this.orders.filter(
+          order => order.has_sec && order.has_frais
+        )
+      } else {
+        orderList = this.orders
+      }
+      return orderList
     }
   },
   watch: {
