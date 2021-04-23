@@ -34,11 +34,6 @@ export default {
     }
   },
   methods: {
-    createCustomStore() {
-      // this.$store.registerModule('pickingModule', {
-        
-      // })
-    },
     addEventListener() {
       this.$root.$on('displayOrderEvent', event => {
         this.displayOrderEvent(event)
@@ -94,7 +89,6 @@ export default {
     }
   },
   created() {
-    this.createCustomStore()
     this.addEventListener()
   },
   beforeMount() {},

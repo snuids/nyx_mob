@@ -1,22 +1,10 @@
 <template>
-  <!-- <q-page class="flex bg-grey-5 row">
-    <q-page-sticky expand position="top">
-      <div class="bg-grey-8 full-width grey-banner">
-        <div class="whole-container">
-          <div class="text-white date-banner">
-            <div class="text-center">
-              Date :
-            </div>
-            <div class="menu-banner float-right"></div>
-          </div>
-        </div>
-      </div>
-    </q-page-sticky>
-  </q-page> -->
   <q-page>
     <div class="flex flex-center column">
-      <div class="text-h6">Commandes</div>
       <div class="row " style="min-height: 400px; width: 80%; padding: 24px;">
+        <div class="text-h6 commandes">
+          {{ ordersToDisplay.length }} commandes
+        </div>
         <div
           id="parent"
           class="fit row wrap justify-start items-start content-start"
@@ -60,15 +48,13 @@
       </div>
     </div>
     <q-page-sticky expand position="top">
-      <StickyBanner class=""></StickyBanner>
+      <StickyBanner></StickyBanner>
     </q-page-sticky>
   </q-page>
 </template>
 
 <script>
-import Vue from 'vue'
 import axios from 'axios'
-import moment from 'moment'
 import StickyBanner from './MvpPicking/StickyBanner'
 
 export default {
@@ -82,6 +68,7 @@ export default {
       orders: [],
       filterHasSec: true,
       filterHasFrais: true,
+      applyFilter: false,
       queryList: {
         size: 5000,
         sort: [
@@ -116,22 +103,26 @@ export default {
       return this.$store.getters['mvp/targetDate']
     },
     ordersToDisplay: function() {
-      let orderList
-      if (!this.filterHasFrais) {
-        orderList = this.orders.filter(order => !order.has_frais)
-        if (!this.filterHasSec) {
-          orderList = orderList.filter(order => !order.has_sec)
+      if (this.applyFilter) {
+        let orderList
+        if (!this.filterHasFrais) {
+          orderList = this.orders.filter(order => !order.has_frais)
+          if (!this.filterHasSec) {
+            orderList = orderList.filter(order => !order.has_sec)
+          }
+        } else if (!this.filterHasSec) {
+          orderList = this.orders.filter(order => !order.has_sec)
+        } else if (this.filterHasFrais && this.filterHasSec) {
+          orderList = this.orders.filter(
+            order => order.has_sec && order.has_frais
+          )
+        } else {
+          orderList = this.orders
         }
-      } else if (!this.filterHasSec) {
-        orderList = this.orders.filter(order => !order.has_sec)
-      } else if (this.filterHasFrais && this.filterHasSec) {
-        orderList = this.orders.filter(
-          order => order.has_sec && order.has_frais
-        )
+        return orderList
       } else {
-        orderList = this.orders
+        return this.orders
       }
-      return orderList
     }
   },
   watch: {
@@ -152,7 +143,7 @@ export default {
         this.queryList.query.bool.must[0].range.date.lte = dateObj.dateTo
       }
 
-      var url =
+      const url =
         this.$store.getters.apiurl +
         'generic_search/' +
         this.indice +
@@ -175,6 +166,7 @@ export default {
               status: record._source.financial_status,
               product_items: record._source.product_list
             }
+            this.$store.commit('mvpPrepOrders/addProduct', data.product_items)
 
             this.orders.push(data)
           }

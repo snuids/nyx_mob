@@ -22,7 +22,7 @@
         </q-list>
       </div>
       <q-page-sticky expand position="top">
-        <StickyBanner ref="StickyBannerInstance"/>
+        <StickyBanner ref="StickyBannerInstance" />
       </q-page-sticky>
     </q-page>
   </q-page-container>
@@ -104,7 +104,7 @@ export default {
   watch: {
     targetDate: {
       handler: function() {
-        this.getPoList();
+        this.getPoList()
       },
       deep: true
     }
@@ -146,12 +146,10 @@ export default {
 
           this.allPurchaseOrders.forEach(element => {
             if (element.units_ordered && element.units_received) {
-              
-              if(element.units_received == 0)
+              if (element.units_received == 0) element.cart_complete = 0
+              else if (element.units_received < element.units_ordered)
                 element.cart_complete = 0
-              else if(element.units_received < element.units_ordered)
-                element.cart_complete = 0
-              else if(element.units_received >= element.units_ordered)
+              else if (element.units_received >= element.units_ordered)
                 element.cart_complete = 1
             }
           })
