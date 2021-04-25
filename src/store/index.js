@@ -4,6 +4,7 @@ import axios from 'axios'
 import moment from 'moment'
 
 import mvpPicking from './custom/mvp'
+import mvpPrepOrders from './custom/mvpPrepOrders'
 
 Vue.use(Vuex)
 
@@ -15,7 +16,8 @@ Vue.use(Vuex)
 export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      mvp: mvpPicking
+      mvp: mvpPicking,
+      mvpPrep: mvpPrepOrders
     },
     state: {
       version: 'v1.0.3',

@@ -1,16 +1,39 @@
 <template>
   <q-page>
     <div class="flex flex-center column">
-      <div class="row " style="min-height: 400px; width: 80%; padding: 24px;">
-        <div class="text-h6 commandes">
+      <div
+        class="row justify-between q-mt-sm"
+        style="min-height: 400px; width: 80%; padding: 24px;"
+      >
+        <div class="text-h6 q-py-lg">
           {{ ordersToDisplay.length }} commandes
+        </div>
+        <div class="q-pa-md q-gutter-y-sm">
+          <q-toggle
+            :label="filterHasFrais"
+            color="green"
+            false-value="Pas de frais"
+            true-value="Frais"
+            v-model="filterHasFrais"
+            toggle-order="tf"
+            @click="ordersToDisplay"
+          ></q-toggle>
+          <q-toggle
+            :label="filterHasSec"
+            color="green"
+            false-value="Pas de Sec"
+            true-value="Sec"
+            v-model="filterHasSec"
+            toggle-order="tf"
+            @click="ordersToDisplay"
+          ></q-toggle>
         </div>
         <div
           id="parent"
           class="fit row wrap justify-start items-start content-start"
           style="overflow: hidden;"
         >
-          <p v-if="orders.length == 0">
+          <p v-if="orders.length === 0">
             Pas de commandes ce jour ci
           </p>
           <div
@@ -19,30 +42,7 @@
             class="q-ma-md      bg-blue-grey-2"
             style="overflow: auto;"
           >
-            <q-card
-              v-ripple
-              class="my-card bg-blue-grey-2 cursor-pointer q-hoverable"
-            >
-              <span class="q-focus-helper"></span>
-              <q-card-section class="text-h6">
-                {{ order.orderNumber }}</q-card-section
-              >
-
-              <q-separator />
-
-              <q-card-section>
-                <ul>
-                  <li>status : {{ order.status }}</li>
-                  <li>Client: {{ order.last_name }}</li>
-                  <li v-if="order.has_frais">
-                    Contient du frais
-                  </li>
-                  <li v-if="order.has_sec">
-                    Contient du sec
-                  </li>
-                </ul>
-              </q-card-section>
-            </q-card>
+            <OrderCard :order="order" :products="products" />
           </div>
         </div>
       </div>
@@ -50,26 +50,33 @@
     <q-page-sticky expand position="top">
       <StickyBanner></StickyBanner>
     </q-page-sticky>
+
+    <router-view></router-view>
   </q-page>
 </template>
 
 <script>
 import axios from 'axios'
 import StickyBanner from './MvpPicking/StickyBanner'
+import OrderCard from './mvpPrepOrders/OrderCard'
+import ShowOrder from './mvpPrepOrders/ShowOrder'
 
 export default {
   components: {
-    StickyBanner
+    StickyBanner,
+    OrderCard,
+    ShowOrder
   },
 
   name: 'MvpPrepOrders',
   data() {
     return {
       orders: [],
-      filterHasSec: true,
-      filterHasFrais: true,
-      applyFilter: false,
-      queryList: {
+      products: [],
+      filterHasSec: 'Sec',
+      filterHasFrais: 'Frais',
+      applyFilter: true,
+      queryList1: {
         size: 5000,
         sort: [
           {
@@ -95,7 +102,34 @@ export default {
           }
         }
       },
-      indice: 'dev_shopify_order'
+      queryList2: {
+        size: 5000,
+        sort: [
+          {
+            date: {
+              order: 'desc',
+              unmapped_type: 'boolean'
+            }
+          }
+        ],
+        _source: {},
+        query: {
+          bool: {
+            must: [
+              {
+                range: {
+                  date: {
+                    gte: '',
+                    lte: ''
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      indiceOrders: 'dev_shopify_order',
+      indiceProducts: 'dev_shopify_line_item'
     }
   },
   computed: {
@@ -103,32 +137,30 @@ export default {
       return this.$store.getters['mvp/targetDate']
     },
     ordersToDisplay: function() {
-      if (this.applyFilter) {
-        let orderList
-        if (!this.filterHasFrais) {
-          orderList = this.orders.filter(order => !order.has_frais)
-          if (!this.filterHasSec) {
-            orderList = orderList.filter(order => !order.has_sec)
-          }
-        } else if (!this.filterHasSec) {
-          orderList = this.orders.filter(order => !order.has_sec)
-        } else if (this.filterHasFrais && this.filterHasSec) {
-          orderList = this.orders.filter(
-            order => order.has_sec && order.has_frais
-          )
-        } else {
-          orderList = this.orders
+      let orderList
+      if (this.filterHasFrais !== 'Frais') {
+        orderList = this.orders.filter(order => !order.has_frais)
+        if (this.filterHasSec !== 'Sec') {
+          orderList = orderList.filter(order => !order.has_sec)
         }
-        return orderList
-      } else {
-        return this.orders
+      } else if (this.filterHasSec !== 'Sec') {
+        orderList = this.orders.filter(order => !order.has_sec)
+      } else if (
+        this.filterHasFrais === 'Frais' &&
+        this.filterHasSec === 'Sec'
+      ) {
+        orderList = this.orders.filter(
+          order => order.has_sec || order.has_frais
+        )
       }
+      return orderList
     }
   },
   watch: {
     targetDate: {
       handler: function() {
         this.getOrders()
+        this.getProducts()
       },
       deep: true
     }
@@ -136,27 +168,29 @@ export default {
   methods: {
     getOrders(dateObj = null) {
       if (dateObj === null) {
-        this.queryList.query.bool.must[0].range.date.gte = this.targetDate.dateFrom
-        this.queryList.query.bool.must[0].range.date.lte = this.targetDate.dateTo
+        this.queryList1.query.bool.must[0].range.date.gte = this.targetDate.dateFrom
+        this.queryList1.query.bool.must[0].range.date.lte = this.targetDate.dateTo
       } else {
-        this.queryList.query.bool.must[0].range.date.gte = dateObj.dateFrom
-        this.queryList.query.bool.must[0].range.date.lte = dateObj.dateTo
+        this.queryList1.query.bool.must[0].range.date.gte = dateObj.dateFrom
+        this.queryList1.query.bool.must[0].range.date.lte = dateObj.dateTo
       }
+
+      console.log(this.queryList1.query.bool.must[0].range.date.gte)
 
       const url =
         this.$store.getters.apiurl +
         'generic_search/' +
-        this.indice +
+        this.indiceOrders +
         '?token=' +
         this.$store.getters.creds.token
 
       console.log(url)
       axios
-        .post(url, this.queryList)
+        .post(url, this.queryList1)
         .then(response => {
           this.orders = []
-          console.log(response.data.records)
           for (let record of response.data.records) {
+            //console.table(record._source.product_list)
             let data = {
               id: record._id,
               orderNumber: record._source.order_number,
@@ -166,49 +200,73 @@ export default {
               status: record._source.financial_status,
               product_items: record._source.product_list
             }
-            this.$store.commit('mvpPrepOrders/addProduct', data.product_items)
+            //this.$store.commit('mvpPrep/addProduct', data.product_items)
 
             this.orders.push(data)
           }
+        })
+        .catch(error => console.error(error))
+    },
+    getProducts(dateObj = null) {
+      if (dateObj === null) {
+        this.queryList2.query.bool.must[0].range.date.gte = this.targetDate.dateFrom.format(
+          'YYYY/MM/DD'
+        )
+        this.queryList2.query.bool.must[0].range.date.lte = this.targetDate.dateTo.format(
+          'YYYY/MM/DD'
+        )
+      } else {
+        this.queryList2.query.bool.must[0].range.date.gte = dateObj.dateFrom.format(
+          'YYYY/MM/DD'
+        )
+        this.queryList2.query.bool.must[0].range.date.lte = dateObj.dateTo.format(
+          'YYYY/MM/DD'
+        )
+      }
+
+      //console.log(this.queryList.query.bool.must[0].range.date.lte)
+
+      const url =
+        this.$store.getters.apiurl +
+        'generic_search/' +
+        this.indiceProducts +
+        '?token=' +
+        this.$store.getters.creds.token
+
+      console.log(url)
+      axios
+        .post(url, this.queryList2)
+        .then(response => {
+          this.products = []
+          for (let record of response.data.records) {
+            //console.table(record._source.product_list)
+            let data = {
+              name: record._source.name,
+              quantity: record._source.quantity,
+              orderNumber: record._source.order
+            }
+            //this.$store.commit('mvpPrep/addProduct', data.product_items)
+
+            this.products.push(data)
+          }
+          //console.table(this.products)
         })
         .catch(error => console.error(error))
     }
   },
   mounted() {
     this.getOrders()
+    this.getProducts()
   }
 }
 </script>
 
 <style>
-.date-banner {
-  font-size: 1.1em;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5px;
-}
-
-.grey-banner {
-  height: 32px;
-}
-
-.whole-container {
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  height: 100%;
-  display: flex;
-}
 li {
   list-style-type: none;
 }
 
 ul {
   padding-left: 0;
-}
-
-my-card {
-  border-radius: 20px;
 }
 </style>

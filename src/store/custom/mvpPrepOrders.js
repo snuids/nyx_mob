@@ -14,6 +14,7 @@ export default {
   mutations: {
     addProduct(state, payload) {
       state.allProductsOrder.push(payload.product_items)
+      //console.table(state.allProductsOrder)
     }
   },
   getters: {
