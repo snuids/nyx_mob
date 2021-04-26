@@ -60,6 +60,7 @@ import axios from 'axios'
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrderCard from './mvpPrepOrders/OrderCard'
 import ShowOrder from './mvpPrepOrders/ShowOrder'
+import moment from 'moment'
 
 export default {
   components: {
@@ -73,6 +74,7 @@ export default {
     return {
       orders: [],
       products: [],
+      currentOrder: {},
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
       applyFilter: true,
@@ -190,9 +192,10 @@ export default {
         .then(response => {
           this.orders = []
           for (let record of response.data.records) {
-            //console.table(record._source.product_list)
             let data = {
-              id: record._id,
+              _id: record._id,
+              _index: record._index,
+              _source: record._source,
               orderNumber: record._source.order_number,
               has_frais: record._source.has_frais,
               has_sec: record._source.has_sec,
@@ -200,7 +203,6 @@ export default {
               status: record._source.financial_status,
               product_items: record._source.product_list
             }
-
             this.orders.push(data)
           }
           this.$store.commit('mvpPrep/mutate_allOrders', this.orders)
@@ -249,11 +251,13 @@ export default {
 
             this.products.push(data)
           }
+          this.$store.commit('mvpPrep/mutate_allProducts', this.products)
           //console.table(this.products)
         })
         .catch(error => console.error(error))
     }
   },
+
   mounted() {
     this.getOrders()
     this.getProducts()

@@ -208,7 +208,7 @@ export default function(/* { ssrContext } */) {
           payload.data._id +
           '?token=' +
           state.creds.token
-
+        console.log('update record url : ', url)
         axios
           .post(url, payload.data._source)
           .then(response => {

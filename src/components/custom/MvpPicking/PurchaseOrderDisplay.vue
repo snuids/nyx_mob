@@ -277,6 +277,7 @@ export default {
         _source: this.currentOrder,
         _id: this.$store.state.mvpPicking.currentOrder.meta.id
       }
+      console.log(updatedPurchaseOrder)
 
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
