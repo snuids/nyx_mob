@@ -157,7 +157,7 @@ export default {
           this.orderTheOrders()
 
           // Saving in store
-          this.$store.commit('mvp/mutate_allPurchaseOrders', {
+          this.$store.commit('mvpPicking/mutate_allPurchaseOrders', {
             data: this.allPurchaseOrders
           })
 

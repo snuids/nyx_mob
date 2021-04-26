@@ -10,15 +10,6 @@ export default {
       dateFromShort: '',
       dateToShort: ''
     },
-    currentOrder: {
-      meta: {
-        id: '',
-        index: ''
-      },
-      details: {},
-      cart: {}
-    },
-    allPurchaseOrders: {},
     screenSize: {
       windowHeight: '',
       windowWidth: '',
@@ -33,9 +24,6 @@ export default {
     // exemple : this.$store.getters.targetDate
     // exemple : this.$store.getters.screenSize.windowHeight
     targetDate: state => state.targetDate,
-    currentOrder: state => state.currentOrder,
-    getOrderDetails: state => state.currentOrder.details,
-    allPurchaseOrders: state => state.allPurchaseOrders,
     screenSize: state => state.screenSize,
     slackKey: state => state.slack_api_key
   },
@@ -45,12 +33,6 @@ export default {
     },
     mutate_targetDate(state, payload) {
       state.targetDate = payload.dateObj
-    },
-    mutate_currentOrder(state, payload) {
-      state.currentOrder = payload.order
-    },
-    mutate_allPurchaseOrders(state, payload) {
-      state.allPurchaseOrders = payload.data
     }
   },
   actions: {

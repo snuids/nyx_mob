@@ -3,8 +3,9 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import moment from 'moment'
 
-import mvpPicking from './custom/mvp'
+import mvp from './custom/mvp'
 import mvpPrepOrders from './custom/mvpPrepOrders'
+import mvpPicking from './custom/mvpPicking'
 
 Vue.use(Vuex)
 
@@ -16,8 +17,9 @@ Vue.use(Vuex)
 export default function(/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
-      mvp: mvpPicking,
-      mvpPrep: mvpPrepOrders
+      mvp: mvp,
+      mvpPrep: mvpPrepOrders,
+      mvpPicking: mvpPicking
     },
     state: {
       version: 'v1.0.3',
@@ -51,7 +53,6 @@ export default function(/* { ssrContext } */) {
           state.apiurl +
           'generic_search/nyx_privilege?token=' +
           state.creds.token
-
         axios
           .post(url, { size: 1000 })
           .then(response => {

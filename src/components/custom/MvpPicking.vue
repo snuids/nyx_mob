@@ -47,7 +47,7 @@ export default {
       this.$root.$off('displayListEvent')
     },
     displayOrderEvent(event) {
-      this.$store.commit('mvp/mutate_currentOrder', {
+      this.$store.commit('mvpPicking/mutate_currentOrder', {
         order: {
           meta: {
             id: event.id,
@@ -58,7 +58,7 @@ export default {
       this.isPurchaseOrderDisplayed = true
     },
     displayListEvent(event) {
-      this.$store.commit('mvp/mutate_currentOrder', {
+      this.$store.commit('mvpPicking/mutate_currentOrder', {
         order: {
           meta: {
             id: '',

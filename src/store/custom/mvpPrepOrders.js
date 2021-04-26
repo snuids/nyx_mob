@@ -1,26 +1,14 @@
 export default {
   namespaced: true,
   state: {
-    currentOrder: {
-      meta: {
-        id: '',
-        index: ''
-      },
-      details: {},
-      cart: {}
-    },
-    allProductsOrder: []
+    orders: []
   },
   mutations: {
-    addProduct(state, payload) {
-      state.allProductsOrder.push(payload.product_items)
-      //console.table(state.allProductsOrder)
+    mutate_allOrders(state, payload) {
+      state.orders = payload
     }
   },
   getters: {
-    currentOrder: state => state.currentOrder,
-    getOrderDetails: state => state.currentOrder.details,
-    allPurchaseOrders: state => state.allPurchaseOrders,
-    screenSize: state => state.screenSize
+    allOrders: state => state.orders
   }
 }

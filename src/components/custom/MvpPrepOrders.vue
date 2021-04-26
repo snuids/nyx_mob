@@ -200,10 +200,10 @@ export default {
               status: record._source.financial_status,
               product_items: record._source.product_list
             }
-            //this.$store.commit('mvpPrep/addProduct', data.product_items)
 
             this.orders.push(data)
           }
+          this.$store.commit('mvpPrep/mutate_allOrders', this.orders)
         })
         .catch(error => console.error(error))
     },

@@ -323,7 +323,7 @@ export default {
   },
   created() {
     console.log('>>>>>>>>>>> ', this.order)
-    this.currentOrder = this.$store.getters['mvp/currentOrder'].details
+    this.currentOrder = this.$store.getters['mvpPicking/currentOrder'].details
   },
   mounted() {},
   updated() {},
