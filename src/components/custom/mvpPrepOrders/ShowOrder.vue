@@ -26,10 +26,7 @@ export default {
   name: 'ShowOrder',
   components: { OrderItems },
   data() {
-    return {
-      item: null,
-      btn_value: null
-    }
+    return {}
   },
   computed: {
     //products: this.$store.getters['mvpPrep/orderItems'](this.orderId)

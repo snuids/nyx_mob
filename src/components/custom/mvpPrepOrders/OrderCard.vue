@@ -59,6 +59,13 @@ export default {
       console.log('order from orderCard')
       console.log(this.order)
       this.sendOrderToServer()
+
+      this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
+
+      console.log('toto')
+      this.$store.dispatch("mvpPrep/getOrderItems");
+      console.log('tata')
+      
     },
     sendOrderToServer() {
       this.$store.state.mvpPrep.currentOrder._source.status = 'started'
@@ -79,7 +86,8 @@ export default {
         type: 'updateRecord',
         data: updatedOrder
       })
-    }
+    },
+    
   }
 }
 </script>
