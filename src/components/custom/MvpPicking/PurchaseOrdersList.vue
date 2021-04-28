@@ -303,7 +303,8 @@ export default {
   },
   mounted() {
     this.getPoList()
-    let timer = process.env.AUTO_REFRESH * 1000
+    //let timer = process.env.AUTO_REFRESH * 1000
+    const timer = this.$store.getters['mvp/timer'] * 1000
 
     // automatic refresh every X ms
     this.interval = setInterval(

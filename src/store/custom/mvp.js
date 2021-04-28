@@ -4,6 +4,7 @@ import moment from 'moment'
 export default {
   namespaced: true,
   state: {
+    timer: 5,
     targetDate: {
       dateFrom: '',
       dateTo: '',
@@ -25,6 +26,7 @@ export default {
     // exemple : this.$store.getters.screenSize.windowHeight
     targetDate: state => state.targetDate,
     screenSize: state => state.screenSize,
+    timer: state => state.timer,
     slackKey: state => state.slack_api_key
   },
   mutations: {

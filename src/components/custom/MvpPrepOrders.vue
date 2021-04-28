@@ -28,23 +28,8 @@
             @click="ordersToDisplay"
           ></q-toggle>
         </div>
-        <div
-          id="parent"
-          class="fit row wrap justify-start items-start content-start"
-          style="overflow: hidden;"
-        >
-          <p v-if="orders.length === 0">
-            Pas de commandes ce jour ci
-          </p>
-          <div
-            v-for="(order, idx) in ordersToDisplay"
-            :key="idx"
-            class="q-ma-md      bg-blue-grey-2"
-            style="overflow: auto;"
-          >
-            <OrderCard :order="order" :products="products" />
-          </div>
-        </div>
+
+        <OrdersList :orders="ordersToDisplay" :products="products" />
       </div>
     </div>
     <q-page-sticky expand position="top">
@@ -58,15 +43,12 @@
 <script>
 import axios from 'axios'
 import StickyBanner from './MvpPicking/StickyBanner'
-import OrderCard from './mvpPrepOrders/OrderCard'
-import ShowOrder from './mvpPrepOrders/ShowOrder'
-import moment from 'moment'
+import OrdersList from './mvpPrepOrders/OrdersList'
 
 export default {
   components: {
-    StickyBanner,
-    OrderCard,
-    ShowOrder
+    OrdersList,
+    StickyBanner
   },
 
   name: 'MvpPrepOrders',
@@ -74,10 +56,8 @@ export default {
     return {
       orders: [],
       products: [],
-      currentOrder: {},
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
-      applyFilter: true,
       queryList1: {
         size: 5000,
         sort: [
@@ -251,7 +231,7 @@ export default {
 
             this.products.push(data)
           }
-          this.$store.commit('mvpPrep/mutate_allProducts', this.products)
+          this.$store.commit('mvpPrep/mutate_allItems', this.products)
           //console.table(this.products)
         })
         .catch(error => console.error(error))
@@ -261,6 +241,16 @@ export default {
   mounted() {
     this.getOrders()
     this.getProducts()
+    const timer = this.$store.getters['mvp/timer'] * 1000
+    this.interval = setInterval(
+      function() {
+        this.getOrders()
+      }.bind(this),
+      timer
+    )
+  },
+  beforeDestroy() {
+    clearInterval(this.interval)
   }
 }
 </script>
