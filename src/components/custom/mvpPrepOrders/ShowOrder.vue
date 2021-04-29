@@ -10,7 +10,7 @@
         class="float-right "
       />
     </div>
-    <OrderItems :products="this.products" />
+    <OrderItems v-if="orderProducts" :products="orderProducts" />
     <q-page-sticky expand position="top">
       <StickyBanner></StickyBanner>
     </q-page-sticky>
@@ -24,12 +24,15 @@ import moment from 'moment'
 
 export default {
   name: 'ShowOrder',
-  components: { OrderItems },
-  data() {
-    return {}
+  created() {
+    this.$store.dispatch('mvpPrep/getOrderItems')
   },
+  components: { OrderItems },
   computed: {
-    //products: this.$store.getters['mvpPrep/orderItems'](this.orderId)
+    orderProducts() {
+      // console.log(this.$store.state.orderItems)
+      return this.$store.state.mvpPrep.currentOrderItems
+    }
   },
   props: ['orderId', 'status', 'hasSec', 'hasFrais', 'products'],
   methods: {
@@ -40,7 +43,7 @@ export default {
       this.sendUnlockOrderToServer()
     },
     sendUnlockOrderToServer() {
-      this.$store.state.mvpPrep.currentOrder._source.status = 'finished'
+      this.$store.state.mvpPrep.currentOrder._source.prep_status = 'finished'
       this.$store.state.mvpPrep.currentOrder._source.lock = false
       this.$store.state.mvpPrep.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
@@ -62,6 +65,9 @@ export default {
         data: updatedOrder
       })
     }
+  },
+  beforeDestroy() {
+    this.sendUnlockOrderToServer()
   }
 }
 </script>

@@ -7,13 +7,7 @@
         : {
             name: 'order-display',
             params: {
-              orderId: order.orderNumber.substr(1),
-              status: order.status,
-              hasSec: order.has_sec,
-              hasFrais: order.has_frais,
-              products: products.filter(
-                product => product.orderNumber === order.orderNumber
-              )
+              orderId: order._source.order_number.replace('#', '')
             }
           }
     "
@@ -22,26 +16,28 @@
       @click="cardClick"
       v-ripple
       :class="[
-        order._source.status === 'started' ? 'started' : '',
+        order._source.prep_status === 'started' ? 'started' : '',
         'my-card bg-blue-grey-2 cursor-pointer q-hoverable'
       ]"
     >
       <span class="q-focus-helper"></span>
-      <q-card-section class="text-h6"> {{ order.orderNumber }}</q-card-section>
+      <q-card-section class="text-h6">
+        {{ order._source.order_number }}</q-card-section
+      >
       <q-separator />
       <q-card-section>
         <ul>
-          <li>status : {{ order.status }}</li>
-          <li>Client: {{ order.last_name }}</li>
-          <li v-if="order.has_frais">
+          <li>Préparation : {{ order._source.prep_status }}</li>
+          <li>Client: {{ order._source.last_name }}</li>
+          <li v-if="order._source.has_frais">
             Contient du frais
           </li>
-          <li v-if="order.has_sec">
+          <li v-if="order._source.has_sec">
             Contient du sec
           </li>
         </ul>
 
-        <span>Contient {{ order.product_items.length }} produits</span>
+        <span>Contient {{ order._source.product_list.length }} produits</span>
       </q-card-section>
     </q-card>
   </router-link>
@@ -52,27 +48,27 @@ import moment from 'moment'
 
 export default {
   name: 'OrderCard',
-  props: ['order', 'products'],
+  props: ['order'],
   methods: {
     cardClick() {
-      this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
-      console.log('order from orderCard')
       console.log(this.order)
+      this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
       this.sendOrderToServer()
 
       this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
 
       console.log('toto')
-      this.$store.dispatch("mvpPrep/getOrderItems");
+      this.$store.dispatch('mvpPrep/getOrderItems')
       console.log('tata')
-      
     },
     sendOrderToServer() {
-      this.$store.state.mvpPrep.currentOrder._source.status = 'started'
+      this.$store.state.mvpPrep.currentOrder._source.prep_status = 'started'
       this.$store.state.mvpPrep.currentOrder._source.lock = true
       this.$store.state.mvpPrep.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
+      console.log('this is the current order on which ive clicked')
+      console.log(this.$store.state.mvpPrep.currentOrder)
       let newId = this.$store.state.mvpPrep.currentOrder._id.replace('#', '')
       // forge the query
       const updatedOrder = {
@@ -86,8 +82,7 @@ export default {
         type: 'updateRecord',
         data: updatedOrder
       })
-    },
-    
+    }
   }
 }
 </script>

@@ -1,47 +1,34 @@
 <template>
   <q-list bordered separator>
-    <q-item v-for="(product, idx) in products" :key="idx" class="q-pa-md">
-      <q-item-section
-        >{{ product.quantity }} | {{ product.name }}</q-item-section
-      >
-      <q-btn-group class="float-right">
-        <q-btn
-          @click="itemClick"
-          color="yellow"
-          text-color="black"
-          push
-          label="REMB"
-          unelevated
-        ></q-btn>
-        <q-btn
-          @click="itemClick"
-          color="amber"
-          text-color="black"
-          push
-          label="MANQ"
-          unelevated
-        ></q-btn>
-        <q-btn
-          @click="itemClick"
-          color="green"
-          text-color="black"
-          push
-          label="ok"
-          unelevated
-        ></q-btn>
-      </q-btn-group>
-    </q-item>
+    <OrderItem
+      v-for="(produit, idx) in products"
+      :key="idx"
+      :product="produit"
+      @remb="rembourser"
+      @manq="manquant"
+      @success="success"
+      class="q-pa-md"
+    >
+    </OrderItem>
   </q-list>
 </template>
 
 <script>
+import OrderItem from './OrderItem'
+
 export default {
   name: 'OrderItems',
   props: ['products'],
-  computed: {},
+  components: { OrderItem },
   methods: {
-    itemClick() {
-      console.log('ok')
+    rembourser(product) {
+      console.log(product)
+    },
+    manquant(product) {
+      console.log(product)
+    },
+    success(product) {
+      console.log(product)
     }
   }
 }

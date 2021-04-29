@@ -14,7 +14,7 @@
       class="q-ma-md      bg-blue-grey-2"
       style="overflow: auto;"
     >
-      <OrderCard :order="order" :products="products" />
+      <OrderCard :order="order" @card="orderClicked(order)" />
     </div>
   </div>
 </template>
@@ -24,7 +24,13 @@ import OrderCard from './OrderCard'
 export default {
   name: 'OrdersList',
   components: { OrderCard },
-  props: ['orders', 'products']
+  props: ['orders'],
+  methods: {
+    orderClicked(order) {
+      console.log('this is the order from ordercard clicked')
+      console.log(order)
+    }
+  }
 }
 </script>
 

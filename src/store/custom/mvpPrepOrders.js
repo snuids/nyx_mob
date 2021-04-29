@@ -7,14 +7,14 @@ export default {
     items: [],
     currentOrder: {},
     currentItem: {},
-    currentOrderItems: [],
+    currentOrderItems: null
   },
   mutations: {
     mutate_allOrders(state, payload) {
       state.orders = payload
     },
-    mutate_allItems(state, payload) {
-      state.items = payload
+    mutate_currentOrderItems(state, payload) {
+      state.currentOrderItems = payload
     },
     mutate_currentOrder(state, payload) {
       state.currentOrder = payload
@@ -24,14 +24,11 @@ export default {
     }
   },
   actions: {
-
-    getOrderItems({state, rootState}) {
-
+    getOrderItems({ state, commit, rootState }) {
       let mvpStore = rootState.mvp
       let url = rootState.apiurl
-      console.log(mvpStore)
+      console.log('mvp store: ', mvpStore)
       console.log(url)
-
 
       let queryList2 = {
         size: 5000,
@@ -45,19 +42,19 @@ export default {
         ],
         _source: {},
         query: {
-          "bool": {
-            "must": [],
-            "filter": [
+          bool: {
+            must: [],
+            filter: [
               {
-                "bool": {
-                  "should": [
+                bool: {
+                  should: [
                     {
-                      "match": {
-                        "order": ""
+                      match: {
+                        order: ''
                       }
                     }
                   ],
-                  "minimum_should_match": 1
+                  minimum_should_match: 1
                 }
               },
               {
@@ -69,8 +66,8 @@ export default {
                 }
               }
             ],
-            "should": [],
-            "must_not": []
+            should: [],
+            must_not: []
           }
         }
       }
@@ -85,32 +82,28 @@ export default {
         'YYYY/MM/DD'
       )
 
-      queryList2.query.bool.filter[0].bool.should[0].match.order = '#' + state.currentOrder.orderNumber.replace('#', '')
+      queryList2.query.bool.filter[0].bool.should[0].match.order =
+        '#' + state.currentOrder._source.order_number.replace('#', '')
 
       url += 'generic_search/' + indiceProducts
       url += '?token=' + rootState.creds.token
 
       axios
-      .post(url, queryList2)
-      .then(response => {
-        if (response.data.error != '') console.error('Get products error...')
-        else {
-          console.log(response)
-
-        }
-      })
-      .catch(error => {
-        console.error(error)
-      })
-
-      
-
+        .post(url, queryList2)
+        .then(response => {
+          if (response.data.error != '') console.error('Get products error...')
+          else {
+            commit('mutate_currentOrderItems', response.data.records)
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
     }
   },
   getters: {
     allOrders: state => state.orders,
-    orderItems: state => order =>
-      state.items.filter(product => product.order === order),
+    orderItems: state => state.currentOrderItems,
     lock: state => state.currentOrder._source.lock
   }
 }

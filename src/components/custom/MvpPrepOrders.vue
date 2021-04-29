@@ -29,7 +29,7 @@
           ></q-toggle>
         </div>
 
-        <OrdersList :orders="ordersToDisplay" :products="products" />
+        <OrdersList :orders="ordersToDisplay" />
       </div>
     </div>
     <q-page-sticky expand position="top">
@@ -44,6 +44,7 @@
 import axios from 'axios'
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrdersList from './mvpPrepOrders/OrdersList'
+import orders from './data'
 
 export default {
   components: {
@@ -54,7 +55,6 @@ export default {
   name: 'MvpPrepOrders',
   data() {
     return {
-      orders: [],
       products: [],
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
@@ -115,24 +115,27 @@ export default {
     }
   },
   computed: {
+    orders() {
+      return this.$store.state.mvpPrep.orders
+    },
     targetDate: function() {
       return this.$store.getters['mvp/targetDate']
     },
     ordersToDisplay: function() {
       let orderList
       if (this.filterHasFrais !== 'Frais') {
-        orderList = this.orders.filter(order => !order.has_frais)
+        orderList = this.orders.filter(order => !order._source.has_frais)
         if (this.filterHasSec !== 'Sec') {
-          orderList = orderList.filter(order => !order.has_sec)
+          orderList = orderList.filter(order => !order._source.has_sec)
         }
       } else if (this.filterHasSec !== 'Sec') {
-        orderList = this.orders.filter(order => !order.has_sec)
+        orderList = this.orders.filter(order => !order._source.has_sec)
       } else if (
         this.filterHasFrais === 'Frais' &&
         this.filterHasSec === 'Sec'
       ) {
         orderList = this.orders.filter(
-          order => order.has_sec || order.has_frais
+          order => order._source.has_sec || order._source.has_frais
         )
       }
       return orderList
@@ -142,7 +145,7 @@ export default {
     targetDate: {
       handler: function() {
         this.getOrders()
-        this.getProducts()
+        //this.getProducts()
       },
       deep: true
     }
@@ -157,8 +160,6 @@ export default {
         this.queryList1.query.bool.must[0].range.date.lte = dateObj.dateTo
       }
 
-      console.log(this.queryList1.query.bool.must[0].range.date.gte)
-
       const url =
         this.$store.getters.apiurl +
         'generic_search/' +
@@ -166,29 +167,19 @@ export default {
         '?token=' +
         this.$store.getters.creds.token
 
-      console.log(url)
       axios
         .post(url, this.queryList1)
         .then(response => {
-          this.orders = []
+          this.newOrders = []
           for (let record of response.data.records) {
-            let data = {
-              _id: record._id,
-              _index: record._index,
-              _source: record._source,
-              orderNumber: record._source.order_number,
-              has_frais: record._source.has_frais,
-              has_sec: record._source.has_sec,
-              last_name: record._source.last_name,
-              status: record._source.financial_status,
-              product_items: record._source.product_list
-            }
-            this.orders.push(data)
+            this.newOrders.push(record)
           }
-          this.$store.commit('mvpPrep/mutate_allOrders', this.orders)
+          this.$store.commit('mvpPrep/mutate_allOrders', this.newOrders)
         })
         .catch(error => console.error(error))
-    },
+    }
+
+    /*
     getProducts(dateObj = null) {
       if (dateObj === null) {
         this.queryList2.query.bool.must[0].range.date.gte = this.targetDate.dateFrom.format(
@@ -236,11 +227,15 @@ export default {
         })
         .catch(error => console.error(error))
     }
+
+     */
   },
 
-  mounted() {
+  created() {
     this.getOrders()
-    this.getProducts()
+  },
+  mounted() {
+    //this.getProducts()
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(
       function() {
