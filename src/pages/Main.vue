@@ -21,7 +21,7 @@
           color="green"
         />
 
-        <div class="user-info" v-if="creds">
+        <div class="user-info" v-if="creds && creds.user">
           <small class="text-bold lowercase text-black block"
             >{{ creds.user.firstname }} {{ creds.user.lastname }}</small
           >

@@ -1,6 +1,6 @@
 
 <template>
-  <div>
+  <div v-if="activeApp">
     <div v-if="activeApp.type=='form'">
       <Form :config="activeApp"></Form>
     </div>
@@ -27,7 +27,6 @@ const dynamicComponents = {}
 req.keys().forEach(filename => {
   const name = `${filename.split('.')[1].split('/')[filename.split('.')[1].split('/').length - 1]}`
   const component = req(filename).default
-  console.log(name)
   dynamicComponents[name] = component
 
 })
