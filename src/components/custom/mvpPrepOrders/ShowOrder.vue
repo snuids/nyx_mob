@@ -64,10 +64,18 @@ export default {
         type: 'updateRecord',
         data: updatedOrder
       })
+    },
+    preventNav(event) {
+      console.log('ENNNNNNNNNNDDDDDDDDD:::::::::::::::::::::::::')
+      this.sendUnlockOrderToServer()
+      
     }
   },
+  beforeMount() {
+    window.addEventListener("beforeunload", this.preventNav)
+  },
   beforeDestroy() {
-    this.sendUnlockOrderToServer()
+    window.removeEventListener("beforeunload", this.preventNav)
   }
 }
 </script>
