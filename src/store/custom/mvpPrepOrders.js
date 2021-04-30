@@ -27,8 +27,6 @@ export default {
     getOrderItems({ state, commit, rootState }) {
       let mvpStore = rootState.mvp
       let url = rootState.apiurl
-      console.log('mvp store: ', mvpStore)
-      console.log(url)
 
       let queryList2 = {
         size: 5000,
@@ -72,8 +70,6 @@ export default {
         }
       }
       const indiceProducts = 'dev_shopify_line_item'
-
-      console.log(queryList2)
 
       queryList2.query.bool.filter[1].range.date.gte = mvpStore.targetDate.dateFrom.format(
         'YYYY/MM/DD'
