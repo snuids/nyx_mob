@@ -19,16 +19,24 @@ import OrderItem from './OrderItem'
 export default {
   name: 'OrderItems',
   props: ['products'],
+  data() {
+    return {
+      status: null
+    }
+  },
   components: { OrderItem },
   methods: {
     rembourser(product) {
-      console.log(product)
+      status = 'remb'
+      //console.log(product)
     },
     manquant(product) {
-      console.log(product)
+      status = 'manq'
+      //console.log(product)
     },
     success(product) {
-      console.log(product)
+      status = 'success'
+      //console.log(product)
     }
   }
 }

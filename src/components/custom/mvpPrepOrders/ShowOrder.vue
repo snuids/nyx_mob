@@ -1,16 +1,17 @@
 <template>
   <div>
-    <div class="q-pa-xl">
+    <div class="text-h6 q-pa-xl">Commande #{{ orderId }}</div>
+    <OrderItems v-if="orderProducts" :products="orderProducts" />
+    <div class="q-px-xl q-py-xl">
       <q-btn
         @click="unlock"
-        color="white"
+        color="green"
         text-color="black"
-        label="retour"
+        label="valider"
         :to="{ name: 'orders' }"
         class="float-right "
       />
     </div>
-    <OrderItems v-if="orderProducts" :products="orderProducts" />
     <q-page-sticky expand position="top">
       <StickyBanner></StickyBanner>
     </q-page-sticky>
@@ -24,9 +25,6 @@ import moment from 'moment'
 
 export default {
   name: 'ShowOrder',
-  created() {
-    this.$store.dispatch('mvpPrep/getOrderItems')
-  },
   components: { OrderItems },
   computed: {
     orderProducts() {
@@ -34,11 +32,8 @@ export default {
       return this.$store.state.mvpPrep.currentOrderItems
     }
   },
-  props: ['orderId', 'status', 'hasSec', 'hasFrais', 'products'],
+  props: ['orderId'],
   methods: {
-    itemClick() {
-      console.log(self.label)
-    },
     unlock() {
       this.sendUnlockOrderToServer()
     },
@@ -67,15 +62,17 @@ export default {
     },
     preventNav(event) {
       console.log('ENNNNNNNNNNDDDDDDDDD:::::::::::::::::::::::::')
+      event.preventDefault()
       this.sendUnlockOrderToServer()
-      
+      event.returnValue = ''
     }
   },
-  beforeMount() {
-    window.addEventListener("beforeunload", this.preventNav)
+  created() {
+    this.$store.dispatch('mvpPrep/getOrderItems')
+    window.addEventListener('beforeunload', this.preventNav)
   },
   beforeDestroy() {
-    window.removeEventListener("beforeunload", this.preventNav)
+    window.removeEventListener('beforeunload', this.preventNav)
   }
 }
 </script>
