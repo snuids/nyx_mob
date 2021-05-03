@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="text-h6 q-pa-xl">Commande #{{ orderId }}</div>
-    <OrderItems v-if="orderProducts" :products="orderProducts" />
+    <OrderItems
+      v-if="orderProducts"
+      :products="orderProducts"
+      :preparedProducts="preparedProducts"
+    />
+
     <div class="q-px-xl q-py-xl">
       <q-btn
         @click="unlock"
@@ -26,6 +31,11 @@ import moment from 'moment'
 export default {
   name: 'ShowOrder',
   components: { OrderItems },
+  data() {
+    return {
+      preparedProducts: []
+    }
+  },
   computed: {
     orderProducts() {
       // console.log(this.$store.state.orderItems)
@@ -36,6 +46,8 @@ export default {
   methods: {
     unlock() {
       this.sendUnlockOrderToServer()
+      this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
+      console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
     sendUnlockOrderToServer() {
       this.$store.state.mvpPrep.currentOrder._source.prep_status = 'finished'

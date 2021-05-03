@@ -37,14 +37,15 @@
 export default {
   name: 'OrderItem',
   props: ['product'],
-  data() {
-    return {
-      status: null
+  computed: {
+    status() {
+      return this.product._source.prep_status
     }
   },
   methods: {
     remb(product) {
       this.status = 'remb'
+      this.product._source.prep_status = status
       this.$emit('remb', product)
     },
     manq(product) {

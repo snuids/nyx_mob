@@ -6,7 +6,8 @@ export default {
     orders: [],
     currentOrder: {},
     currentItem: {},
-    currentOrderItems: null
+    currentOrderItems: null,
+    currentOrderPreparedItems: null
   },
   mutations: {
     mutate_allOrders(state, payload) {
@@ -20,6 +21,9 @@ export default {
     },
     mutate_currentItem(state, payload) {
       state.currentItem = payload
+    },
+    mutate_preparedItems(state, payload) {
+      state.currentOrderPreparedItems = payload
     }
   },
   actions: {
@@ -100,6 +104,7 @@ export default {
   getters: {
     allOrders: state => state.orders,
     orderItems: state => state.currentOrderItems,
+    preparedItems: state => state.currentOrderPreparedItems,
     lock: state => state.currentOrder._source.lock
   }
 }

@@ -18,7 +18,7 @@ import OrderItem from './OrderItem'
 
 export default {
   name: 'OrderItems',
-  props: ['products'],
+  props: ['products', 'preparedProducts'],
   data() {
     return {
       status: null
@@ -28,14 +28,19 @@ export default {
   methods: {
     rembourser(product) {
       status = 'remb'
+      this.preparedProducts.push(product)
       //console.log(product)
     },
     manquant(product) {
       status = 'manq'
+      product._source.prep_status = status
+      this.preparedProducts.push(product)
       //console.log(product)
     },
     success(product) {
       status = 'success'
+      product._source.prep_status = status
+      this.preparedProducts.push(product)
       //console.log(product)
     }
   }
