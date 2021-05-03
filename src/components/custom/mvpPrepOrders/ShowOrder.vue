@@ -12,10 +12,10 @@
         class="float-right "
       />
     </div>
-    <q-page-sticky expand position="top">
+    <!--<q-page-sticky expand position="top">
       <StickyBanner></StickyBanner>
     </q-page-sticky>
-    <!--<router-view></router-view> -->
+    <router-view></router-view> -->
   </div>
 </template>
 
@@ -68,7 +68,6 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('mvpPrep/getOrderItems')
     window.addEventListener('beforeunload', this.preventNav)
   },
   beforeDestroy() {

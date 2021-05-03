@@ -1,10 +1,10 @@
 <template>
   <q-item :class="[status, 'q-pa-md']">
-    <q-item-section
-      >{{ product._source.quantity }} |
+    <q-item-section>
+      {{ product._source.quantity }} &nbsp; &nbsp;
       {{ product._source.name }}</q-item-section
     >
-    <q-btn-group class="float-right " rounded>
+    <q-btn-group class="float-right" rounded>
       <q-btn
         @click="remb(product)"
         color="yellow"
@@ -61,7 +61,7 @@ export default {
 
 <style scoped>
 .remb {
-  border-left: 5px solid #c2185b;
+  border-left: 5px solid red;
 }
 
 .manq {

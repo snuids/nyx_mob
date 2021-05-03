@@ -4,7 +4,6 @@ export default {
   namespaced: true,
   state: {
     orders: [],
-    items: [],
     currentOrder: {},
     currentItem: {},
     currentOrderItems: null
@@ -27,7 +26,6 @@ export default {
     getOrderItems({ state, commit, rootState }) {
       let mvpStore = rootState.mvp
       let url = rootState.apiurl
-
       let queryList2 = {
         size: 5000,
         sort: [
@@ -70,25 +68,27 @@ export default {
         }
       }
       const indiceProducts = 'dev_shopify_line_item'
-
       queryList2.query.bool.filter[1].range.date.gte = mvpStore.targetDate.dateFrom.format(
         'YYYY/MM/DD'
       )
       queryList2.query.bool.filter[1].range.date.lte = mvpStore.targetDate.dateTo.format(
         'YYYY/MM/DD'
       )
-
       queryList2.query.bool.filter[0].bool.should[0].match.order =
         '#' + state.currentOrder._source.order_number.replace('#', '')
-
       url += 'generic_search/' + indiceProducts
       url += '?token=' + rootState.creds.token
-
       axios
         .post(url, queryList2)
         .then(response => {
           if (response.data.error != '') console.error('Get products error...')
           else {
+            console.log(response.data.records)
+            response.data.records.sort((a, b) =>
+              a._source.name > b._source.name ? 1 : -1
+            )
+            console.log('sorted')
+            console.log(response.data.records)
             commit('mutate_currentOrderItems', response.data.records)
           }
         })
