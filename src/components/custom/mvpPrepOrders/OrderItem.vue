@@ -42,18 +42,28 @@ export default {
       status: null
     }
   },
+  computed: {
+    isFrais() {
+      return this.product._source.product.tags
+        .map(x => x.toLowerCase())
+        .includes('frais')
+    }
+  },
   methods: {
     remb(product) {
       this.status = 'remb'
       this.$emit('remb', product)
+      console.log(product)
     },
     manq(product) {
       this.status = 'manq'
       this.$emit('manq', product)
+      console.log(product)
     },
     success(product) {
       this.status = 'success'
       this.$emit('success', product)
+      console.log(product)
     }
   }
 }
