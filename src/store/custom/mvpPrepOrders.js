@@ -89,7 +89,10 @@ export default {
           else {
             console.log(response.data.records)
             response.data.records.sort((a, b) =>
-              a._source.name > b._source.name ? 1 : -1
+              a._source.product.tags.find(elt => elt.includes('LOC')) >
+              b._source.product.tags.find(elt => elt.includes('LOC'))
+                ? 1
+                : -1
             )
             console.log('sorted')
             console.log(response.data.records)

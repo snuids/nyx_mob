@@ -1,9 +1,15 @@
 <template>
   <q-item :class="[status, 'q-pa-md']">
     <q-item-section>
-      {{ product._source.quantity }} &nbsp; &nbsp;
-      {{ product._source.name }}</q-item-section
-    >
+      <div>
+        {{ product._source.quantity }} &nbsp; &nbsp;
+        {{ product._source.name }}
+      </div>
+      &nbsp; &nbsp;
+      <q-badge class="frais" align="top">{{
+        this.isFrais ? 'Frais' : 'Sec'
+      }}</q-badge>
+    </q-item-section>
     <q-btn-group class="float-right" rounded>
       <q-btn
         @click="remb(product)"
@@ -37,34 +43,29 @@
 export default {
   name: 'OrderItem',
   props: ['product'],
-  computed: {
-    status() {
-      return this.product._source.prep_status
-    }
-  },
+
   computed: {
     isFrais() {
       return this.product._source.product.tags
         .map(x => x.toLowerCase())
         .includes('frais')
+    },
+    status() {
+      return this.product._source.prep_status
     }
   },
   methods: {
     remb(product) {
-      this.status = 'remb'
-      this.product._source.prep_status = status
+      this.product._source.prep_status = 'remb'
       this.$emit('remb', product)
-      console.log(product)
     },
     manq(product) {
-      this.status = 'manq'
+      this.product._source.prep_status = 'manq'
       this.$emit('manq', product)
-      console.log(product)
     },
     success(product) {
-      this.status = 'success'
+      this.product._source.prep_status = 'success'
       this.$emit('success', product)
-      console.log(product)
     }
   }
 }
@@ -81,5 +82,9 @@ export default {
 
 .success {
   border-left: 5px solid green;
+}
+
+.frais {
+  max-width: 40px;
 }
 </style>

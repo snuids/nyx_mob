@@ -2,7 +2,7 @@
   <q-list bordered separator>
     <OrderItem
       v-for="(produit, idx) in products"
-      :key="idx"
+      :key="componentKey + idx"
       :product="produit"
       @remb="rembourser"
       @manq="manquant"
@@ -21,27 +21,51 @@ export default {
   props: ['products', 'preparedProducts'],
   data() {
     return {
-      status: null
+      status: null,
+      componentKey: 0
     }
   },
   components: { OrderItem },
   methods: {
     rembourser(product) {
-      status = 'remb'
-      this.preparedProducts.push(product)
-      //console.log(product)
+      this.componentKey += 1
+      if (this.included(this.preparedProducts, product)) {
+        this.update(this.preparedProducts, product)
+      } else {
+        this.preparedProducts.push(product)
+      }
     },
     manquant(product) {
-      status = 'manq'
-      product._source.prep_status = status
-      this.preparedProducts.push(product)
-      //console.log(product)
+      this.componentKey += 1
+      if (this.included(this.preparedProducts, product)) {
+        this.update(this.preparedProducts, product)
+      } else {
+        this.preparedProducts.push(product)
+      }
     },
     success(product) {
-      status = 'success'
-      product._source.prep_status = status
-      this.preparedProducts.push(product)
-      //console.log(product)
+      this.componentKey += 1
+      if (this.included(this.preparedProducts, product)) {
+        this.update(this.preparedProducts, product)
+      } else {
+        this.preparedProducts.push(product)
+      }
+    },
+    update(products, product) {
+      const eltIdx = products.findIndex(elt => elt._id === product._id)
+      let newProductsArray = [...products]
+      newProductsArray[eltIdx] = {
+        ...product
+      }
+      this.$store.commit('mvpPrep/mutate_preparedItems', newProductsArray)
+    },
+    included: function(products, product) {
+      for (let p in products) {
+        if (products[p]._id === product._id) {
+          return true
+        }
+      }
+      return false
     }
   }
 }

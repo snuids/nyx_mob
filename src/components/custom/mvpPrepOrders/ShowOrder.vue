@@ -1,9 +1,31 @@
 <template>
   <div>
     <div class="text-h6 q-pa-xl">Commande #{{ orderId }}</div>
+
+    <div class="q-pa-md q-gutter-y-sm">
+      <q-toggle
+        :label="filterHasFrais"
+        color="green"
+        false-value="Pas de frais"
+        true-value="Frais"
+        v-model="filterHasFrais"
+        toggle-order="tf"
+        @click="itemsToDisplay"
+      ></q-toggle>
+      <q-toggle
+        :label="filterHasSec"
+        color="green"
+        false-value="Pas de Sec"
+        true-value="Sec"
+        v-model="filterHasSec"
+        toggle-order="tf"
+        @click="itemsToDisplay"
+      ></q-toggle>
+    </div>
+
     <OrderItems
       v-if="orderProducts"
-      :products="orderProducts"
+      :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
     />
 
@@ -33,19 +55,37 @@ export default {
   components: { OrderItems },
   data() {
     return {
-      preparedProducts: []
+      preparedProducts: [],
+      filterHasSec: 'Sec',
+      filterHasFrais: 'Frais'
     }
   },
   computed: {
     orderProducts() {
-      // console.log(this.$store.state.orderItems)
       return this.$store.state.mvpPrep.currentOrderItems
+    },
+    itemsToDisplay: function() {
+      let itemList
+      if (this.filterHasFrais !== 'Frais') {
+        itemList = this.orderProducts.filter(product => !this.isFrais(product))
+      } else if (this.filterHasSec !== 'Sec') {
+        itemList = this.orderProducts.filter(product => this.isFrais(product))
+      } else {
+        itemList = this.orderProducts
+      }
+
+      return itemList
     }
   },
   props: ['orderId'],
   methods: {
+    isFrais(product) {
+      product._source.product.tags.map(x => x.toLowerCase()).includes('frais')
+    },
+
     unlock() {
       this.sendUnlockOrderToServer()
+      console.table(this.preparedProducts)
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
