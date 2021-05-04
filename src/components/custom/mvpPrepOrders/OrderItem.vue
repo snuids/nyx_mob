@@ -1,14 +1,14 @@
 <template>
   <q-item :class="[status, 'q-pa-md']">
     <q-item-section>
+      <q-badge class="frais" align="top">{{
+        this.isFrais ? 'Frais' : 'Sec'
+      }}</q-badge>
       <div>
         {{ product._source.quantity }} &nbsp; &nbsp;
         {{ product._source.name }}
       </div>
       &nbsp; &nbsp;
-      <q-badge class="frais" align="top">{{
-        this.isFrais ? 'Frais' : 'Sec'
-      }}</q-badge>
     </q-item-section>
     <q-btn-group class="float-right" rounded>
       <q-btn

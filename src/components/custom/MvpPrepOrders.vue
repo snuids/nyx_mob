@@ -5,30 +5,29 @@
         class="row justify-between q-mt-sm"
         style="min-height: 400px; width: 80%; padding: 24px;"
       >
-        <div class="text-h6 q-py-lg">
+        <div class="text-h6 q-pa-xl">
           {{ ordersToDisplay.length }} commandes
+          <div class="float-right">
+            <q-toggle
+              :label="filterHasFrais"
+              color="green"
+              false-value="Pas de Frais"
+              true-value="Frais"
+              v-model="filterHasFrais"
+              toggle-order="tf"
+              @click="ordersToDisplay"
+            ></q-toggle>
+            <q-toggle
+              :label="filterHasSec"
+              color="green"
+              false-value="Pas de Sec"
+              true-value="Sec"
+              v-model="filterHasSec"
+              toggle-order="tf"
+              @click="ordersToDisplay"
+            ></q-toggle>
+          </div>
         </div>
-        <div class="q-pa-md q-gutter-y-sm">
-          <q-toggle
-            :label="filterHasFrais"
-            color="green"
-            false-value="Pas de frais"
-            true-value="Frais"
-            v-model="filterHasFrais"
-            toggle-order="tf"
-            @click="ordersToDisplay"
-          ></q-toggle>
-          <q-toggle
-            :label="filterHasSec"
-            color="green"
-            false-value="Pas de Sec"
-            true-value="Sec"
-            v-model="filterHasSec"
-            toggle-order="tf"
-            @click="ordersToDisplay"
-          ></q-toggle>
-        </div>
-
         <OrdersList :orders="ordersToDisplay" />
       </div>
     </div>
@@ -44,7 +43,6 @@
 import axios from 'axios'
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrdersList from './mvpPrepOrders/OrdersList'
-import orders from './data'
 
 export default {
   components: {
@@ -123,12 +121,12 @@ export default {
     },
     ordersToDisplay: function() {
       let orderList
-      if (this.filterHasFrais !== 'Frais') {
+      if (this.filterHasFrais === 'Pas de Frais') {
         orderList = this.orders.filter(order => !order._source.has_frais)
-        if (this.filterHasSec !== 'Sec') {
+        if (this.filterHasSec === 'Pas de Sec') {
           orderList = orderList.filter(order => !order._source.has_sec)
         }
-      } else if (this.filterHasSec !== 'Sec') {
+      } else if (this.filterHasSec === 'Pas de Sec') {
         orderList = this.orders.filter(order => !order._source.has_sec)
       } else if (
         this.filterHasFrais === 'Frais' &&

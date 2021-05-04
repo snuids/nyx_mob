@@ -1,30 +1,33 @@
 <template>
   <div>
-    <div class="text-h6 q-pa-xl">Commande #{{ orderId }}</div>
+    <div class="text-h6 q-pa-xl">
+      Commande #{{ orderId }} <br />
+      {{ itemsToDisplay.length }} produits
 
-    <div class="q-pa-md q-gutter-y-sm">
-      <q-toggle
-        :label="filterHasFrais"
-        color="green"
-        false-value="Pas de frais"
-        true-value="Frais"
-        v-model="filterHasFrais"
-        toggle-order="tf"
-        @click="itemsToDisplay"
-      ></q-toggle>
-      <q-toggle
-        :label="filterHasSec"
-        color="green"
-        false-value="Pas de Sec"
-        true-value="Sec"
-        v-model="filterHasSec"
-        toggle-order="tf"
-        @click="itemsToDisplay"
-      ></q-toggle>
+      <div class="float-right">
+        <q-toggle
+          :label="filterHasFrais"
+          color="green"
+          false-value="Pas de Frais"
+          true-value="Frais"
+          v-model="filterHasFrais"
+          toggle-order="tf"
+          @click="itemsToDisplay"
+        ></q-toggle>
+        <q-toggle
+          :label="filterHasSec"
+          color="green"
+          false-value="Pas de Sec"
+          true-value="Sec"
+          v-model="filterHasSec"
+          toggle-order="tf"
+          @click="itemsToDisplay"
+        ></q-toggle>
+      </div>
     </div>
 
     <OrderItems
-      v-if="orderProducts"
+      v-if="itemsToDisplay"
       :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
     />
@@ -66,23 +69,26 @@ export default {
     },
     itemsToDisplay: function() {
       let itemList
-      if (this.filterHasFrais !== 'Frais') {
+      if (this.filterHasFrais === 'Pas de Frais') {
         itemList = this.orderProducts.filter(product => !this.isFrais(product))
-      } else if (this.filterHasSec !== 'Sec') {
+        if (this.filterHasSec === 'Pas de Sec') {
+          itemList = itemList.filter(product => this.isFrais(product))
+        }
+      } else if (this.filterHasSec === 'Pas de Sec') {
         itemList = this.orderProducts.filter(product => this.isFrais(product))
       } else {
         itemList = this.orderProducts
       }
-
       return itemList
     }
   },
   props: ['orderId'],
   methods: {
-    isFrais(product) {
-      product._source.product.tags.map(x => x.toLowerCase()).includes('frais')
+    isFrais(item) {
+      return item._source.product.tags
+        .map(x => x.toLowerCase())
+        .includes('frais')
     },
-
     unlock() {
       this.sendUnlockOrderToServer()
       console.table(this.preparedProducts)
