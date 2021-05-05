@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="id">
     <!--  MENU  -->
     <q-btn dense flat color="primary" label="menu" class="text-white q-px-md">
       <q-menu anchor="bottom right" self="top right">
@@ -107,7 +107,7 @@ export default {
   name: 'MainMenu',
   data() {
     return {
-      username: null,
+      //username: null,
       id: null,
       slackDirect: false,
       slackMsg: '',
@@ -174,14 +174,17 @@ export default {
       this.$emit('newDates', { data: o })
     }
   },
-  mounted() {
-    this.username =
-      this.$store.getters.creds.user.firstname +
-      ' ' +
-      this.$store.getters.creds.user.lastname
-    this.id = this.$store.getters.creds.user.id
-  },
+  //mounted() {}
+
   computed: {
+    username() {
+      return (
+        this.$store.getters.creds.user.firstname +
+        ' ' +
+        this.$store.getters.creds.user.lastname
+      )
+      this.id = this.$store.getters.creds.user.id
+    },
     isLandscape: function() {
       if (this.$store.state.mvp.screenSize.windowWidth > 1000) return false
       else if (

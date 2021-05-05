@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="flex flex-center column">
+    <div class="flex flex-center column" v-if="orders">
       <div
         class="row justify-between q-mt-sm"
         style="min-height: 400px; width: 80%; padding: 24px;"
@@ -164,10 +164,11 @@ export default {
         this.indiceOrders +
         '?token=' +
         this.$store.getters.creds.token
-
+      this.$q.loading.show()
       axios
         .post(url, this.queryList1)
         .then(response => {
+          this.$q.loading.hide()
           this.newOrders = []
           for (let record of response.data.records) {
             this.newOrders.push(record)

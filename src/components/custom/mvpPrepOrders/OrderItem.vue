@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'OrderItem',
   props: ['product'],
@@ -52,18 +54,41 @@ export default {
     },
     status() {
       return this.product._source.prep_status
+    },
+    history() {
+      return this.product._source.history
     }
   },
   methods: {
+    addToHistory(itemStatus) {
+      if (this.history) {
+        this.product._source.history.push({
+          status: itemStatus,
+          date: moment().format('DD/MM/YYYY HH:mm:ss'),
+          user: this.$store.getters.creds.user.firstname
+        })
+      } else {
+        this.product._source.history = [
+          {
+            status: itemStatus,
+            date: moment().format('DD/MM/YYYY HH:mm:ss'),
+            user: this.$store.getters.creds.user.firstname
+          }
+        ]
+      }
+    },
     remb(product) {
       this.product._source.prep_status = 'remb'
+      this.addToHistory('remb')
       this.$emit('remb', product)
     },
     manq(product) {
+      this.addToHistory('manq')
       this.product._source.prep_status = 'manq'
       this.$emit('manq', product)
     },
     success(product) {
+      this.addToHistory('success')
       this.product._source.prep_status = 'success'
       this.$emit('success', product)
     }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="itemsToDisplay">
     <div class="text-h6 q-pa-xl">
       Commande #{{ orderId }} <br />
       {{ itemsToDisplay.length }} produits
@@ -27,7 +27,6 @@
     </div>
 
     <OrderItems
-      v-if="itemsToDisplay"
       :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
     />

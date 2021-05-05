@@ -9,7 +9,9 @@
     ]"
   >
     <span class="q-focus-helper"></span>
-    <q-card-section class="text-h6">{{ order._source.order_number }}</q-card-section>
+    <q-card-section class="text-h6">{{
+      order._source.order_number
+    }}</q-card-section>
     <q-separator />
     <q-card-section>
       <ul>
@@ -37,10 +39,8 @@ export default {
   },
   methods: {
     cardClick() {
-
       console.log(this.cardDisabled)
-      if (this.cardDisabled)
-        return 
+      if (this.cardDisabled) return
 
       this.sendOrderToServer()
 
@@ -50,7 +50,7 @@ export default {
 
       let orderId = this.order._source.order_number.replace('#', '')
 
-      this.$router.push({ name: 'order-display', params: { orderId: orderId } });
+      this.$router.push({ name: 'order-display', params: { orderId: orderId } })
     },
     sendOrderToServer() {
       this.order._source.prep_status = 'started'
