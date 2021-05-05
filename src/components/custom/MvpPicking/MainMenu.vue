@@ -1,5 +1,5 @@
 <template>
-  <div v-if="id">
+  <div>
     <!--  MENU  -->
     <q-btn dense flat color="primary" label="menu" class="text-white q-px-md">
       <q-menu anchor="bottom right" self="top right">

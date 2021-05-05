@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    cardClick() {
+    async cardClick() {
       console.log(this.cardDisabled)
       if (this.cardDisabled) return
 
@@ -46,11 +46,16 @@ export default {
 
       this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
 
-      this.$store.dispatch('mvpPrep/getOrderItems')
+      this.$q.loading.show()
+      await this.$store.dispatch('mvpPrep/getOrderItems')
+      this.$q.loading.hide()
 
       let orderId = this.order._source.order_number.replace('#', '')
 
-      this.$router.push({ name: 'order-display', params: { orderId: orderId } })
+      await this.$router.push({
+        name: 'order-display',
+        params: { orderId: orderId }
+      })
     },
     sendOrderToServer() {
       this.order._source.prep_status = 'started'
