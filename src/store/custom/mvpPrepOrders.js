@@ -71,7 +71,7 @@ export default {
           }
         }
       }
-      const indiceProducts = 'dev_shopify_line_item'
+      const indiceProducts = 'mvp_app_line_item'
       queryList2.query.bool.filter[1].range.date.gte = mvpStore.targetDate.dateFrom.format(
         'YYYY/MM/DD'
       )

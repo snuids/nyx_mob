@@ -1,5 +1,6 @@
 <template>
   <q-card
+    v-if="order"
     :disabled="cardDisabled"
     @click="cardClick"
     v-ripple
@@ -21,7 +22,7 @@
         <li v-if="order._source.has_sec">Contient du sec</li>
       </ul>
 
-      <span>Contient {{ order._source.product_list.length }} produits</span>
+      <!--<span>Contient {{ order._source.product_list.length }} produits</span>-->
     </q-card-section>
   </q-card>
 </template>

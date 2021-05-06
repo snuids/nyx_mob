@@ -108,7 +108,8 @@ export default {
           }
         }
       },
-      indiceOrders: 'dev_shopify_order',
+      //indiceOrders: 'dev_shopify_order',
+      indiceOrders: 'mvp_app_order',
       indiceProducts: 'dev_shopify_line_item'
     }
   },

@@ -59,7 +59,8 @@ export default {
     return {
       preparedProducts: [],
       filterHasSec: 'Sec',
-      filterHasFrais: 'Frais'
+      filterHasFrais: 'Frais',
+      isEditing: false
     }
   },
   computed: {
@@ -89,7 +90,6 @@ export default {
         .includes('frais')
     },
     unlock() {
-      this.sendUnlockOrderToServer()
       console.table(this.preparedProducts)
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       console.log(this.$store.getters['mvpPrep/preparedItems'])
@@ -124,9 +124,16 @@ export default {
       event.returnValue = ''
     }
   },
-  created() {
+
+  beforeMount() {
     window.addEventListener('beforeunload', this.preventNav)
   },
+
+  beforeRouteLeave(to, from, next) {
+    this.sendUnlockOrderToServer()
+    next()
+  },
+
   beforeDestroy() {
     window.removeEventListener('beforeunload', this.preventNav)
   }
