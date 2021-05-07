@@ -1,12 +1,12 @@
 <template>
   <q-list bordered separator>
     <OrderItem
-      v-for="(produit, idx) in products"
+      v-for="(item, idx) in products"
       :key="componentKey + idx"
-      :product="produit"
-      @remb="rembourser"
-      @manq="manquant"
-      @success="success"
+      :product="item"
+      @remb="addProductToPreparedItems"
+      @manq="addProductToPreparedItems"
+      @success="addProductToPreparedItems"
       class="q-pa-md"
     >
     </OrderItem>
@@ -21,29 +21,12 @@ export default {
   props: ['products', 'preparedProducts'],
   data() {
     return {
-      status: null,
       componentKey: 0
     }
   },
   components: { OrderItem },
   methods: {
-    rembourser(product) {
-      this.componentKey += 1
-      if (this.included(this.preparedProducts, product)) {
-        this.update(this.preparedProducts, product)
-      } else {
-        this.preparedProducts.push(product)
-      }
-    },
-    manquant(product) {
-      this.componentKey += 1
-      if (this.included(this.preparedProducts, product)) {
-        this.update(this.preparedProducts, product)
-      } else {
-        this.preparedProducts.push(product)
-      }
-    },
-    success(product) {
+    addProductToPreparedItems(product) {
       this.componentKey += 1
       if (this.included(this.preparedProducts, product)) {
         this.update(this.preparedProducts, product)

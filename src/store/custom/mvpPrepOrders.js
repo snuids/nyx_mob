@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Loading } from 'quasar'
 
 export default {
   namespaced: true,
@@ -35,6 +36,9 @@ export default {
   },
   actions: {
     getOrderItems({ state, commit, rootState }) {
+      Loading.show({
+        delay: 300
+      })
       let mvpStore = rootState.mvp
       let url = rootState.apiurl
       let queryList2 = {
@@ -92,6 +96,7 @@ export default {
       axios
         .post(url, queryList2)
         .then(response => {
+          Loading.hide()
           if (response.data.error != '') console.error('Get products error...')
           else {
             console.log(response.data.records)
@@ -108,14 +113,16 @@ export default {
         })
     },
     updateOrderItems({ state, commit }, payload) {
+      Loading.show({
+        delay: 300
+      })
       const url = state.serverUrl + state.apiUrl + '?apikey=' + state.apiKey
-      // 'https://app.nyx-mvp.ovh/api/v1/lambdas/4/save_line_items?apikey=PREPKEY_39864873684'
-
       console.log(url)
       //payload:  {line_items: []}
       axios
         .post(url, payload)
         .then(res => {
+          Loading.hide()
           console.log(res)
           if (res.data.error != '') console.error('Send line items error...')
           else {
@@ -127,6 +134,9 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
+      Loading.show({
+        delay: 300
+      })
       const indiceOrders = 'mvp_app_order'
       const mvpStore = rootState.mvp
       let queryList1 = {
@@ -178,10 +188,36 @@ export default {
           commit('mutate_allOrders', response.data.records)
           console.log('the orders are here')
           console.log(state.orders)
+          Loading.hide()
         })
         .catch(error => console.error(error))
+    },
+    updateOrder({ state, rootState }, payload) {
+      console.log('you are in updateOrder')
+      console.log('here is the payload: ', payload)
+      const url =
+        rootState.apiurl +
+        'generic/' +
+        payload.data._index +
+        '/' +
+        payload.data._id +
+        '?token=' +
+        rootState.creds.token
+      axios
+        .post(url, payload.data._source)
+        .then(res => {
+          if (res.data.error != '') {
+            console.log('save object error')
+          } else {
+            console.log('save object success')
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   },
+
   getters: {
     allOrders: state => state.orders,
     orderItems: state => state.currentOrderItems,

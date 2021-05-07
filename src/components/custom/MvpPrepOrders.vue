@@ -34,7 +34,6 @@
     <q-page-sticky expand position="top">
       <StickyBanner></StickyBanner>
     </q-page-sticky>
-
     <router-view></router-view>
   </q-page>
 </template>
@@ -50,68 +49,18 @@ export default {
   },
 
   name: 'MvpPrepOrders',
+
   data() {
     return {
       products: [],
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
-      queryList1: {
-        size: 5000,
-        sort: [
-          {
-            date: {
-              order: 'desc',
-              unmapped_type: 'boolean'
-            }
-          }
-        ],
-        _source: {},
-        query: {
-          bool: {
-            must: [
-              {
-                range: {
-                  date: {
-                    gte: '',
-                    lte: ''
-                  }
-                }
-              }
-            ]
-          }
-        }
-      },
-      queryList2: {
-        size: 5000,
-        sort: [
-          {
-            date: {
-              order: 'desc',
-              unmapped_type: 'boolean'
-            }
-          }
-        ],
-        _source: {},
-        query: {
-          bool: {
-            must: [
-              {
-                range: {
-                  date: {
-                    gte: '',
-                    lte: ''
-                  }
-                }
-              }
-            ]
-          }
-        }
-      },
       //indiceOrders: 'dev_shopify_order',
       indiceOrders: 'mvp_app_order'
       //indiceProducts: 'dev_shopify_line_item'
     }
   },
+
   computed: {
     orders() {
       return this.$store.state.mvpPrep.orders
@@ -139,102 +88,25 @@ export default {
       return orderList
     }
   },
+
   watch: {
     targetDate: {
-      handler: function() {
-        this.$store.dispatch('mvpPrep/getOrders')
-        //this.getOrders()
-        //this.getProducts()
+      handler: async function() {
+        this.$q.loading.show()
+        await this.$store.dispatch('mvpPrep/getOrders')
+        this.$q.loading.hide()
       },
       deep: true
     }
   },
-  methods: {
-    /*
-    getOrders(dateObj = null) {
-      if (dateObj === null) {
-        this.queryList1.query.bool.must[0].range.date.gte = this.targetDate.dateFrom
-        this.queryList1.query.bool.must[0].range.date.lte = this.targetDate.dateTo
-      } else {
-        this.queryList1.query.bool.must[0].range.date.gte = dateObj.dateFrom
-        this.queryList1.query.bool.must[0].range.date.lte = dateObj.dateTo
-      }
-
-      const url =
-        this.$store.getters.apiurl +
-        'generic_search/' +
-        this.indiceOrders +
-        '?token=' +
-        this.$store.getters.creds.token
-      this.$q.loading.show()
-      axios
-        .post(url, this.queryList1)
-        .then(response => {
-          this.$q.loading.hide()
-          console.log('these are the orders from getOrders')
-          this.$store.commit('mvpPrep/mutate_allOrders', response.data.records)
-        })
-        .catch(error => console.error(error))
-    }
-    getProducts(dateObj = null) {
-      if (dateObj === null) {
-        this.queryList2.query.bool.must[0].range.date.gte = this.targetDate.dateFrom.format(
-          'YYYY/MM/DD'
-        )
-        this.queryList2.query.bool.must[0].range.date.lte = this.targetDate.dateTo.format(
-          'YYYY/MM/DD'
-        )
-      } else {
-        this.queryList2.query.bool.must[0].range.date.gte = dateObj.dateFrom.format(
-          'YYYY/MM/DD'
-        )
-        this.queryList2.query.bool.must[0].range.date.lte = dateObj.dateTo.format(
-          'YYYY/MM/DD'
-        )
-      }
-
-      //console.log(this.queryList.query.bool.must[0].range.date.lte)
-
-      const url =
-        this.$store.getters.apiurl +
-        'generic_search/' +
-        this.indiceProducts +
-        '?token=' +
-        this.$store.getters.creds.token
-
-      console.log(url)
-      axios
-        .post(url, this.queryList2)
-        .then(response => {
-          this.products = []
-          for (let record of response.data.records) {
-            //console.table(record._source.product_list)
-            let data = {
-              name: record._source.name,
-              quantity: record._source.quantity,
-              orderNumber: record._source.order
-            }
-            //this.$store.commit('mvpPrep/addProduct', data.product_items)
-
-            this.products.push(data)
-          }
-          this.$store.commit('mvpPrep/mutate_allItems', this.products)
-          //console.table(this.products)
-        })
-        .catch(error => console.error(error))
-    }
-
-     */
-  },
 
   async created() {
     this.$q.loading.show()
-    //this.getOrders()
     await this.$store.dispatch('mvpPrep/getOrders')
     this.$q.loading.hide()
   },
+
   mounted() {
-    //this.getProducts()
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(
       async function() {
@@ -246,6 +118,7 @@ export default {
       timer
     )
   },
+
   beforeDestroy() {
     clearInterval(this.interval)
   }

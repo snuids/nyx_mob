@@ -1,20 +1,15 @@
 <template>
-  <div
-    id="parent"
-    class="fit row wrap justify-start items-start content-start"
-    style="overflow: hidden;"
-  >
+  <div id="parent" class="row q-col-gutter-md">
     <p v-if="orders.length === 0">
       Pas de commandes ce jour ci
     </p>
 
-    <div
-      v-for="(order, idx) in orders"
-      :key="idx"
-      class="q-ma-md      bg-blue-grey-2"
-      style="overflow: auto;"
-    >
-      <OrderCard :order="order" @card="orderClicked(order)" />
+    <div v-for="(order, idx) in orders" :key="idx">
+      <OrderCard
+        @card="orderClicked(order)"
+        :order="order"
+        class="col-xs-12 col-md-6 flex"
+      />
     </div>
   </div>
 </template>
@@ -24,7 +19,11 @@ import OrderCard from './OrderCard'
 export default {
   name: 'OrdersList',
   components: { OrderCard },
-  props: ['orders'],
+  computed: {
+    orders() {
+      return this.$store.state.mvpPrep.orders
+    }
+  },
   methods: {
     orderClicked(order) {
       console.log('this is the order from ordercard clicked')

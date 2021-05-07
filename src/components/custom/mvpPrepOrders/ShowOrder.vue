@@ -34,8 +34,8 @@
         @click="unlock"
         color="green"
         text-color="black"
-        label="valider"
         :to="{ name: 'orders' }"
+        label="valider"
         class="float-right "
       />
     </div>
@@ -88,14 +88,17 @@ export default {
     async unlock() {
       console.table(this.preparedProducts)
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
-      await this.$store.dispatch('mvpPrep/updateOrderItems', {
-        line_items: this.preparedProducts
-      })
+      if (this.preparedProducts.length > 0) {
+        await this.$store.dispatch('mvpPrep/updateOrderItems', {
+          line_items: this.preparedProducts
+        })
+      }
+      await this.sendUnlockOrder()
       await this.$store.dispatch('mvpPrep/getOrders')
       console.log(this.$store.state.mvpPrep.updated_items)
       console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
-    sendUnlockOrder() {
+    async sendUnlockOrder() {
       this.$store.state.mvpPrep.currentOrder._source.prep_status = 'finished'
       this.$store.state.mvpPrep.currentOrder._source.lock = false
       this.$store.state.mvpPrep.currentOrder._source.updatedAt = moment().format(
@@ -103,19 +106,24 @@ export default {
       )
       let newId = this.$store.state.mvpPrep.currentOrder._id.replace('#', '')
       // forge the query
+      console.log('we are in sendunlockorder')
+      console.log(this.$store.state.mvpPrep.currentOrder)
+      /*
       const updatedOrder = {
         _index: this.$store.state.mvpPrep.currentOrder._index,
         _source: this.$store.state.mvpPrep.currentOrder._source,
         _id: newId
       }
+      */
       console.log('bouton retour cliqué')
-      console.log(updatedOrder)
+      //console.log(updatedOrder)
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
-      this.$store.commit({
-        type: 'updateRecord',
-        data: updatedOrder
+      await this.$store.dispatch({
+        type: 'mvpPrep/updateOrder',
+        data: this.$store.state.mvpPrep.currentOrder
       })
+      console.log('sendunlockorder terminé')
     },
     preventNav(event) {
       console.log('ENNNNNNNNNNDDDDDDDDD:::::::::::::::::::::::::')
@@ -133,8 +141,8 @@ export default {
     window.addEventListener('beforeunload', this.preventNav)
   },
 
-  beforeRouteLeave(to, from, next) {
-    this.sendUnlockOrder()
+  async beforeRouteLeave(to, from, next) {
+    await this.sendUnlockOrder()
     next()
   },
 
