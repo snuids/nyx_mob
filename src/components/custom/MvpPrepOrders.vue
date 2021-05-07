@@ -40,7 +40,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrdersList from './mvpPrepOrders/OrdersList'
 
@@ -109,8 +108,8 @@ export default {
         }
       },
       //indiceOrders: 'dev_shopify_order',
-      indiceOrders: 'mvp_app_order',
-      indiceProducts: 'dev_shopify_line_item'
+      indiceOrders: 'mvp_app_order'
+      //indiceProducts: 'dev_shopify_line_item'
     }
   },
   computed: {
@@ -143,13 +142,15 @@ export default {
   watch: {
     targetDate: {
       handler: function() {
-        this.getOrders()
+        this.$store.dispatch('mvpPrep/getOrders')
+        //this.getOrders()
         //this.getProducts()
       },
       deep: true
     }
   },
   methods: {
+    /*
     getOrders(dateObj = null) {
       if (dateObj === null) {
         this.queryList1.query.bool.must[0].range.date.gte = this.targetDate.dateFrom
@@ -170,16 +171,11 @@ export default {
         .post(url, this.queryList1)
         .then(response => {
           this.$q.loading.hide()
-          this.newOrders = []
-          for (let record of response.data.records) {
-            this.newOrders.push(record)
-          }
-          this.$store.commit('mvpPrep/mutate_allOrders', this.newOrders)
+          console.log('these are the orders from getOrders')
+          this.$store.commit('mvpPrep/mutate_allOrders', response.data.records)
         })
         .catch(error => console.error(error))
     }
-
-    /*
     getProducts(dateObj = null) {
       if (dateObj === null) {
         this.queryList2.query.bool.must[0].range.date.gte = this.targetDate.dateFrom.format(
@@ -231,15 +227,21 @@ export default {
      */
   },
 
-  created() {
-    this.getOrders()
+  async created() {
+    this.$q.loading.show()
+    //this.getOrders()
+    await this.$store.dispatch('mvpPrep/getOrders')
+    this.$q.loading.hide()
   },
   mounted() {
     //this.getProducts()
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(
-      function() {
-        this.getOrders()
+      async function() {
+        this.$q.loading.show()
+        await this.$store.dispatch('mvpPrep/getOrders')
+        this.$q.loading.hide()
+        //this.getOrders()
       }.bind(this),
       timer
     )

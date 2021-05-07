@@ -4,10 +4,7 @@
       <q-badge class="frais" align="top">{{
         this.isFrais ? 'Frais' : 'Sec'
       }}</q-badge>
-      <div>
-        {{ product._source.quantity }} &nbsp; &nbsp;
-        {{ product._source.name }}
-      </div>
+      <div>1 &nbsp; {{ product._source.name }}</div>
       &nbsp; &nbsp;
     </q-item-section>
     <q-btn-group class="float-right" rounded>
@@ -48,9 +45,7 @@ export default {
 
   computed: {
     isFrais() {
-      return this.product._source.product.tags
-        .map(x => x.toLowerCase())
-        .includes('frais')
+      return this.product._source.fresh
     },
     status() {
       return this.product._source.prep_status

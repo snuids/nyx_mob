@@ -51,6 +51,9 @@ export default {
       await this.$store.dispatch('mvpPrep/getOrderItems')
       this.$q.loading.hide()
 
+      console.log('these are the items sent when the card was cliked')
+      console.log(this.$store.getters['mvpPrep/orderItems'])
+
       let orderId = this.order._source.order_number.replace('#', '')
 
       await this.$router.push({

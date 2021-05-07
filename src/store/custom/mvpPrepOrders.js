@@ -3,11 +3,15 @@ import axios from 'axios'
 export default {
   namespaced: true,
   state: {
-    orders: [],
+    serverUrl: 'https://app.nyx-mvp.ovh/api/v1',
+    apiUrl: '/lambdas/4/save_line_items',
+    apiKey: 'PREPKEY_39864873684',
+    orders: null,
     currentOrder: {},
     currentItem: {},
     currentOrderItems: null,
-    currentOrderPreparedItems: null
+    currentOrderPreparedItems: null,
+    updated_items: null
   },
   mutations: {
     mutate_allOrders(state, payload) {
@@ -24,6 +28,9 @@ export default {
     },
     mutate_preparedItems(state, payload) {
       state.currentOrderPreparedItems = payload
+    },
+    mutate_updated_items(state, payload) {
+      state.updated_items = payload
     }
   },
   actions: {
@@ -89,10 +96,7 @@ export default {
           else {
             console.log(response.data.records)
             response.data.records.sort((a, b) =>
-              a._source.product.tags.find(elt => elt.includes('LOC')) >
-              b._source.product.tags.find(elt => elt.includes('LOC'))
-                ? 1
-                : -1
+              a._source.loc > b._source.loc ? 1 : -1
             )
             console.log('sorted')
             console.log(response.data.records)
@@ -102,6 +106,80 @@ export default {
         .catch(error => {
           console.error(error)
         })
+    },
+    updateOrderItems({ state, commit }, payload) {
+      const url = state.serverUrl + state.apiUrl + '?apikey=' + state.apiKey
+      // 'https://app.nyx-mvp.ovh/api/v1/lambdas/4/save_line_items?apikey=PREPKEY_39864873684'
+
+      console.log(url)
+      //payload:  {line_items: []}
+      axios
+        .post(url, payload)
+        .then(res => {
+          console.log(res)
+          if (res.data.error != '') console.error('Send line items error...')
+          else {
+            commit('mutate_updated_items', res.data.records)
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    },
+    getOrders({ state, rootState, commit }, dateObj = null) {
+      const indiceOrders = 'mvp_app_order'
+      const mvpStore = rootState.mvp
+      let queryList1 = {
+        size: 5000,
+        sort: [
+          {
+            date: {
+              order: 'desc',
+              unmapped_type: 'boolean'
+            }
+          }
+        ],
+        _source: {},
+        query: {
+          bool: {
+            must: [
+              {
+                range: {
+                  date: {
+                    gte: '',
+                    lte: ''
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+      if (dateObj === null) {
+        queryList1.query.bool.must[0].range.date.gte =
+          mvpStore.targetDate.dateFrom
+        queryList1.query.bool.must[0].range.date.lte =
+          mvpStore.targetDate.dateTo
+      } else {
+        queryList1.query.bool.must[0].range.date.gte = dateObj.dateFrom
+        queryList1.query.bool.must[0].range.date.lte = dateObj.dateTo
+      }
+      const url =
+        rootState.apiurl +
+        'generic_search/' +
+        indiceOrders +
+        '?token=' +
+        rootState.creds.token
+
+      console.log('arnaud sent me to get the orders')
+      axios
+        .post(url, queryList1)
+        .then(response => {
+          commit('mutate_allOrders', response.data.records)
+          console.log('the orders are here')
+          console.log(state.orders)
+        })
+        .catch(error => console.error(error))
     }
   },
   getters: {

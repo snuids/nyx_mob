@@ -3,7 +3,6 @@
     <div class="text-h6 q-pa-xl">
       Commande #{{ orderId }} <br />
       {{ itemsToDisplay.length }} produits
-
       <div class="float-right">
         <q-toggle
           :label="filterHasFrais"
@@ -25,7 +24,6 @@
         ></q-toggle>
       </div>
     </div>
-
     <OrderItems
       :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
@@ -85,16 +83,19 @@ export default {
   props: ['orderId'],
   methods: {
     isFrais(item) {
-      return item._source.product.tags
-        .map(x => x.toLowerCase())
-        .includes('frais')
+      return item._source.fresh
     },
-    unlock() {
+    async unlock() {
       console.table(this.preparedProducts)
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
+      await this.$store.dispatch('mvpPrep/updateOrderItems', {
+        line_items: this.preparedProducts
+      })
+      await this.$store.dispatch('mvpPrep/getOrders')
+      console.log(this.$store.state.mvpPrep.updated_items)
       console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
-    sendUnlockOrderToServer() {
+    sendUnlockOrder() {
       this.$store.state.mvpPrep.currentOrder._source.prep_status = 'finished'
       this.$store.state.mvpPrep.currentOrder._source.lock = false
       this.$store.state.mvpPrep.currentOrder._source.updatedAt = moment().format(
@@ -107,7 +108,6 @@ export default {
         _source: this.$store.state.mvpPrep.currentOrder._source,
         _id: newId
       }
-
       console.log('bouton retour cliqué')
       console.log(updatedOrder)
       /* UNCOMMENT TO COMMIT REAL UPDATE */
@@ -120,9 +120,13 @@ export default {
     preventNav(event) {
       console.log('ENNNNNNNNNNDDDDDDDDD:::::::::::::::::::::::::')
       event.preventDefault()
-      this.sendUnlockOrderToServer()
+      this.sendUnlockOrder()
       event.returnValue = ''
     }
+  },
+
+  created() {
+    this.$store.dispatch('mvpPrep/getOrderItems')
   },
 
   beforeMount() {
@@ -130,7 +134,7 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
-    this.sendUnlockOrderToServer()
+    this.sendUnlockOrder()
     next()
   },
 
