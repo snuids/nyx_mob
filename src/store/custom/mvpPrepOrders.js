@@ -7,7 +7,7 @@ export default {
     serverUrl: 'https://app.nyx-mvp.ovh/api/v1',
     apiUrl: '/lambdas/4/save_line_items',
     apiKey: 'PREPKEY_39864873684',
-    orders: null,
+    orders: [],
     currentOrder: {},
     currentItem: {},
     currentOrderItems: null,
@@ -99,12 +99,9 @@ export default {
           Loading.hide()
           if (response.data.error != '') console.error('Get products error...')
           else {
-            console.log(response.data.records)
             response.data.records.sort((a, b) =>
               a._source.loc > b._source.loc ? 1 : -1
             )
-            console.log('sorted')
-            console.log(response.data.records)
             commit('mutate_currentOrderItems', response.data.records)
           }
         })
@@ -123,7 +120,6 @@ export default {
         .post(url, payload)
         .then(res => {
           Loading.hide()
-          console.log(res)
           if (res.data.error != '') console.error('Send line items error...')
           else {
             commit('mutate_updated_items', res.data.records)
@@ -181,20 +177,15 @@ export default {
         '?token=' +
         rootState.creds.token
 
-      console.log('arnaud sent me to get the orders')
       axios
         .post(url, queryList1)
         .then(response => {
           commit('mutate_allOrders', response.data.records)
-          console.log('the orders are here')
-          console.log(state.orders)
           Loading.hide()
         })
         .catch(error => console.error(error))
     },
     updateOrder({ state, rootState }, payload) {
-      console.log('you are in updateOrder')
-      console.log('here is the payload: ', payload)
       const url =
         rootState.apiurl +
         'generic/' +

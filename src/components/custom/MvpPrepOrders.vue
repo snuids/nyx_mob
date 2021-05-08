@@ -1,33 +1,33 @@
 <template>
   <q-page>
     <div class="flex flex-center column" v-if="orders">
+      <div class="text-h6 q-pa-xl">
+        {{ ordersToDisplay.length }} commandes
+        <div class="float-right">
+          <q-toggle
+            :label="filterHasFrais"
+            color="green"
+            false-value="Pas de Frais"
+            true-value="Frais"
+            v-model="filterHasFrais"
+            toggle-order="tf"
+            @click="ordersToDisplay"
+          ></q-toggle>
+          <q-toggle
+            :label="filterHasSec"
+            color="green"
+            false-value="Pas de Sec"
+            true-value="Sec"
+            v-model="filterHasSec"
+            toggle-order="tf"
+            @click="ordersToDisplay"
+          ></q-toggle>
+        </div>
+      </div>
       <div
         class="row justify-between q-mt-sm"
         style="min-height: 400px; width: 80%; padding: 24px;"
       >
-        <div class="text-h6 q-pa-xl">
-          {{ ordersToDisplay.length }} commandes
-          <div class="float-right">
-            <q-toggle
-              :label="filterHasFrais"
-              color="green"
-              false-value="Pas de Frais"
-              true-value="Frais"
-              v-model="filterHasFrais"
-              toggle-order="tf"
-              @click="ordersToDisplay"
-            ></q-toggle>
-            <q-toggle
-              :label="filterHasSec"
-              color="green"
-              false-value="Pas de Sec"
-              true-value="Sec"
-              v-model="filterHasSec"
-              toggle-order="tf"
-              @click="ordersToDisplay"
-            ></q-toggle>
-          </div>
-        </div>
         <OrdersList :orders="ordersToDisplay" />
       </div>
     </div>
@@ -41,6 +41,7 @@
 <script>
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrdersList from './mvpPrepOrders/OrdersList'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -62,9 +63,7 @@ export default {
   },
 
   computed: {
-    orders() {
-      return this.$store.state.mvpPrep.orders
-    },
+    ...mapState('mvpPrep', ['orders']),
     targetDate: function() {
       return this.$store.getters['mvp/targetDate']
     },
@@ -88,31 +87,24 @@ export default {
       return orderList
     }
   },
-
   watch: {
     targetDate: {
       handler: async function() {
-        this.$q.loading.show()
         await this.$store.dispatch('mvpPrep/getOrders')
-        this.$q.loading.hide()
       },
       deep: true
     }
   },
 
   async created() {
-    this.$q.loading.show()
     await this.$store.dispatch('mvpPrep/getOrders')
-    this.$q.loading.hide()
   },
 
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(
       async function() {
-        this.$q.loading.show()
         await this.$store.dispatch('mvpPrep/getOrders')
-        this.$q.loading.hide()
         //this.getOrders()
       }.bind(this),
       timer

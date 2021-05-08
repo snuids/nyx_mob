@@ -1,9 +1,5 @@
 <template>
   <div id="parent" class="row q-col-gutter-md">
-    <p v-if="orders.length === 0">
-      Pas de commandes ce jour ci
-    </p>
-
     <div v-for="(order, idx) in orders" :key="idx">
       <OrderCard
         @card="orderClicked(order)"
@@ -19,11 +15,7 @@ import OrderCard from './OrderCard'
 export default {
   name: 'OrdersList',
   components: { OrderCard },
-  computed: {
-    orders() {
-      return this.$store.state.mvpPrep.orders
-    }
-  },
+  props: ['orders'],
   methods: {
     orderClicked(order) {
       console.log('this is the order from ordercard clicked')
