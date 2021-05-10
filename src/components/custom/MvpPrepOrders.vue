@@ -34,7 +34,9 @@
     <q-page-sticky expand position="top">
       <StickyBanner></StickyBanner>
     </q-page-sticky>
-    <router-view></router-view>
+    <q-page-container>
+      <router-view />
+    </q-page-container>
   </q-page>
 </template>
 
@@ -69,30 +71,53 @@ export default {
     },
     ordersToDisplay: function() {
       let orderList
-      if (this.filterHasFrais === 'Pas de Frais') {
-        orderList = this.orders.filter(order => !order._source.has_frais)
-        if (this.filterHasSec === 'Pas de Sec') {
-          orderList = orderList.filter(order => !order._source.has_sec)
-        }
-      } else if (this.filterHasSec === 'Pas de Sec') {
-        orderList = this.orders.filter(order => !order._source.has_sec)
+      if (
+        this.filterHasSec === 'Pas de Sec' &&
+        this.filterHasFrais === 'Pas de Frais'
+      ) {
+        this.$store.commit('mvpPrep/mutate_lockDry', false)
+        this.$store.commit('mvpPrep/mutate_lockFresh', false)
+        orderList = this.orders.filter(
+          order => !order._source.has_sec && !order._source.has_frais
+        )
       } else if (
         this.filterHasFrais === 'Frais' &&
         this.filterHasSec === 'Sec'
       ) {
+        this.$store.commit('mvpPrep/mutate_lockDry', false)
+        this.$store.commit('mvpPrep/mutate_lockFresh', false)
         orderList = this.orders.filter(
           order => order._source.has_sec || order._source.has_frais
         )
+      } else if (
+        this.filterHasSec === 'Sec' &&
+        this.filterHasFrais === 'Pas de Frais'
+      ) {
+        this.$store.commit('mvpPrep/mutate_lockDry', true)
+        orderList = this.orders.filter(order => order._source.has_sec)
+      } else if (
+        this.filterHasFrais === 'Frais' &&
+        this.filterHasSec === 'Pas de Sec'
+      ) {
+        this.$store.commit('mvpPrep/mutate_lockFresh', true)
+        orderList = this.orders.filter(order => order._source.has_frais)
       }
       return orderList
     }
   },
+
   watch: {
     targetDate: {
       handler: async function() {
         await this.$store.dispatch('mvpPrep/getOrders')
       },
       deep: true
+    },
+    filterHasSec(newFilter) {
+      localStorage.filterHasSec = newFilter
+    },
+    filterHasFrais: function(newFilter) {
+      localStorage.filterHasFrais = newFilter
     }
   },
 
@@ -101,11 +126,16 @@ export default {
   },
 
   mounted() {
+    if (localStorage.filterHasSec) {
+      this.filterHasSec = localStorage.filterHasSec
+    }
+    if (localStorage.filterHasFrais) {
+      this.filterHasFrais = localStorage.filterHasFrais
+    }
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(
       async function() {
         await this.$store.dispatch('mvpPrep/getOrders')
-        //this.getOrders()
       }.bind(this),
       timer
     )

@@ -7,8 +7,11 @@ export default {
     serverUrl: 'https://app.nyx-mvp.ovh/api/v1',
     apiUrl: '/lambdas/4/save_line_items',
     apiKey: 'PREPKEY_39864873684',
+    lock_dry: false,
+    lock_fresh: false,
     orders: [],
     currentOrder: {},
+    currentOrderStatus: null,
     currentItem: {},
     currentOrderItems: null,
     currentOrderPreparedItems: null,
@@ -32,6 +35,15 @@ export default {
     },
     mutate_updated_items(state, payload) {
       state.updated_items = payload
+    },
+    mutate_currentOrderStatus(state, payload) {
+      state.currentOrderStatus = payload
+    },
+    mutate_lockDry(state, payload) {
+      state.lock_dry = payload
+    },
+    mutate_lockFresh(state, payload) {
+      state.lock_fresh = payload
     }
   },
   actions: {
@@ -97,7 +109,7 @@ export default {
         .post(url, queryList2)
         .then(response => {
           Loading.hide()
-          if (response.data.error != '') console.error('Get products error...')
+          if (response.data.error !== '') console.error('Get products error...')
           else {
             response.data.records.sort((a, b) =>
               a._source.loc > b._source.loc ? 1 : -1
@@ -120,7 +132,7 @@ export default {
         .post(url, payload)
         .then(res => {
           Loading.hide()
-          if (res.data.error != '') console.error('Send line items error...')
+          if (res.data.error !== '') console.error('Send line items error...')
           else {
             commit('mutate_updated_items', res.data.records)
           }
@@ -197,7 +209,7 @@ export default {
       axios
         .post(url, payload.data._source)
         .then(res => {
-          if (res.data.error != '') {
+          if (res.data.error !== '') {
             console.log('save object error')
           } else {
             console.log('save object success')

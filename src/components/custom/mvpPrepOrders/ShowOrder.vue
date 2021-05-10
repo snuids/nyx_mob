@@ -39,10 +39,6 @@
         class="float-right "
       />
     </div>
-    <!--<q-page-sticky expand position="top">
-      <StickyBanner></StickyBanner>
-    </q-page-sticky>
-    <router-view></router-view> -->
   </div>
 </template>
 
@@ -100,6 +96,7 @@ export default {
     },
     async sendUnlockOrder() {
       this.$store.state.mvpPrep.currentOrder._source.prep_status = 'finished'
+      this.$store.commit('mvpPrep/mutate_currentOrderStatus', 'finished')
       this.$store.state.mvpPrep.currentOrder._source.lock = false
       this.$store.state.mvpPrep.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'

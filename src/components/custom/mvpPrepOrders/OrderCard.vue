@@ -17,6 +17,16 @@
       <q-card-section>
         <ul>
           <li>Préparation : {{ order._source.prep_status }}</li>
+          <li v-if="order._source.prep_status === 'started'">
+            En cours de preparation
+            {{
+              order._source.lock_type === 'dry'
+                ? 'Sec'
+                : order._source.lock_type === 'fresh'
+                ? 'Frais'
+                : ''
+            }}
+          </li>
           <li>Client: {{ order._source.last_name }}</li>
           <li v-if="order._source.has_frais">Contient du frais</li>
           <li v-if="order._source.has_sec">Contient du sec</li>
@@ -28,6 +38,7 @@
 
 <script>
 import moment from 'moment'
+import { mapState } from 'vuex'
 
 export default {
   name: 'OrderCard',
@@ -35,13 +46,14 @@ export default {
   computed: {
     cardDisabled() {
       return this.order._source.lock
-    }
+    },
+    ...mapState('mvpPrep', ['lock_fresh', 'lock_dry'])
   },
   methods: {
     async cardClick() {
       console.log(this.cardDisabled)
       if (this.cardDisabled) return
-      this.updateOrderOnServer()
+      this.updateOrder()
       this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
       this.$q.loading.show()
       await this.$store.dispatch('mvpPrep/getOrderItems')
@@ -54,23 +66,21 @@ export default {
         params: { orderId: orderId }
       })
     },
-    updateOrderOnServer() {
+    updateOrder() {
       this.order._source.prep_status = 'started'
+      this.$store.commit('mvpPrep/mutate_currentOrderStatus', 'started')
       this.order._source.lock = true
+      this.order._source.lock_type = this.lock_fresh
+        ? 'fresh'
+        : this.lock_dry
+        ? 'dry'
+        : 'none'
       this.order._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
+      console.log('lock type: ', this.order._source.lock_type)
       console.log('this is the current order on which ive clicked')
-      console.log(this.order)
-      let newId = this.order._id.replace('#', '')
-      // forge the query
-      /*
-      const updatedOrder = {
-        _index: this.order._index,
-        _source: this.order._source,
-        _id: newId
-      }
-      */
+      console.log(this.$store.state.mvpPrep.currentOrder)
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
       this.$store.dispatch({

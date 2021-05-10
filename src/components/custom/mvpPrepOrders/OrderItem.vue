@@ -1,5 +1,5 @@
 <template>
-  <q-item :class="[status, 'q-pa-md']">
+  <q-item :class="[currentOrderStatus, 'q-pa-md']">
     <q-item-section>
       <q-badge class="frais" align="top">{{
         this.isFrais ? 'Frais' : 'Sec'
@@ -38,12 +38,14 @@
 
 <script>
 import moment from 'moment'
+import { mapState } from 'vuex'
 
 export default {
   name: 'OrderItem',
   props: ['product'],
 
   computed: {
+    ...mapState('mvpPrep', ['currentOrderStatus']),
     isFrais() {
       return this.product._source.fresh
     },
