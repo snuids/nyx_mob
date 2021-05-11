@@ -1,5 +1,5 @@
 <template>
-  <q-item :class="[currentOrderStatus, 'q-pa-md']">
+  <q-item :class="[status, 'q-pa-md']">
     <q-item-section>
       <q-badge class="frais" align="top">{{
         this.isFrais ? 'Frais' : 'Sec'
