@@ -243,6 +243,34 @@ export default {
       } else {
         return []
       }
+    },
+    missingFresh: state => {
+      if (state.currentOrder._source.missingFresh) {
+        return state.currentOrder._source.missingFresh
+      } else {
+        return []
+      }
+    },
+    missingDry: state => {
+      if (state.currentOrder._source.missingDry) {
+        return state.currentOrder._source.missingDry
+      } else {
+        return []
+      }
+    },
+    rembFresh: state => {
+      if (state.currentOrder._source.rembFresh) {
+        return state.currentOrder._source.rembFresh
+      } else {
+        return []
+      }
+    },
+    rembDry: state => {
+      if (state.currentOrder._source.rembDry) {
+        return state.currentOrder._source.rembDry
+      } else {
+        return []
+      }
     }
   }
 }
