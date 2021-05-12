@@ -45,6 +45,7 @@
 <script>
 import OrderItems from './OrderItems'
 import moment from 'moment'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'ShowOrder',
@@ -58,20 +59,28 @@ export default {
     }
   },
   computed: {
-    orderProducts() {
-      return this.$store.state.mvpPrep.currentOrderItems
-    },
+    ...mapState('mvpPrep', ['currentOrder', 'currentOrderItems']),
+    ...mapGetters('mvpPrep', [
+      'freshItems',
+      'dryItems',
+      'preparedFresh',
+      'preparedDry'
+    ]),
     itemsToDisplay: function() {
       let itemList
       if (this.filterHasFrais === 'Pas de Frais') {
-        itemList = this.orderProducts.filter(product => !this.isFrais(product))
+        itemList = this.currentOrderItems.filter(
+          product => !this.isFrais(product)
+        )
         if (this.filterHasSec === 'Pas de Sec') {
           itemList = itemList.filter(product => this.isFrais(product))
         }
       } else if (this.filterHasSec === 'Pas de Sec') {
-        itemList = this.orderProducts.filter(product => this.isFrais(product))
+        itemList = this.currentOrderItems.filter(product =>
+          this.isFrais(product)
+        )
       } else {
-        itemList = this.orderProducts
+        itemList = this.currentOrderItems
       }
       return itemList
     }
@@ -83,6 +92,34 @@ export default {
     },
     async unlock() {
       console.table(this.preparedProducts)
+      let fresh = this.preparedProducts.filter(
+        product =>
+          product._source.fresh && product._source.prep_status === 'success'
+      )
+      let dry = this.preparedProducts.filter(
+        product =>
+          !product._source.fresh && product._source.prep_status === 'success'
+      )
+      this.currentOrder._source.freshItems = this.freshItems
+      this.currentOrder._source.dryItems = this.dryItems
+      if (this.preparedFresh.length === 0) {
+        this.currentOrder._source.preparedFresh = fresh.slice()
+      } else {
+        fresh.map(item =>
+          this.addProductToPrepared(
+            this.currentOrder._source.preparedFresh,
+            item
+          )
+        )
+      }
+
+      if (this.preparedDry.length === 0) {
+        this.currentOrder._source.preparedDry = dry.slice()
+      } else {
+        dry.map(item =>
+          this.addProductToPrepared(this.currentOrder._source.preparedDry, item)
+        )
+      }
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
@@ -95,16 +132,16 @@ export default {
       console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
     async sendUnlockOrder() {
-      this.$store.state.mvpPrep.currentOrder._source.prep_status = 'finished'
+      this.currentOrder._source.prep_status = 'finished'
       this.$store.commit('mvpPrep/mutate_currentOrderStatus', 'finished')
-      this.$store.state.mvpPrep.currentOrder._source.lock = false
-      this.$store.state.mvpPrep.currentOrder._source.updatedAt = moment().format(
+      this.currentOrder._source.lock = false
+      this.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
-      let newId = this.$store.state.mvpPrep.currentOrder._id.replace('#', '')
+      let newId = this.currentOrder._id.replace('#', '')
       // forge the query
       console.log('we are in sendunlockorder')
-      console.log(this.$store.state.mvpPrep.currentOrder)
+      console.log(this.currentOrder)
       /*
       const updatedOrder = {
         _index: this.$store.state.mvpPrep.currentOrder._index,
@@ -122,6 +159,32 @@ export default {
       })
       console.log('sendunlockorder terminé')
     },
+
+    addProductToPrepared(products, product) {
+      if (this.included(products, product)) {
+        let newArr = this.update(products, product)
+        products = newArr.slice()
+      } else {
+        products.push(product)
+      }
+    },
+    update(products, product) {
+      const eltIdx = products.findIndex(elt => elt._id === product._id)
+      let newProductsArray = [...products]
+      newProductsArray[eltIdx] = {
+        ...product
+      }
+      return newProductsArray
+    },
+    included: function(products, product) {
+      for (let p in products) {
+        if (products[p]._id === product._id) {
+          return true
+        }
+      }
+      return false
+    },
+
     preventNav(event) {
       console.log('ENNNNNNNNNNDDDDDDDDD:::::::::::::::::::::::::')
       event.preventDefault()

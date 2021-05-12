@@ -225,6 +225,24 @@ export default {
     allOrders: state => state.orders,
     orderItems: state => state.currentOrderItems,
     preparedItems: state => state.currentOrderPreparedItems,
-    lock: state => state.currentOrder._source.lock
+    lock: state => state.currentOrder._source.lock,
+    freshItems: state =>
+      state.currentOrderItems.filter(item => item._source.fresh),
+    dryItems: state =>
+      state.currentOrderItems.filter(item => !item._source.fresh),
+    preparedDry: state => {
+      if (state.currentOrder._source.preparedDry) {
+        return state.currentOrder._source.preparedDry
+      } else {
+        return []
+      }
+    },
+    preparedFresh: state => {
+      if (state.currentOrder._source.preparedFresh) {
+        return state.currentOrder._source.preparedFresh
+      } else {
+        return []
+      }
+    }
   }
 }
