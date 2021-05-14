@@ -1,8 +1,12 @@
 <template>
   <div>
     <div class="header">
-      <span v-if="open" @click="open = !open"> &#x25b2; Fermer</span>
-      <span v-if="!open" @click="open = !open"> &#x25bc; Ouvrir</span>
+      <span v-if="open" @click="open = !open">
+        &#x25b2; &nbsp; &nbsp; Fermer</span
+      >
+      <span v-if="!open" @click="open = !open">
+        &#x25bc; &nbsp; &nbsp; Voir le status des produits</span
+      >
     </div>
     <slot v-if="open"></slot>
   </div>

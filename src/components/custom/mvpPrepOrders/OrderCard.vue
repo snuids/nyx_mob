@@ -12,7 +12,7 @@
       <q-card-section @click="cardClick">
         <ul>
           <li>
-            Status :
+            Préparation:
             {{
               order._source.prep_status
                 ? order._source.prep_status === 'finished'
@@ -21,6 +21,8 @@
                   ? 'Non finie'
                   : order._source.prep_status === 'started'
                   ? 'Commencé'
+                  : order._source.prep_status === 'finishedWithRemb'
+                  ? 'Finie avec produits à rembourser'
                   : ''
                 : 'Non préparé'
             }}
@@ -41,8 +43,6 @@
             {{
               order._source.preparedDry.length +
                 order._source.preparedFresh.length +
-                order._source.missingDry.length +
-                order._source.missingFresh.length +
                 order._source.rembDry.length +
                 order._source.rembFresh.length
             }}/{{
@@ -54,7 +54,12 @@
       <q-separator />
       <CollapsibleSection>
         <q-card-section
-          v-if="order._source.preparedDry && order._source.preparedFresh"
+          v-if="
+            order._source.preparedDry &&
+              order._source.preparedFresh &&
+              order._source.dryItems &&
+              order._source.freshItems
+          "
         >
           <p>
             Produits ajoutés avec succès:
@@ -65,6 +70,7 @@
           </p>
 
           <q-circular-progress
+            v-if="order._source.dryItems"
             v-show="order._source.dryItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -80,6 +86,7 @@
           >
 
           <q-circular-progress
+            v-if="order._source.freshItems"
             v-show="order._source.freshItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -105,6 +112,7 @@
             }}
           </p>
           <q-circular-progress
+            v-if="order._source.dryItems"
             v-show="order._source.dryItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -120,6 +128,7 @@
           >
 
           <q-circular-progress
+            v-if="order._source.freshItems"
             v-show="order._source.freshItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -140,7 +149,7 @@
             {{ order._source.rembDry.length + order._source.rembFresh.length }}
           </p>
           <q-circular-progress
-            v-if="order._source.rembDry"
+            v-if="order._source.dryItems"
             v-show="order._source.dryItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -156,7 +165,7 @@
           >
 
           <q-circular-progress
-            v-if="order._source.rembFresh"
+            v-if="order._source.freshItems"
             v-show="order._source.freshItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -244,6 +253,7 @@ export default {
 
 .started {
   border-top: 20px solid cornflowerblue;
+  color: green;
 }
 
 .finished {
@@ -251,7 +261,11 @@ export default {
 }
 
 .unfinished {
-  border-top: 20px solid red;
+  border-top: 20px solid orange;
+}
+
+.finishedWithRemb {
+  border-top: 20px solid #ff8a80;
 }
 
 .myCard {

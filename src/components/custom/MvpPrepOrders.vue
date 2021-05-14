@@ -125,7 +125,7 @@ export default {
     await this.$store.dispatch('mvpPrep/getOrders')
   },
 
-  mounted() {
+  async mounted() {
     if (localStorage.filterHasSec) {
       this.filterHasSec = localStorage.filterHasSec
     }

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Loading } from 'quasar'
+import { Loading, LoadingBar } from 'quasar'
 
 export default {
   namespaced: true,
@@ -142,7 +142,6 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
-      //Loading.show()
       const indiceOrders = 'mvp_app_order'
       const mvpStore = rootState.mvp
       let queryList1 = {
@@ -191,7 +190,6 @@ export default {
         .post(url, queryList1)
         .then(response => {
           commit('mutate_allOrders', response.data.records)
-          Loading.hide()
         })
         .catch(error => console.error(error))
     },

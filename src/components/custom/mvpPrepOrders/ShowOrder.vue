@@ -74,6 +74,7 @@ export default {
   computed: {
     ...mapState('mvpPrep', ['currentOrder', 'currentOrderItems']),
     ...mapGetters('mvpPrep', [
+      'preparedItems',
       'freshItems',
       'dryItems',
       'preparedFresh',
@@ -229,19 +230,29 @@ export default {
       console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
     async sendUnlockOrder() {
+      console.table(this.currentOrder._source.rembFresh)
+      console.table(this.currentOrder._source.rembDry)
+      console.table(this.currentOrder._source.preparedDry)
+      console.table(this.currentOrder._source.preparedFresh)
       if (
-        this.currentOrder._source.rembDry +
-          this.currentOrder._source.rembFresh +
-          this.currentOrder._source.missingFresh +
-          this.currentOrder._source.missingDry +
-          this.currentOrder._source.preparedFresh +
-          this.currentOrder._source.preparedDry ===
-        this.currentOrder._source.freshItems +
-          this.currentOrder._source.dryItems
+        this.currentOrder._source.rembDry &&
+        this.currentOrder._source.rembDry.length +
+          this.currentOrder._source.rembFresh.length +
+          this.currentOrder._source.preparedFresh.length +
+          this.currentOrder._source.preparedDry.length ===
+          this.freshItems.length + this.dryItems.length
       ) {
-        this.currentOrder._source.prep_status = 'finished'
-        this.$store.commit('mvpPrep/mutate_currentOrderStatus', 'finished')
+        if (
+          this.currentOrder._source.rembDry.length > 0 ||
+          this.currentOrder._source.rembFresh.length > 0
+        ) {
+          this.currentOrder._source.prep_status = 'finishedWithRemb'
+        } else {
+          this.currentOrder._source.prep_status = 'finished'
+          this.$store.commit('mvpPrep/mutate_currentOrderStatus', 'finished')
+        }
       } else {
+        console.log('really wow you deceive me')
         this.currentOrder._source.prep_status = 'unfinished'
       }
       this.currentOrder._source.lock = false
@@ -320,6 +331,24 @@ export default {
       event.preventDefault()
       this.sendUnlockOrder()
       event.returnValue = ''
+    }
+  },
+
+  watch: {
+    filterHasSec(newFilter) {
+      localStorage.filterHasSec = newFilter
+    },
+    filterHasFrais: function(newFilter) {
+      localStorage.filterHasFrais = newFilter
+    }
+  },
+
+  mounted() {
+    if (localStorage.filterHasSec) {
+      this.filterHasSec = localStorage.filterHasSec
+    }
+    if (localStorage.filterHasFrais) {
+      this.filterHasFrais = localStorage.filterHasFrais
     }
   },
 
