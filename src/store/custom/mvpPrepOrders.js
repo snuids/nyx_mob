@@ -142,9 +142,7 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
-      Loading.show({
-        delay: 300
-      })
+      //Loading.show()
       const indiceOrders = 'mvp_app_order'
       const mvpStore = rootState.mvp
       let queryList1 = {
