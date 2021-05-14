@@ -1,5 +1,5 @@
 <template>
-  <div v-if="itemsToDisplay">
+  <q-page v-if="itemsToDisplay">
     <div class="text-h6 q-pa-xl">
       Commande #{{ orderId }} <br />
       {{ itemsToDisplay.length }} produits
@@ -29,8 +29,11 @@
       :preparedProducts="preparedProducts"
     />
 
-    <div class="q-px-xl q-py-xl">
+    <div class="q-pa-xl">
       <q-btn
+        :padding="'35px 40px'"
+        :rounded="true"
+        icon-right="save"
         @click="unlock"
         color="green"
         text-color="black"
@@ -38,8 +41,18 @@
         label="valider"
         class="float-right "
       />
+
+      <q-btn
+        :padding="'35px 40px'"
+        :rounded="true"
+        color="green"
+        text-color="black"
+        :to="{ name: 'orders' }"
+        label="Retour"
+        class="float-left "
+      />
     </div>
-  </div>
+  </q-page>
 </template>
 
 <script>
@@ -64,7 +77,11 @@ export default {
       'freshItems',
       'dryItems',
       'preparedFresh',
-      'preparedDry'
+      'preparedDry',
+      'missingDry',
+      'missingFresh',
+      'rembDry',
+      'rembFresh'
     ]),
     itemsToDisplay: function() {
       let itemList
@@ -100,26 +117,106 @@ export default {
         product =>
           !product._source.fresh && product._source.prep_status === 'success'
       )
+      let manqFresh = this.preparedProducts.filter(
+        product =>
+          product._source.fresh && product._source.prep_status === 'manq'
+      )
+      let manqDry = this.preparedProducts.filter(
+        product =>
+          !product._source.fresh && product._source.prep_status === 'manq'
+      )
+      let rembFresh = this.preparedProducts.filter(
+        product =>
+          product._source.fresh && product._source.prep_status === 'remb'
+      )
+
+      let rembDry = this.preparedProducts.filter(
+        product =>
+          !product._source.fresh && product._source.prep_status === 'remb'
+      )
+
       this.currentOrder._source.freshItems = this.freshItems
       this.currentOrder._source.dryItems = this.dryItems
+
       if (this.preparedFresh.length === 0) {
-        this.currentOrder._source.preparedFresh = fresh.slice()
+        this.currentOrder._source.preparedFresh = []
+        this.updateArrayPreparedItems(
+          fresh,
+          this.currentOrder._source.preparedFresh
+        )
       } else {
-        fresh.map(item =>
-          this.addProductToPrepared(
-            this.currentOrder._source.preparedFresh,
-            item
-          )
+        this.updateArrayPreparedItems(
+          fresh,
+          this.currentOrder._source.preparedFresh
         )
       }
 
       if (this.preparedDry.length === 0) {
-        this.currentOrder._source.preparedDry = dry.slice()
+        this.currentOrder._source.preparedDry = []
+
+        this.updateArrayPreparedItems(
+          dry,
+          this.currentOrder._source.preparedDry
+        )
       } else {
-        dry.map(item =>
-          this.addProductToPrepared(this.currentOrder._source.preparedDry, item)
+        this.updateArrayPreparedItems(
+          dry,
+          this.currentOrder._source.preparedDry
         )
       }
+
+      if (this.missingFresh.length === 0) {
+        this.currentOrder._source.missingFresh = []
+        this.updateArrayPreparedItems(
+          manqFresh,
+          this.currentOrder._source.missingFresh
+        )
+      } else {
+        this.updateArrayPreparedItems(
+          manqFresh,
+          this.currentOrder._source.missingFresh
+        )
+      }
+
+      if (this.missingDry.length === 0) {
+        this.currentOrder._source.missingDry = []
+        this.updateArrayPreparedItems(
+          manqDry,
+          this.currentOrder._source.missingDry
+        )
+      } else {
+        this.updateArrayPreparedItems(
+          manqDry,
+          this.currentOrder._source.missingDry
+        )
+      }
+
+      if (this.rembFresh.length === 0) {
+        this.currentOrder._source.rembFresh = []
+        this.updateArrayPreparedItems(
+          rembFresh,
+          this.currentOrder._source.rembFresh
+        )
+      } else {
+        this.updateArrayPreparedItems(
+          rembFresh,
+          this.currentOrder._source.rembFresh
+        )
+      }
+
+      if (this.rembDry.length === 0) {
+        this.currentOrder._source.rembDry = []
+        this.updateArrayPreparedItems(
+          rembDry,
+          this.currentOrder._source.rembDry
+        )
+      } else {
+        this.updateArrayPreparedItems(
+          rembDry,
+          this.currentOrder._source.rembDry
+        )
+      }
+
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
@@ -160,21 +257,41 @@ export default {
       console.log('sendunlockorder terminé')
     },
 
-    addProductToPrepared(products, product) {
-      if (this.included(products, product)) {
-        let newArr = this.update(products, product)
-        products = newArr.slice()
-      } else {
-        products.push(product)
-      }
+    updateArrayPreparedItems(preparedArray, arrayToInsertIn) {
+      preparedArray.map(item =>
+        this.addProductToPrepared(
+          [
+            this.currentOrder._source.preparedDry,
+            this.currentOrder._source.missingDry,
+            this.currentOrder._source.rembDry,
+            this.currentOrder._source.preparedFresh,
+            this.currentOrder._source.missingFresh,
+            this.currentOrder._source.rembFresh
+          ],
+          arrayToInsertIn,
+          item
+        )
+      )
     },
+
+    addProductToPrepared(productsArray, arrayToInsertIn, product) {
+      productsArray.forEach(products => {
+        if (products === arrayToInsertIn) {
+          if (!this.included(products, product)) {
+            arrayToInsertIn.push(product)
+          }
+        } else {
+          if (this.included(products, product)) {
+            this.update(products, product)
+            console.log('element removed from ', products)
+          }
+        }
+      })
+    },
+
     update(products, product) {
       const eltIdx = products.findIndex(elt => elt._id === product._id)
-      let newProductsArray = [...products]
-      newProductsArray[eltIdx] = {
-        ...product
-      }
-      return newProductsArray
+      products.splice(eltIdx, 1)
     },
     included: function(products, product) {
       for (let p in products) {

@@ -6,17 +6,16 @@
       v-ripple
       :class="[
         order._source.prep_status === 'started' ? 'started' : '',
-        'fit cursor-pointer q-hoverable bg-blue-grey-2'
+        'fit cursor-pointer q-hoverable myCard'
       ]"
     >
       <span class="q-focus-helper"></span>
       <q-card-section class="text-h6">{{
         order._source.order_number
       }}</q-card-section>
-      <q-separator />
       <q-card-section>
         <ul>
-          <li>Préparation : {{ order._source.prep_status }}</li>
+          <!--<li>Préparation : {{ order._source.prep_status }}</li> -->
           <li v-if="order._source.prep_status === 'started'">
             En cours de preparation
             {{
@@ -28,25 +27,27 @@
             }}
           </li>
           <li>Client: {{ order._source.last_name }}</li>
-          <li v-if="order._source.has_frais">Contient du frais</li>
-          <li v-if="order._source.has_sec">Contient du sec</li>
-          <li v-if="order._source.preparedDry">
-            {{ order._source.preparedDry.length }}/{{
-              order._source.dryItems.length
-            }}
-            produits secs préparés
-          </li>
-          <li v-if="order._source.preparedDry">
-            {{ order._source.preparedFresh.length }}/{{
-              order._source.freshItems.length
-            }}
-            produits frais préparés
-          </li>
         </ul>
       </q-card-section>
-      <q-card-section>
+      <q-separator />
+      <q-card-section
+        v-if="
+          order._source.preparedDry &&
+            order._source.preparedFresh &&
+            (order._source.preparedDry.length > 0 ||
+              order._source.preparedFresh.length > 0)
+        "
+      >
+        <p>
+          Produits ajoutés avec succès:
+          {{
+            order._source.preparedDry.length +
+              order._source.preparedFresh.length
+          }}
+        </p>
+
         <q-circular-progress
-          v-if="order._source.preparedDry"
+          v-show="order._source.dryItems.length > 0"
           show-value
           class="text-light-blue q-ma-md"
           :value="order._source.preparedDry.length"
@@ -61,7 +62,7 @@
         >
 
         <q-circular-progress
-          v-if="order._source.preparedFresh"
+          v-show="order._source.freshItems.length > 0"
           show-value
           class="text-light-blue q-ma-md"
           :value="order._source.preparedFresh.length"
@@ -69,6 +70,94 @@
           size="80px"
           color="green"
           >{{ order._source.preparedFresh.length }}/{{
+            order._source.freshItems.length
+          }}<br />
+          Frais</q-circular-progress
+        >
+      </q-card-section>
+      <q-separator />
+      <q-card-section
+        v-if="
+          order._source.missingDry &&
+            order._source.missingFresh &&
+            (order._source.missingDry.length > 0 ||
+              order._source.missingFresh.length > 0)
+        "
+      >
+        <p>
+          Produits en attente producteur:
+          {{
+            order._source.missingDry.length + order._source.missingFresh.length
+          }}
+        </p>
+        <q-circular-progress
+          v-show="order._source.dryItems.length > 0"
+          show-value
+          class="text-light-blue q-ma-md"
+          :value="order._source.missingDry.length"
+          :max="order._source.dryItems.length"
+          size="80px"
+          color="orange"
+          >{{ order._source.missingDry.length }}/{{
+            order._source.dryItems.length
+          }}
+          <br />
+          Sec</q-circular-progress
+        >
+
+        <q-circular-progress
+          v-show="order._source.freshItems.length > 0"
+          show-value
+          class="text-light-blue q-ma-md"
+          :value="order._source.missingFresh.length"
+          :max="order._source.freshItems.length"
+          size="80px"
+          color="orange"
+          >{{ order._source.missingFresh.length }}/{{
+            order._source.freshItems.length
+          }}<br />
+          Frais</q-circular-progress
+        >
+      </q-card-section>
+      <q-separator />
+      <q-card-section
+        v-if="
+          order._source.rembDry &&
+            order._source.rembFresh &&
+            (order._source.rembDry.length > 0 ||
+              order._source.rembFresh.length > 0)
+        "
+      >
+        <p>
+          Produits à rembourser:
+          {{ order._source.rembDry.length + order._source.rembFresh.length }}
+        </p>
+        <q-circular-progress
+          v-if="order._source.rembDry"
+          v-show="order._source.dryItems.length > 0"
+          show-value
+          class="text-light-blue q-ma-md"
+          :value="order._source.rembDry.length"
+          :max="order._source.dryItems.length"
+          size="80px"
+          color="red"
+          >{{ order._source.rembDry.length }}/{{
+            order._source.dryItems.length
+          }}
+          <br />
+          Sec</q-circular-progress
+        >
+
+        <q-circular-progress
+          v-if="order._source.rembFresh"
+          v-show="order._source.freshItems.length > 0"
+          show-value
+          class="text-light-blue q-ma-md"
+          :value="order._source.rembFresh.length"
+          :max="order._source.freshItems.length"
+          size="80px"
+          color="red"
+          >{{ order._source.rembFresh.length }}/{{
             order._source.freshItems.length
           }}<br />
           Frais</q-circular-progress
@@ -142,5 +231,9 @@ export default {
 
 .started {
   color: green;
+}
+
+.myCard {
+  background-color: #e8e8e8;
 }
 </style>

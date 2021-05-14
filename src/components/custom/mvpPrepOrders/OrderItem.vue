@@ -75,8 +75,8 @@ export default {
       }
     },
     remb(product) {
-      this.product._source.prep_status = 'remb'
       this.addToHistory('remb')
+      this.product._source.prep_status = 'remb'
       this.$emit('remb', product)
     },
     manq(product) {
@@ -95,15 +95,15 @@ export default {
 
 <style scoped>
 .remb {
-  border-left: 5px solid red;
+  border-left: 8px solid red;
 }
 
 .manq {
-  border-left: 5px solid #f2c037;
+  border-left: 8px solid #f2c037;
 }
 
 .success {
-  border-left: 5px solid green;
+  border-left: 8px solid green;
 }
 
 .frais {

@@ -32,6 +32,10 @@ export default {
         this.update(this.preparedProducts, product)
       } else {
         this.preparedProducts.push(product)
+        this.$store.commit(
+          'mvpPrep/mutate_preparedItems',
+          this.preparedProducts
+        )
       }
     },
     update(products, product) {
