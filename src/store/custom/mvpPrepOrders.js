@@ -118,6 +118,7 @@ export default {
           }
         })
         .catch(error => {
+          Loading.hide()
           console.error(error)
         })
     },
@@ -142,6 +143,7 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
+      Loading.show()
       const indiceOrders = 'mvp_app_order'
       const mvpStore = rootState.mvp
       let queryList1 = {
@@ -189,9 +191,13 @@ export default {
       axios
         .post(url, queryList1)
         .then(response => {
+          Loading.hide()
           commit('mutate_allOrders', response.data.records)
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+          Loading.hide()
+          console.error(error)
+        })
     },
     updateOrder({ state, rootState }, payload) {
       const url =

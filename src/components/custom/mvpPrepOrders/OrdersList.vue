@@ -1,6 +1,11 @@
 <template>
   <div id="parent" class="row q-col-gutter-md">
-    <div v-for="(order, idx) in orders" :key="idx">
+    <div
+      v-for="(order, idx) in orders.sort((a, b) => {
+        return a._id - b._id
+      })"
+      :key="idx"
+    >
       <OrderCard
         @card="orderClicked(order)"
         :order="order"
