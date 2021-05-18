@@ -1,39 +1,45 @@
 <template>
-  <q-page v-if="itemsToDisplay" style="padding-top: 80px">
+  <q-page v-if="itemsToDisplay" style="padding-top: 40px">
     <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
-      style="padding-bottom: 35px"
+      style="padding-bottom: 80px"
       :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
     />
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-2 items-center text-h6">
-        <div class="col-xs-2 row justify-center">
+        <div class="col-xs-6 row justify-start">
           Commande #{{ orderId }} <br />
         </div>
-        <q-toggle
-          :label="filterHasFrais"
-          color="green"
-          false-value="Pas de Frais"
-          true-value="Frais"
-          v-model="filterHasFrais"
-          toggle-order="tf"
-          @click="itemsToDisplay"
-          class="col-xs-2 "
-        ></q-toggle>
-        <q-toggle
-          :label="filterHasSec"
-          color="green"
-          false-value="Pas de Sec"
-          true-value="Sec"
-          v-model="filterHasSec"
-          toggle-order="tf"
-          @click="itemsToDisplay"
-          class="col-xs-2  "
-        ></q-toggle>
-        <div class="row col-xs-3 justify-center">
+        <div class="row col-xs-6 justify-center">
+          <q-toggle
+            :label="filterHasFrais"
+            color="green"
+            false-value="Pas de Frais"
+            true-value="Frais"
+            v-model="filterHasFrais"
+            toggle-order="tf"
+            @click="itemsToDisplay"
+            class="col-xs-3 "
+          ></q-toggle>
+          <q-toggle
+            :label="filterHasSec"
+            color="green"
+            false-value="Pas de Sec"
+            true-value="Sec"
+            v-model="filterHasSec"
+            toggle-order="tf"
+            @click="itemsToDisplay"
+            class="col-xs-3  "
+          ></q-toggle>
+        </div>
+      </div>
+    </q-page-sticky>
+    <q-page-sticky expand position="bottom">
+      <div class="row full-width flex items-center bg-blue-5 text-h6">
+        <div class="row col-xs-5 justify-center ">
           <q-circular-progress
             show-value
             font-size="12px"
@@ -52,30 +58,28 @@
             }}%
           </q-circular-progress>
         </div>
-        <div class="row col-xs-3 justify-center">
+        <div class="row col-xs-5 justify-start ">
           {{ this.currentOrderItems.length - (value + itemsClicked) }} produits
           restants
         </div>
-      </div>
-    </q-page-sticky>
-    <q-page-sticky expand position="bottom">
-      <div class="row full-width flex bg-blue-grey-2">
-        <q-btn
+        <!--<q-btn
           color="green"
           text-color="white"
           :to="{ name: 'orders' }"
           label="Retour"
-          class="col-xs-6   "
-        />
-        <q-btn
-          icon-right="save"
-          @click="unlock"
-          color="green"
-          text-color="white"
-          :to="{ name: 'orders' }"
-          label="valider"
-          class="col-xs-6   "
-        />
+          class="col-xs-3   justify-center"
+        />-->
+        <div class="row col-xs-2 justify-center">
+          <q-btn
+            icon-right="save"
+            @click="unlock"
+            color="green"
+            text-color="white"
+            :to="{ name: 'orders' }"
+            label="valider"
+            style="height: 60px;"
+          />
+        </div>
       </div>
     </q-page-sticky>
   </q-page>
