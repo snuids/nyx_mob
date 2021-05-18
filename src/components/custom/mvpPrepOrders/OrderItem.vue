@@ -5,7 +5,7 @@
         this.isFrais ? 'Frais' : 'Sec'
       }}</q-badge>
       <div>1 &nbsp; {{ product._source.name }}</div>
-      &nbsp; &nbsp;
+      <div>LOC {{ product._source.loc }} | {{ product._source.vendor }}</div>
     </q-item-section>
     <q-btn-group class="float-right" rounded>
       <q-btn
