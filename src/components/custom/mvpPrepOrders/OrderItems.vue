@@ -4,10 +4,10 @@
       v-for="(item, idx) in products"
       :key="componentKey + idx"
       :product="item"
+      :value="value"
       @remb="addProductToPreparedItems"
       @manq="addProductToPreparedItems"
       @success="addProductToPreparedItems"
-      class="q-pa-md"
     >
     </OrderItem>
   </q-list>
@@ -21,7 +21,8 @@ export default {
   props: ['products', 'preparedProducts'],
   data() {
     return {
-      componentKey: 0
+      componentKey: 0,
+      value: 0
     }
   },
   components: { OrderItem },
@@ -31,6 +32,7 @@ export default {
       if (this.included(this.preparedProducts, product)) {
         this.update(this.preparedProducts, product)
       } else {
+        this.value += 1
         this.preparedProducts.push(product)
         this.$store.commit(
           'mvpPrep/mutate_preparedItems',

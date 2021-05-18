@@ -1,5 +1,5 @@
 <template>
-  <q-item :class="[status, 'q-pa-md']">
+  <q-item :class="[status]">
     <q-item-section>
       <q-badge class="frais" align="top">{{
         this.isFrais ? 'Frais' : 'Sec'
@@ -10,7 +10,7 @@
     <q-btn-group class="float-right" rounded>
       <q-btn
         @click="remb(product)"
-        color="yellow"
+        color="red"
         text-color="black"
         push
         label="REMB"
@@ -42,10 +42,10 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'OrderItem',
-  props: ['product'],
+  props: ['product', 'value'],
 
   computed: {
-    ...mapState('mvpPrep', ['currentOrderStatus']),
+    ...mapState('mvpPrep', ['currentOrderStatus', 'itemsClicked']),
     isFrais() {
       return this.product._source.fresh
     },
@@ -75,19 +75,29 @@ export default {
       }
     },
     remb(product) {
+      this.incrementClick(product)
       this.addToHistory('remb')
       this.product._source.prep_status = 'remb'
       this.$emit('remb', product)
     },
     manq(product) {
+      this.incrementClick(product)
       this.addToHistory('manq')
       this.product._source.prep_status = 'manq'
       this.$emit('manq', product)
     },
     success(product) {
+      this.incrementClick(product)
       this.addToHistory('success')
       this.product._source.prep_status = 'success'
       this.$emit('success', product)
+    },
+    incrementClick(product) {
+      console.log('increment click')
+      if (product._source.prep_status === undefined) {
+        console.log(this.value)
+        this.$store.commit('mvpPrep/mutate_itemsClicked', this.value + 1)
+      }
     }
   }
 }

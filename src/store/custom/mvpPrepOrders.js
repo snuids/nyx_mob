@@ -10,6 +10,7 @@ export default {
     lock_dry: false,
     lock_fresh: false,
     orders: [],
+    itemsClicked: 0,
     currentOrder: {},
     currentOrderStatus: null,
     currentItem: {},
@@ -18,6 +19,9 @@ export default {
     updated_items: null
   },
   mutations: {
+    mutate_itemsClicked: function(state, payload) {
+      state.itemsClicked = payload
+    },
     mutate_allOrders(state, payload) {
       state.orders = payload
     },

@@ -1,9 +1,20 @@
 <template>
-  <q-page v-if="itemsToDisplay">
-    <div class="text-h6 q-pa-xl">
-      Commande #{{ orderId }} <br />
-      {{ itemsToDisplay.length }} produits
-      <div class="float-right">
+  <q-page v-if="itemsToDisplay" padding style="padding-top: 100px">
+    <div class="row text-h6 flex full-width">
+      <p class="col-xs-6 row justify-center">Commande #{{ orderId }} <br /></p>
+      <p class="col-xs-6 row justify-center">
+        {{ currentOrderItems.length }} produits
+      </p>
+    </div>
+
+    <OrderItems
+      style="padding-bottom: 50px"
+      :products="itemsToDisplay"
+      :preparedProducts="preparedProducts"
+    />
+
+    <q-page-sticky expand position="top">
+      <div class="row full-width flex bg-blue-grey-2">
         <q-toggle
           :label="filterHasFrais"
           color="green"
@@ -12,6 +23,7 @@
           v-model="filterHasFrais"
           toggle-order="tf"
           @click="itemsToDisplay"
+          class="col-xs-4 "
         ></q-toggle>
         <q-toggle
           :label="filterHasSec"
@@ -21,37 +33,49 @@
           v-model="filterHasSec"
           toggle-order="tf"
           @click="itemsToDisplay"
+          class="col-xs-4  "
         ></q-toggle>
+        <q-circular-progress
+          show-value
+          font-size="12px"
+          :value="value + this.itemsClicked"
+          :max="this.currentOrderItems.length"
+          size="50px"
+          :thickness="0.22"
+          color="teal"
+          track-color="grey-3"
+          class="q-ma-md float-right"
+        >
+          {{
+            Math.round(
+              ((value + itemsClicked) * 100) / currentOrderItems.length
+            )
+          }}%
+        </q-circular-progress>
       </div>
-    </div>
-    <OrderItems
-      :products="itemsToDisplay"
-      :preparedProducts="preparedProducts"
-    />
-
-    <div class="q-pa-xl">
-      <q-btn
-        :padding="'35px 40px'"
-        :rounded="true"
-        icon-right="save"
-        @click="unlock"
-        color="green"
-        text-color="black"
-        :to="{ name: 'orders' }"
-        label="valider"
-        class="float-right "
-      />
-
-      <q-btn
-        :padding="'35px 40px'"
-        :rounded="true"
-        color="green"
-        text-color="black"
-        :to="{ name: 'orders' }"
-        label="Retour"
-        class="float-left "
-      />
-    </div>
+    </q-page-sticky>
+    <q-page-sticky expand position="bottom">
+      <div class="row full-width flex bg-blue-grey-2">
+        <q-btn
+          color="green"
+          padding="'35px 40px'"
+          text-color="white"
+          :to="{ name: 'orders' }"
+          label="Retour"
+          class="col-xs-6   "
+        />
+        <q-btn
+          icon-right="save"
+          padding="'35px 40px'"
+          @click="unlock"
+          color="green"
+          text-color="white"
+          :to="{ name: 'orders' }"
+          label="valider"
+          class="col-xs-6   "
+        />
+      </div>
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -59,10 +83,11 @@
 import OrderItems from './OrderItems'
 import moment from 'moment'
 import { mapState, mapGetters } from 'vuex'
+import CallAction from './CallAction'
 
 export default {
   name: 'ShowOrder',
-  components: { OrderItems },
+  components: { CallAction, OrderItems },
   data() {
     return {
       preparedProducts: [],
@@ -72,7 +97,11 @@ export default {
     }
   },
   computed: {
-    ...mapState('mvpPrep', ['currentOrder', 'currentOrderItems']),
+    ...mapState('mvpPrep', [
+      'currentOrder',
+      'currentOrderItems',
+      'itemsClicked'
+    ]),
     ...mapGetters('mvpPrep', [
       'preparedItems',
       'freshItems',
@@ -101,6 +130,20 @@ export default {
         itemList = this.currentOrderItems
       }
       return itemList
+    },
+    value: function() {
+      if (this.preparedFresh != undefined) {
+        return (
+          this.preparedDry.length +
+          this.preparedFresh.length +
+          this.missingDry.length +
+          this.missingFresh.length +
+          this.rembDry.length +
+          this.rembFresh.length
+        )
+      } else {
+        return this.itemsClicked
+      }
     }
   },
   props: ['orderId'],
@@ -353,6 +396,7 @@ export default {
   },
 
   created() {
+    this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
     this.$store.dispatch('mvpPrep/getOrderItems')
   },
 
