@@ -1,5 +1,5 @@
 <template>
-  <q-item :class="[status]">
+  <q-item :class="[`bg-${bgColor}-2`]">
     <q-item-section>
       <q-badge class="frais" align="top">{{
         this.isFrais ? 'Frais' : 'Sec'
@@ -10,7 +10,7 @@
     <q-btn-group class="float-right" rounded>
       <q-btn
         @click="remb(product)"
-        color="red"
+        color="red-4"
         text-color="black"
         push
         label="REMB"
@@ -18,7 +18,7 @@
       ></q-btn>
       <q-btn
         @click="manq(product)"
-        color="amber"
+        color="orange-4"
         text-color="black"
         push
         label="MANQ"
@@ -26,7 +26,7 @@
       ></q-btn>
       <q-btn
         @click="success(product)"
-        color="green"
+        color="green-4"
         text-color="black"
         push
         label="ok"
@@ -51,6 +51,15 @@ export default {
     },
     status() {
       return this.product._source.prep_status
+    },
+    bgColor() {
+      if (this.status === 'remb') {
+        return 'red'
+      } else if (this.status === 'manq') {
+        return 'orange'
+      } else if (this.status === 'success') {
+        return 'green'
+      }
     },
     history() {
       return this.product._source.history

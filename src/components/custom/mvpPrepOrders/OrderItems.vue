@@ -1,5 +1,5 @@
 <template>
-  <q-list bordered separator>
+  <q-list separator class="q-pa-none">
     <OrderItem
       v-for="(item, idx) in products"
       :key="componentKey + idx"

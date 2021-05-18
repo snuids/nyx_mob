@@ -6,11 +6,7 @@
       })"
       :key="idx"
     >
-      <OrderCard
-        @card="orderClicked(order)"
-        :order="order"
-        class="col-xs-12 col-md-6 flex"
-      />
+      <OrderCard @card="orderClicked(order)" :order="order" />
     </div>
   </div>
 </template>

@@ -1,11 +1,6 @@
 <template>
-  <q-page v-if="itemsToDisplay" padding style="padding-top: 100px">
-    <div class="row text-h6 flex full-width">
-      <p class="col-xs-6 row justify-center">Commande #{{ orderId }} <br /></p>
-      <p class="col-xs-6 row justify-center">
-        {{ currentOrderItems.length }} produits
-      </p>
-    </div>
+  <q-page v-if="itemsToDisplay" style="padding-top: 100px">
+    <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
       style="padding-bottom: 50px"
@@ -14,7 +9,10 @@
     />
 
     <q-page-sticky expand position="top">
-      <div class="row full-width flex bg-blue-grey-2">
+      <div class="row full-width flex bg-blue-grey-2 items-center text-h6">
+        <div class="col-xs-2 row justify-center">
+          Commande #{{ orderId }} <br />
+        </div>
         <q-toggle
           :label="filterHasFrais"
           color="green"
@@ -23,7 +21,7 @@
           v-model="filterHasFrais"
           toggle-order="tf"
           @click="itemsToDisplay"
-          class="col-xs-4 "
+          class="col-xs-2 "
         ></q-toggle>
         <q-toggle
           :label="filterHasSec"
@@ -33,32 +31,37 @@
           v-model="filterHasSec"
           toggle-order="tf"
           @click="itemsToDisplay"
-          class="col-xs-4  "
+          class="col-xs-2  "
         ></q-toggle>
-        <q-circular-progress
-          show-value
-          font-size="12px"
-          :value="value + this.itemsClicked"
-          :max="this.currentOrderItems.length"
-          size="50px"
-          :thickness="0.22"
-          color="teal"
-          track-color="grey-3"
-          class="q-ma-md float-right"
-        >
-          {{
-            Math.round(
-              ((value + itemsClicked) * 100) / currentOrderItems.length
-            )
-          }}%
-        </q-circular-progress>
+        <div class="row col-xs-3 justify-center">
+          <q-circular-progress
+            show-value
+            font-size="12px"
+            :value="value + this.itemsClicked"
+            :max="this.currentOrderItems.length"
+            size="50px"
+            :thickness="0.22"
+            color="teal"
+            track-color="grey-3"
+            class="q-ma-md float-right"
+          >
+            {{
+              Math.round(
+                ((value + itemsClicked) * 100) / currentOrderItems.length
+              )
+            }}%
+          </q-circular-progress>
+        </div>
+        <div class="row col-xs-3 justify-center">
+          {{ this.currentOrderItems.length - (value + itemsClicked) }} produits
+          restants
+        </div>
       </div>
     </q-page-sticky>
     <q-page-sticky expand position="bottom">
       <div class="row full-width flex bg-blue-grey-2">
         <q-btn
           color="green"
-          padding="'35px 40px'"
           text-color="white"
           :to="{ name: 'orders' }"
           label="Retour"
@@ -66,7 +69,6 @@
         />
         <q-btn
           icon-right="save"
-          padding="'35px 40px'"
           @click="unlock"
           color="green"
           text-color="white"
