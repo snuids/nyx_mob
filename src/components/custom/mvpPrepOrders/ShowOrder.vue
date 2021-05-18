@@ -1,9 +1,9 @@
 <template>
-  <q-page v-if="itemsToDisplay" style="padding-top: 100px">
+  <q-page v-if="itemsToDisplay" style="padding-top: 80px">
     <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
-      style="padding-bottom: 50px"
+      style="padding-bottom: 35px"
       :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
     />
