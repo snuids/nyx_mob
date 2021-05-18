@@ -1,10 +1,13 @@
 <template>
   <q-item :class="[`bg-${bgColor}-2`]">
+    <q-item-section style="max-width: 100px">
+      <img src="https://via.placeholder.com/100" />
+    </q-item-section>
     <q-item-section>
       <q-badge class="frais" align="top">{{
         this.isFrais ? 'Frais' : 'Sec'
       }}</q-badge>
-      <div>1 &nbsp; {{ product._source.name }}</div>
+      <div style="font-weight: bold">1 &nbsp; {{ product._source.name }}</div>
       <div>LOC {{ product._source.loc }} | {{ product._source.vendor }}</div>
     </q-item-section>
     <q-btn-group class="float-right" rounded>

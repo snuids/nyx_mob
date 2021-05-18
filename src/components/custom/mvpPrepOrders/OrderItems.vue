@@ -2,7 +2,7 @@
   <q-list separator class="q-pa-none">
     <OrderItem
       v-for="(item, idx) in products"
-      :key="componentKey + idx"
+      :key="componentKey + item._id + idx"
       :product="item"
       :value="value"
       @remb="addProductToPreparedItems"
