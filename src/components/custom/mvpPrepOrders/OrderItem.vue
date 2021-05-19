@@ -1,42 +1,47 @@
 <template>
-  <q-item :class="[`bg-${bgColor}-2`]">
-    <q-item-section style="max-width: 100px">
-      <img src="https://via.placeholder.com/100" />
-    </q-item-section>
-    <q-item-section>
-      <q-badge class="frais" align="top">{{
-        this.isFrais ? 'Frais' : 'Sec'
-      }}</q-badge>
-      <div style="font-weight: bold">1 &nbsp; {{ product._source.name }}</div>
-      <div>LOC {{ product._source.loc }} | {{ product._source.vendor }}</div>
-    </q-item-section>
-    <q-btn-group class="float-right" rounded>
-      <q-btn
-        @click="remb(product)"
-        color="red-4"
-        text-color="black"
-        push
-        label="REMB"
-        unelevated
-      ></q-btn>
-      <q-btn
-        @click="manq(product)"
-        color="orange-4"
-        text-color="black"
-        push
-        label="MANQ"
-        unelevated
-      ></q-btn>
-      <q-btn
-        @click="success(product)"
-        color="green-4"
-        text-color="black"
-        push
-        label="ok"
-        unelevated
-      ></q-btn>
-    </q-btn-group>
-  </q-item>
+  <transition name="item">
+    <q-item
+      :class="[`bg-${bgColor}-2`]"
+      v-if="product._source.prep_status !== 'success'"
+    >
+      <q-item-section style="max-width: 100px">
+        <img src="https://via.placeholder.com/100" />
+      </q-item-section>
+      <q-item-section>
+        <q-badge class="frais" align="top">{{
+          this.isFrais ? 'Frais' : 'Sec'
+        }}</q-badge>
+        <div style="font-weight: bold">1 &nbsp; {{ product._source.name }}</div>
+        <div>LOC {{ product._source.loc }} | {{ product._source.vendor }}</div>
+      </q-item-section>
+      <q-btn-group class="float-right" rounded>
+        <q-btn
+          @click="remb(product)"
+          color="red-4"
+          text-color="black"
+          push
+          label="REMB"
+          unelevated
+        ></q-btn>
+        <q-btn
+          @click="manq(product)"
+          color="orange-4"
+          text-color="black"
+          push
+          label="MANQ"
+          unelevated
+        ></q-btn>
+        <q-btn
+          @click="success(product)"
+          color="green-4"
+          text-color="black"
+          push
+          label="ok"
+          unelevated
+        ></q-btn>
+      </q-btn-group>
+    </q-item>
+  </transition>
 </template>
 
 <script>
@@ -130,5 +135,15 @@ export default {
 
 .frais {
   max-width: 40px;
+}
+
+.item-leave-from {
+  opacity: 1;
+}
+.item-leave-to {
+  opacity: 0;
+}
+.item-leave-active {
+  transition: all 1s ease-out;
 }
 </style>
