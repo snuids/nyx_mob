@@ -1,38 +1,49 @@
 <template>
   <q-page>
     <div class="flex flex-center column" v-if="orders">
-      <div class="text-h6 q-pa-xl">
-        {{ ordersToDisplay.length }} commandes
-        <div class="float-right">
-          <q-toggle
-            :label="filterHasFrais"
-            color="green"
-            false-value="Pas de Frais"
-            true-value="Frais"
-            v-model="filterHasFrais"
-            toggle-order="tf"
-            @click="ordersToDisplay"
-          ></q-toggle>
-          <q-toggle
-            :label="filterHasSec"
-            color="green"
-            false-value="Pas de Sec"
-            true-value="Sec"
-            v-model="filterHasSec"
-            toggle-order="tf"
-            @click="ordersToDisplay"
-          ></q-toggle>
-        </div>
-      </div>
       <div
         class="row justify-between q-mt-sm"
-        style="min-height: 400px; width: 80%; padding: 24px;"
+        style="min-height: 400px; width: 80%; padding-top: 200px"
       >
         <OrdersList :orders="ordersToDisplay" />
       </div>
     </div>
     <q-page-sticky expand position="top">
-      <StickyBanner></StickyBanner>
+      <div class="row full-width flex bg-blue-grey-2 items-center">
+        <div
+          class="row col-xs-6 justify-center  text-h6 items-center "
+          style="height: 50px"
+        >
+          {{ userName }}
+        </div>
+        <div class="row col-xs-6  justify-center text-h6 ">
+          {{ ordersToDisplay.length }} commandes
+          <div class="float-right">
+            <q-toggle
+              :label="filterHasFrais"
+              color="green"
+              false-value="Pas de Frais"
+              true-value="Frais"
+              v-model="filterHasFrais"
+              toggle-order="tf"
+              @click="ordersToDisplay"
+            ></q-toggle>
+            <q-toggle
+              :label="filterHasSec"
+              color="green"
+              false-value="Pas de Sec"
+              true-value="Sec"
+              v-model="filterHasSec"
+              toggle-order="tf"
+              @click="ordersToDisplay"
+            ></q-toggle>
+          </div>
+        </div>
+        <StickyBanner
+          class="row items-center"
+          style="height: 50px"
+        ></StickyBanner>
+      </div>
     </q-page-sticky>
     <q-page-container>
       <router-view />
@@ -43,7 +54,7 @@
 <script>
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrdersList from './mvpPrepOrders/OrdersList'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -65,7 +76,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders']),
+    userName() {
+      return this.creds.user.firstname
+    },
     targetDate: function() {
       return this.$store.getters['mvp/targetDate']
     },
@@ -108,8 +123,10 @@ export default {
 
   watch: {
     targetDate: {
-      handler: async function() {
-        await this.$store.dispatch('mvpPrep/getOrders')
+      handler: function() {
+        this.$store.dispatch('mvpPrep/getOrders').then(() => {
+          console.log(this.orders)
+        })
       },
       deep: true
     },

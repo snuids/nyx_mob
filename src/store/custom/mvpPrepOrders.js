@@ -118,7 +118,13 @@ export default {
             response.data.records.sort((a, b) =>
               a._source.loc > b._source.loc ? 1 : -1
             )
-            commit('mutate_currentOrderItems', response.data.records)
+            let products = response.data.records
+            for (let i in products) {
+              if (products[i]._source.prep_status === undefined) {
+                products[i]._source.prep_status = ''
+              }
+            }
+            commit('mutate_currentOrderItems', products)
           }
         })
         .catch(error => {
@@ -196,7 +202,20 @@ export default {
         .post(url, queryList1)
         .then(response => {
           Loading.hide()
-          commit('mutate_allOrders', response.data.records)
+          let orders = response.data.records
+          for (let i in orders) {
+            if (orders[i]._source.dryItems === undefined) {
+              orders[i]._source.preparedDry = []
+              orders[i]._source.preparedFresh = []
+              orders[i]._source.dryItems = []
+              orders[i]._source.freshItems = []
+              orders[i]._source.missingFresh = []
+              orders[i]._source.missingDry = []
+              orders[i]._source.rembDry = []
+              orders[i]._source.rembFresh = []
+            }
+          }
+          commit('mutate_allOrders', orders)
         })
         .catch(error => {
           Loading.hide()

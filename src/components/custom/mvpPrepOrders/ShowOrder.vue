@@ -1,5 +1,5 @@
 <template>
-  <q-page v-if="itemsToDisplay" style="padding-top: 40px">
+  <q-page v-if="itemsToDisplay" style="padding-top: 140px">
     <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
@@ -10,6 +10,23 @@
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-2 items-center text-h6">
+        <div
+          class="row col-xs-12 justify-center bg-green-7  items-center text-white"
+          style="height: 100px"
+        >
+          <div>
+            <q-btn
+              :to="{ name: 'orders' }"
+              icon="arrow_back_ios"
+              style="margin-right: 60px"
+              size="20px"
+              unelevated
+            />
+          </div>
+
+          {{ userName }}
+        </div>
+
         <div class="col-xs-6 row justify-start">
           Commande #{{ orderId }} <br />
         </div>
@@ -62,13 +79,7 @@
           {{ this.currentOrderItems.length - (value + itemsClicked) }} produits
           restants
         </div>
-        <!--<q-btn
-          color="green"
-          text-color="white"
-          :to="{ name: 'orders' }"
-          label="Retour"
-          class="col-xs-3   justify-center"
-        />-->
+        <!---->
         <div class="row col-xs-2 justify-center">
           <q-btn
             icon-right="save"
@@ -90,10 +101,11 @@ import OrderItems from './OrderItems'
 import moment from 'moment'
 import { mapState, mapGetters } from 'vuex'
 import CallAction from './CallAction'
+import OrderItem from './OrderItem'
 
 export default {
   name: 'ShowOrder',
-  components: { CallAction, OrderItems },
+  components: { CallAction, OrderItems, OrderItem },
   data() {
     return {
       preparedProducts: [],
@@ -108,6 +120,12 @@ export default {
       'currentOrderItems',
       'itemsClicked'
     ]),
+    userName: function() {
+      return this.creds.user.firstname
+      //' ' +
+      //this.$store.getters.creds.user.lastname
+    },
+    ...mapGetters(['creds']),
     ...mapGetters('mvpPrep', [
       'preparedItems',
       'freshItems',
@@ -142,8 +160,6 @@ export default {
         return (
           this.preparedDry.length +
           this.preparedFresh.length +
-          this.missingDry.length +
-          this.missingFresh.length +
           this.rembDry.length +
           this.rembFresh.length
         )

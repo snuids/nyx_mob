@@ -1,8 +1,8 @@
 <template>
-  <transition name="item">
+  <transition appear leave-active-class="animated fadeOutDown" :duration="300">
     <q-item
       :class="[`bg-${bgColor}-2`]"
-      v-if="product._source.prep_status !== 'success'"
+      v-if="prepStatus !== 'success' || !prepa"
     >
       <q-item-section style="max-width: 100px">
         <img src="https://via.placeholder.com/100" />
@@ -11,8 +11,13 @@
         <q-badge class="frais" align="top">{{
           this.isFrais ? 'Frais' : 'Sec'
         }}</q-badge>
-        <div style="font-weight: bold">1 &nbsp; {{ product._source.name }}</div>
-        <div>LOC {{ product._source.loc }} | {{ product._source.vendor }}</div>
+        <div style="font-weight: bold; font-size: 16px">
+          1 &nbsp; {{ product._source.name }}
+        </div>
+        <div>
+          <q-icon name="location_on"></q-icon>
+          LOC {{ product._source.loc }} | {{ product._source.vendor }}
+        </div>
       </q-item-section>
       <q-btn-group class="float-right" rounded>
         <q-btn
@@ -51,9 +56,16 @@ import { mapState } from 'vuex'
 export default {
   name: 'OrderItem',
   props: ['product', 'value'],
-
+  data() {
+    return {
+      prepa: false
+    }
+  },
   computed: {
     ...mapState('mvpPrep', ['currentOrderStatus', 'itemsClicked']),
+    prepStatus() {
+      return this.product._source.prep_status
+    },
     isFrais() {
       return this.product._source.fresh
     },
@@ -61,11 +73,11 @@ export default {
       return this.product._source.prep_status
     },
     bgColor() {
-      if (this.status === 'remb') {
+      if (this.product._source.prep_status === 'remb') {
         return 'red'
-      } else if (this.status === 'manq') {
+      } else if (this.product._source.prep_status === 'manq') {
         return 'orange'
-      } else if (this.status === 'success') {
+      } else if (this.product._source.prep_status === 'success') {
         return 'green'
       }
     },
@@ -94,24 +106,28 @@ export default {
     remb(product) {
       this.incrementClick(product)
       this.addToHistory('remb')
-      this.product._source.prep_status = 'remb'
+      this.$set(this.product._source, 'prep_status', 'remb')
       this.$emit('remb', product)
     },
     manq(product) {
-      this.incrementClick(product)
+      //this.incrementClick(product)
       this.addToHistory('manq')
-      this.product._source.prep_status = 'manq'
+      this.$set(this.product._source, 'prep_status', 'manq')
       this.$emit('manq', product)
     },
     success(product) {
+      this.prepa = true
       this.incrementClick(product)
       this.addToHistory('success')
-      this.product._source.prep_status = 'success'
+      this.$set(this.product._source, 'prep_status', 'success')
       this.$emit('success', product)
     },
     incrementClick(product) {
       console.log('increment click')
-      if (product._source.prep_status === undefined) {
+      if (
+        product._source.prep_status === '' ||
+        product._source.prep_status === 'manq'
+      ) {
         console.log(this.value)
         this.$store.commit('mvpPrep/mutate_itemsClicked', this.value + 1)
       }
@@ -135,15 +151,5 @@ export default {
 
 .frais {
   max-width: 40px;
-}
-
-.item-leave-from {
-  opacity: 1;
-}
-.item-leave-to {
-  opacity: 0;
-}
-.item-leave-active {
-  transition: all 1s ease-out;
 }
 </style>

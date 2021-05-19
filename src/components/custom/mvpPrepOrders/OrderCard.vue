@@ -53,14 +53,7 @@
       </q-card-section>
       <q-separator />
       <CollapsibleSection>
-        <q-card-section
-          v-if="
-            order._source.preparedDry &&
-              order._source.preparedFresh &&
-              order._source.dryItems &&
-              order._source.freshItems
-          "
-        >
+        <q-card-section>
           <p>
             Produits ajoutés avec succès:
             {{
@@ -70,7 +63,6 @@
           </p>
 
           <q-circular-progress
-            v-if="order._source.dryItems"
             v-show="order._source.dryItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -86,7 +78,6 @@
           >
 
           <q-circular-progress
-            v-if="order._source.freshItems"
             v-show="order._source.freshItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -101,9 +92,7 @@
           >
         </q-card-section>
         <q-separator />
-        <q-card-section
-          v-if="order._source.missingDry && order._source.missingFresh"
-        >
+        <q-card-section>
           <p>
             Produits en attente producteur:
             {{
@@ -112,7 +101,6 @@
             }}
           </p>
           <q-circular-progress
-            v-if="order._source.dryItems"
             v-show="order._source.dryItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -128,7 +116,6 @@
           >
 
           <q-circular-progress
-            v-if="order._source.freshItems"
             v-show="order._source.freshItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -143,13 +130,12 @@
           >
         </q-card-section>
         <q-separator />
-        <q-card-section v-if="order._source.rembDry && order._source.rembFresh">
+        <q-card-section>
           <p>
             Produits à rembourser:
             {{ order._source.rembDry.length + order._source.rembFresh.length }}
           </p>
           <q-circular-progress
-            v-if="order._source.dryItems"
             v-show="order._source.dryItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -165,7 +151,6 @@
           >
 
           <q-circular-progress
-            v-if="order._source.freshItems"
             v-show="order._source.freshItems.length > 0"
             show-value
             class="text-light-blue q-ma-md"
@@ -197,27 +182,32 @@ export default {
     cardDisabled() {
       return this.order._source.lock
     },
-    ...mapState('mvpPrep', ['lock_fresh', 'lock_dry']),
+    ...mapState('mvpPrep', ['lock_fresh', 'lock_dry', 'currentOrderItems']),
     status() {
       return this.order._source.prep_status
     }
   },
   methods: {
-    async cardClick() {
+    cardClick() {
       console.log(this.cardDisabled)
       if (this.cardDisabled) return
       this.updateOrderStatus()
       this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
       this.$q.loading.show()
-      await this.$store.dispatch('mvpPrep/getOrderItems')
-      this.$q.loading.hide()
-      console.log('these are the items sent when the card was cliked')
-      console.log(this.$store.getters['mvpPrep/orderItems'])
-      let orderId = this.order._source.order_number.replace('#', '')
-      await this.$router.push({
-        name: 'order-display',
-        params: { orderId: orderId }
-      })
+      this.$store
+        .dispatch('mvpPrep/getOrderItems')
+        .then(() => {
+          this.$q.loading.hide()
+          console.log('these are the items sent when the card was cliked')
+          console.log(this.currentOrderItems)
+        })
+        .then(() => {
+          //let orderId = this.order._source.order_number.replace('#', '')
+          this.$router.push({
+            name: 'order-display',
+            params: { orderId: this.order._id }
+          })
+        })
     },
     updateOrderStatus() {
       this.order._source.prep_status = 'started'
