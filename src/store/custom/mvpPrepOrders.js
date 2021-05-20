@@ -16,9 +16,13 @@ export default {
     currentItem: {},
     currentOrderItems: null,
     currentOrderPreparedItems: null,
-    updated_items: null
+    updated_items: null,
+    displayedItems: []
   },
   mutations: {
+    mutate_displayedItems(state, payload) {
+      state.displayedItems = payload
+    },
     mutate_itemsClicked: function(state, payload) {
       state.itemsClicked = payload
     },
@@ -124,6 +128,21 @@ export default {
                 products[i]._source.prep_status = ''
               }
             }
+            products.sort((a, b) => {
+              if (
+                a._source.prep_status === '' ||
+                b._source.prep_status === ''
+              ) {
+                return b._source.prep_status !== '' ? -1 : 1
+              } else if (
+                a._source.prep_status === 'manq' ||
+                b._source.prep_status === 'manq'
+              ) {
+                return b._source.prep_status !== 'manq' ? -1 : 1
+              } else if (a._source.prep_status === 'remb') {
+                return b._source.prep_status !== 'remb' ? -1 : 1
+              }
+            })
             commit('mutate_currentOrderItems', products)
           }
         })
@@ -132,6 +151,7 @@ export default {
           console.error(error)
         })
     },
+    sortItems(product1, product2) {},
     updateOrderItems({ state, commit }, payload) {
       Loading.show({
         delay: 300
@@ -153,7 +173,9 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
-      Loading.show()
+      Loading.show({
+        delay: 2000
+      })
       const indiceOrders = 'mvp_app_order'
       const mvpStore = rootState.mvp
       let queryList1 = {

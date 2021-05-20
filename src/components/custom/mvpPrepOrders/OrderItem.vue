@@ -1,18 +1,29 @@
 <template>
-  <transition appear leave-active-class="animated fadeOutDown" :duration="300">
+  <transition
+    appear
+    enter-active-class="animated fadeInUp"
+    leave-active-class="animated fadeOutDown"
+    :duration="300"
+  >
     <q-item
-      :class="[`bg-${bgColor}-2`]"
+      clickable
+      :class="[`bg-${bgColor}-2`, 'item']"
       v-if="prepStatus !== 'success' || !prepa"
     >
       <q-item-section style="max-width: 100px">
         <img src="https://via.placeholder.com/100" />
       </q-item-section>
       <q-item-section>
-        <q-badge class="frais" align="top">{{
-          this.isFrais ? 'Frais' : 'Sec'
-        }}</q-badge>
-        <div style="font-weight: bold; font-size: 16px">
-          1 &nbsp; {{ product._source.name }}
+        <div class="flex row items-center" style="max-height: 50px">
+          <div
+            style="font-weight: bold; font-size: 16px"
+            class="row col-xs-4 justify-start "
+          >
+            {{ product._source.name }}
+          </div>
+          <q-badge class="frais row col-xs-2 justify-center ">
+            {{ this.isFrais ? 'Frais' : 'Sec' }}
+          </q-badge>
         </div>
         <div>
           <q-icon name="location_on"></q-icon>
@@ -62,7 +73,11 @@ export default {
     }
   },
   computed: {
-    ...mapState('mvpPrep', ['currentOrderStatus', 'itemsClicked']),
+    ...mapState('mvpPrep', [
+      'currentOrderStatus',
+      'itemsClicked',
+      'displayedItems'
+    ]),
     prepStatus() {
       return this.product._source.prep_status
     },
@@ -120,6 +135,18 @@ export default {
       this.incrementClick(product)
       this.addToHistory('success')
       this.$set(this.product._source, 'prep_status', 'success')
+      setTimeout(() => {
+        this.$store.commit(
+          'mvpPrep/mutate_displayedItems',
+          this.displayedItems.push(
+            this.displayedItems.splice(
+              this.displayedItems.indexOf(product),
+              1
+            )[0]
+          )
+        )
+      }, 300)
+
       this.$emit('success', product)
     },
     incrementClick(product) {
@@ -150,5 +177,11 @@ export default {
 
 .frais {
   max-width: 40px;
+}
+
+.item {
+  border-radius: 20px;
+  box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
+  margin-bottom: 5px;
 }
 </style>

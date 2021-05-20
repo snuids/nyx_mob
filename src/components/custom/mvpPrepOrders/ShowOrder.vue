@@ -4,7 +4,6 @@
 
     <OrderItems
       style="padding-bottom: 80px"
-      :products="itemsToDisplay"
       :preparedProducts="preparedProducts"
     />
 
@@ -21,6 +20,8 @@
               style="margin-right: 60px"
               size="20px"
               unelevated
+              round
+              outline
             />
           </div>
 
@@ -150,6 +151,7 @@ export default {
       } else {
         itemList = this.currentOrderItems
       }
+      this.$store.commit('mvpPrep/mutate_displayedItems', itemList)
       return itemList
     }
   },
@@ -416,7 +418,7 @@ export default {
             }
           }
         ],
-        timeout: 1000
+        timeout: 500
       })
     }
   },
@@ -432,11 +434,11 @@ export default {
       if (newValue === this.currentOrderItems.length) {
         this.showNotif('center')
         setTimeout(() => {
-          this.unlock().then(() => {
+          this.unlock().then(() =>
             this.$router.push({
               name: 'orders'
             })
-          })
+          )
         }, 2000)
       }
     }

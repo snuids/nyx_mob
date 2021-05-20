@@ -1,7 +1,7 @@
 <template>
-  <q-list separator class="q-pa-none">
+  <q-list class="q-pa-none">
     <OrderItem
-      v-for="(item, idx) in products"
+      v-for="(item, idx) in this.displayedItems"
       :key="item._id + idx"
       :product="item"
       @remb="addProductToPreparedItems"
@@ -14,14 +14,18 @@
 
 <script>
 import OrderItem from './OrderItem'
+import { mapState } from 'vuex'
 
 export default {
   name: 'OrderItems',
-  props: ['products', 'preparedProducts'],
+  props: ['preparedProducts'],
   data() {
     return {
       componentKey: 0
     }
+  },
+  computed: {
+    ...mapState('mvpPrep', ['displayedItems'])
   },
   components: { OrderItem },
   methods: {
