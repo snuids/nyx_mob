@@ -1,5 +1,5 @@
 <template>
-  <q-page v-if="itemsToDisplay" style="padding-top: 140px">
+  <q-page v-if="itemsToDisplay" style="padding-top: 170px">
     <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
@@ -353,11 +353,11 @@ export default {
     addProductToPrepared(productsArray, arrayToInsertIn, product) {
       productsArray.forEach(products => {
         if (products === arrayToInsertIn) {
-          if (!this.included(products, product)) {
+          if (products.filter(item => item._id === product._id).length === 0) {
             arrayToInsertIn.push(product)
           }
         } else {
-          if (this.included(products, product)) {
+          if (products.filter(item => item._id === product._id).length > 0) {
             this.update(products, product)
             console.log('element removed from ', products)
           }
@@ -368,14 +368,6 @@ export default {
     update(products, product) {
       const eltIdx = products.findIndex(elt => elt._id === product._id)
       products.splice(eltIdx, 1)
-    },
-    included: function(products, product) {
-      for (let p in products) {
-        if (products[p]._id === product._id) {
-          return true
-        }
-      }
-      return false
     },
 
     preventNav(event) {

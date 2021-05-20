@@ -30,7 +30,10 @@ export default {
   components: { OrderItem },
   methods: {
     addProductToPreparedItems(product) {
-      if (this.included(this.preparedProducts, product)) {
+      if (
+        this.preparedProducts.filter(item => item._id === product._id).length >
+        0
+      ) {
         this.update(this.preparedProducts, product)
       } else {
         this.preparedProducts.push(product)
@@ -47,14 +50,6 @@ export default {
         ...product
       }
       this.$store.commit('mvpPrep/mutate_preparedItems', newProductsArray)
-    },
-    included: function(products, product) {
-      for (let p in products) {
-        if (products[p]._id === product._id) {
-          return true
-        }
-      }
-      return false
     }
   }
 }

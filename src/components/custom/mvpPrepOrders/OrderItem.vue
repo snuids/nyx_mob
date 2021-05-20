@@ -1,10 +1,5 @@
 <template>
-  <transition
-    appear
-    enter-active-class="animated fadeInUp"
-    leave-active-class="animated fadeOutDown"
-    :duration="300"
-  >
+  <transition appear leave-active-class="animated fadeOutDown" duration="250">
     <q-item
       clickable
       :class="[`bg-${bgColor}-2`, 'item']"
@@ -84,9 +79,7 @@ export default {
     isFrais() {
       return this.product._source.fresh
     },
-    status() {
-      return this.product._source.prep_status
-    },
+
     bgColor() {
       if (this.product._source.prep_status === 'remb') {
         return 'red'
@@ -125,7 +118,7 @@ export default {
       this.$emit('remb', product)
     },
     manq(product) {
-      //this.incrementClick(product)
+      this.decrementClick(product)
       this.addToHistory('manq')
       this.$set(this.product._source, 'prep_status', 'manq')
       this.$emit('manq', product)
@@ -147,6 +140,8 @@ export default {
         )
       }, 300)
 
+      console.log('-------------------------', this.displayedItems)
+
       this.$emit('success', product)
     },
     incrementClick(product) {
@@ -156,6 +151,14 @@ export default {
       ) {
         console.log('ok')
         this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
+      }
+    },
+    decrementClick(product) {
+      if (
+        product._source.prep_status === 'remb' ||
+        product._source.prep_status === 'success'
+      ) {
+        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked - 1)
       }
     }
   }

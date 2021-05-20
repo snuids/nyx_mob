@@ -151,7 +151,6 @@ export default {
           console.error(error)
         })
     },
-    sortItems(product1, product2) {},
     updateOrderItems({ state, commit }, payload) {
       Loading.show({
         delay: 300
