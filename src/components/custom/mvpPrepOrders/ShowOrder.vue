@@ -56,11 +56,11 @@
     </q-page-sticky>
     <q-page-sticky expand position="bottom">
       <div class="row full-width flex items-center bg-blue-5 text-h6">
-        <div class="row col-xs-5 justify-center ">
+        <div class="row col-xs-6 justify-end ">
           <q-circular-progress
             show-value
             font-size="12px"
-            :value="value + this.itemsClicked"
+            :value="progress"
             :max="this.currentOrderItems.length"
             size="50px"
             :thickness="0.22"
@@ -68,29 +68,13 @@
             track-color="grey-3"
             class="q-ma-md float-right"
           >
-            {{
-              Math.round(
-                ((value + itemsClicked) * 100) / currentOrderItems.length
-              )
-            }}%
+            {{ Math.round((progress * 100) / currentOrderItems.length) }}%
           </q-circular-progress>
         </div>
-        <div class="row col-xs-5 justify-start ">
-          {{ this.currentOrderItems.length - (value + itemsClicked) }} produits
-          restants
+        <div class="row col-xs-6 justify-start ">
+          {{ this.currentOrderItems.length - progress }} produits restants
         </div>
         <!---->
-        <div class="row col-xs-2 justify-center">
-          <q-btn
-            icon-right="save"
-            @click="unlock"
-            color="green"
-            text-color="white"
-            :to="{ name: 'orders' }"
-            label="valider"
-            style="height: 60px;"
-          />
-        </div>
       </div>
     </q-page-sticky>
   </q-page>
@@ -115,6 +99,19 @@ export default {
     }
   },
   computed: {
+    progress() {
+      let alreadyMadeProgress
+      if (this.preparedFresh != undefined) {
+        alreadyMadeProgress =
+          this.preparedDry.length +
+          this.preparedFresh.length +
+          this.rembDry.length +
+          this.rembFresh.length
+      } else {
+        alreadyMadeProgress = this.itemsClicked
+      }
+      return alreadyMadeProgress + this.itemsClicked
+    },
     ...mapState('mvpPrep', [
       'currentOrder',
       'currentOrderItems',
@@ -154,18 +151,6 @@ export default {
         itemList = this.currentOrderItems
       }
       return itemList
-    },
-    value: function() {
-      if (this.preparedFresh != undefined) {
-        return (
-          this.preparedDry.length +
-          this.preparedFresh.length +
-          this.rembDry.length +
-          this.rembFresh.length
-        )
-      } else {
-        return this.itemsClicked
-      }
     }
   },
   props: ['orderId'],
@@ -396,6 +381,43 @@ export default {
       event.preventDefault()
       this.sendUnlockOrder()
       event.returnValue = ''
+    },
+
+    showNotif(position) {
+      const alerts = [
+        {
+          color: 'green',
+          message: "Wow! tu te dépasses aujourd'hui",
+          icon: 'thumb_up'
+        },
+        {
+          color: 'teal',
+          message: 'Commande préparée avec succès',
+          icon: 'tag_faces'
+        }
+      ]
+      const { color, textColor, multiLine, icon, message, avatar } = alerts[
+        Math.floor(Math.random() * 10) % alerts.length
+      ]
+
+      this.$q.notify({
+        color,
+        textColor,
+        //icon: random > 30 ? icon : null,
+        icon,
+        message,
+        position,
+        avatar,
+        multiLine,
+        actions: [
+          {
+            handler: () => {
+              console.log('wooow')
+            }
+          }
+        ],
+        timeout: 1000
+      })
     }
   },
 
@@ -405,6 +427,18 @@ export default {
     },
     filterHasFrais: function(newFilter) {
       localStorage.filterHasFrais = newFilter
+    },
+    progress: function(newValue) {
+      if (newValue === this.currentOrderItems.length) {
+        this.showNotif('center')
+        setTimeout(() => {
+          this.unlock().then(() => {
+            this.$router.push({
+              name: 'orders'
+            })
+          })
+        }, 2000)
+      }
     }
   },
 
@@ -427,7 +461,7 @@ export default {
   },
 
   async beforeRouteLeave(to, from, next) {
-    await this.sendUnlockOrder()
+    await this.unlock()
     next()
   },
 

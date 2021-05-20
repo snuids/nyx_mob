@@ -3,7 +3,7 @@
     <q-card
       :disabled="cardDisabled"
       v-ripple
-      :class="[status, 'col-xs-12 cursor-pointer q-hoverable myCard']"
+      :class="[status, 'cursor-pointer q-hoverable myCard']"
     >
       <span class="q-focus-helper"></span>
       <q-card-section class="text-h6">{{

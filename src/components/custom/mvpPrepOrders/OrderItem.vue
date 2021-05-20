@@ -55,7 +55,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'OrderItem',
-  props: ['product', 'value'],
+  props: ['product'],
   data() {
     return {
       prepa: false
@@ -123,13 +123,12 @@ export default {
       this.$emit('success', product)
     },
     incrementClick(product) {
-      console.log('increment click')
       if (
         product._source.prep_status === '' ||
         product._source.prep_status === 'manq'
       ) {
-        console.log(this.value)
-        this.$store.commit('mvpPrep/mutate_itemsClicked', this.value + 1)
+        console.log('ok')
+        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
       }
     }
   }

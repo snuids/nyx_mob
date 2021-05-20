@@ -1,9 +1,9 @@
 <template>
   <q-page>
-    <div class="flex flex-center column" v-if="orders">
+    <div class="row full-width flex flex-center column" v-if="orders">
       <div
-        class="row justify-between q-mt-sm"
-        style="min-height: 400px; width: 80%; padding-top: 200px"
+        class="row col-xs-12 justify-between q-mt-sm q-pa-xl"
+        style="min-height: 400px; padding-top: 130px"
       >
         <OrdersList :orders="ordersToDisplay" />
       </div>
