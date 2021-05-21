@@ -32,7 +32,23 @@
           Commande #{{ orderId }} <br />
         </div>
         <div class="row col-xs-6 justify-center">
-          <q-toggle
+          <q-btn-toggle
+              v-model="modeFilter"
+              spread
+              class="my-custom-toggle"
+              no-caps
+              rounded
+              unelevated
+              toggle-color="primary"
+              color="white"
+              text-color="primary"
+              :options="[
+                {label: 'Frais', value: 'fresh'},
+                {label: 'Sec', value: 'dry'},
+                {label: 'Tout', value: 'all'},
+              ]"
+            ></q-btn-toggle>
+          <!-- <q-toggle
             :label="filterHasFrais"
             color="green"
             false-value="Pas de Frais"
@@ -51,7 +67,7 @@
             toggle-order="tf"
             @click="itemsToDisplay"
             class="col-xs-3  "
-          ></q-toggle>
+          ></q-toggle> -->
         </div>
       </div>
     </q-page-sticky>
@@ -96,7 +112,7 @@ export default {
       preparedProducts: [],
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
-      isEditing: false
+      isEditing: false,
     }
   },
   computed: {
@@ -118,6 +134,15 @@ export default {
       'currentOrderItems',
       'itemsClicked'
     ]),
+    modeFilter: {
+        get(){
+          return this.$store.getters['mvpPrep/modeFilter']
+        },
+        set(newMode){
+          return this.$store.commit('mvpPrep/mutate_modeFilter', newMode)
+          return newMode
+        } 
+    },
     userName: function() {
       return this.creds.user.firstname
       //' ' +
@@ -133,9 +158,10 @@ export default {
       'missingDry',
       'missingFresh',
       'rembDry',
-      'rembFresh'
+      'rembFresh',
     ]),
     itemsToDisplay: function() {
+      console.log('itemsToDisplay')
       let itemList
       if (this.filterHasFrais === 'Pas de Frais') {
         itemList = this.currentOrderItems.filter(
@@ -151,12 +177,15 @@ export default {
       } else {
         itemList = this.currentOrderItems
       }
-      this.$store.commit('mvpPrep/mutate_displayedItems', itemList)
+      // this.$store.commit('mvpPrep/mutate_displayedItems', itemList)
       return itemList
     }
   },
   props: ['orderId'],
   methods: {
+    setItemsToDisplay() {
+      this.$store.commit('mvpPrep/mutate_displayedItems', this.itemsToDisplay)
+    },
     isFrais(item) {
       return item._source.fresh
     },
@@ -443,6 +472,8 @@ export default {
     if (localStorage.filterHasFrais) {
       this.filterHasFrais = localStorage.filterHasFrais
     }
+
+    this.setItemsToDisplay()
   },
 
   created() {

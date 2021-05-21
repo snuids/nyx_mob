@@ -19,6 +19,24 @@
         <div class="row col-xs-6  justify-center text-h6 ">
           {{ ordersToDisplay.length }} commandes
           <div class="float-right">
+            <q-btn-toggle
+              v-model="modeFilter"
+              spread
+              class="my-custom-toggle"
+              no-caps
+              rounded
+              unelevated
+              toggle-color="primary"
+              color="white"
+              text-color="primary"
+              :options="[
+                {label: 'Frais', value: 'fresh'},
+                {label: 'Sec', value: 'dry'},
+                {label: 'Tout', value: 'all'},
+              ]"
+            ></q-btn-toggle>
+          </div>
+          <!-- <div class="float-right">
             <q-toggle
               :label="filterHasFrais"
               color="green"
@@ -37,7 +55,7 @@
               toggle-order="tf"
               @click="ordersToDisplay"
             ></q-toggle>
-          </div>
+          </div> -->
         </div>
         <StickyBanner
           class="row items-center"
@@ -78,6 +96,15 @@ export default {
   computed: {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders']),
+    modeFilter: {
+        get(){
+          return this.$store.getters['mvpPrep/modeFilter']
+        },
+        set(newMode){
+          return this.$store.commit('mvpPrep/mutate_modeFilter', newMode)
+          return newMode
+        } 
+    },
     userName() {
       return this.creds.user.firstname
     },
@@ -135,7 +162,10 @@ export default {
     },
     filterHasFrais: function(newFilter) {
       localStorage.filterHasFrais = newFilter
-    }
+    },
+    // modeFilter: function(newFilter) {
+    //   this.$store.commit('mvpPrep/mutate_modeFilter', newFilter)
+    // }
   },
 
   async created() {
@@ -149,6 +179,13 @@ export default {
     if (localStorage.filterHasFrais) {
       this.filterHasFrais = localStorage.filterHasFrais
     }
+
+
+  if (localStorage.modeFilter){
+    this.modeFilter = localStorage.modeFilter
+  }
+
+
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(
       async function() {

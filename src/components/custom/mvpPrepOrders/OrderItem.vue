@@ -128,19 +128,36 @@ export default {
       this.incrementClick(product)
       this.addToHistory('success')
       this.$set(this.product._source, 'prep_status', 'success')
-      setTimeout(() => {
-        this.$store.commit(
-          'mvpPrep/mutate_displayedItems',
-          this.displayedItems.push(
-            this.displayedItems.splice(
-              this.displayedItems.indexOf(product),
-              1
-            )[0]
-          )
-        )
-      }, 300)
 
-      console.log('-------------------------', this.displayedItems)
+
+      // let tmpDisplayedItems = JSON.parse(JSON.stringify(this.displayedItems))
+
+
+      // let elementPos = tmpDisplayedItems.map(function(x) {return x._id; }).indexOf(product._id);
+
+      // console.log(elementPos)
+
+      // console.log(tmpDisplayedItems.push(
+      //   tmpDisplayedItems.splice(
+      //     elementPos,
+      //               1
+      //             )[0]
+      //           ))
+
+      // console.log(tmpDisplayedItems)
+
+      // tmpDisplayedItems.forEach(Element => {
+      //   console.log(Element._source.name)
+      // })
+
+      // setTimeout(() => {
+      //   this.$store.commit(
+      //     'mvpPrep/mutate_displayedItems', tmpDisplayedItems
+          
+      //   )
+      //   console.log('-------------------------', this.displayedItems)
+      // }, 300)
+
 
       this.$emit('success', product)
     },

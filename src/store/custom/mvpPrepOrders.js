@@ -15,12 +15,14 @@ export default {
     currentOrderStatus: null,
     currentItem: {},
     currentOrderItems: null,
+    modeFilter: 'all',
     currentOrderPreparedItems: null,
     updated_items: null,
     displayedItems: []
   },
   mutations: {
     mutate_displayedItems(state, payload) {
+      console.log(payload)
       state.displayedItems = payload
     },
     mutate_itemsClicked: function(state, payload) {
@@ -52,6 +54,10 @@ export default {
     },
     mutate_lockFresh(state, payload) {
       state.lock_fresh = payload
+    },
+    mutate_modeFilter(state, payload) {
+      localStorage.modeFilter = payload
+      state.modeFilter = payload
     }
   },
   actions: {
@@ -268,7 +274,9 @@ export default {
   },
 
   getters: {
-    allOrders: state => state.orders,
+    modeFilter: state => state.modeFilter,
+    orders: state => state.orders,
+    displayedItems: state => state.displayedItems,
     orderItems: state => state.currentOrderItems,
     preparedItems: state => state.currentOrderPreparedItems,
     lock: state => state.currentOrder._source.lock,
@@ -318,5 +326,5 @@ export default {
         return []
       }
     }
-  }
+  },
 }
