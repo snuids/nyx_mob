@@ -5,9 +5,18 @@
       :class="[`bg-${bgColor}-2`, 'item']"
       v-if="prepStatus !== 'success' || !prepa"
     >
-      <q-item-section style="max-width: 50px; ">
+      <q-item-section
+        v-if="product._source.smallImage !== undefined"
+        style="max-width: 50px; "
+      >
         <img
           :src="product._source.smallImage"
+          style="width: 50px; height: 50px"
+        />
+      </q-item-section>
+      <q-item-section v-else style="max-width: 50px; ">
+        <img
+          src="https://via.placeholder.com/50"
           style="width: 50px; height: 50px"
         />
       </q-item-section>
@@ -118,12 +127,14 @@ export default {
       this.incrementClick(product)
       this.addToHistory('remb')
       this.$set(this.product._source, 'prep_status', 'remb')
+      this.putFirstItemLast(product)
       this.$emit('remb', product)
     },
     manq(product) {
       this.decrementClick(product)
       this.addToHistory('manq')
       this.$set(this.product._source, 'prep_status', 'manq')
+      this.putFirstItemLast(product)
       this.$emit('manq', product)
     },
     success(product) {
@@ -131,36 +142,28 @@ export default {
       this.incrementClick(product)
       this.addToHistory('success')
       this.$set(this.product._source, 'prep_status', 'success')
+      this.putFirstItemLast(product)
+      this.$emit('success', product)
+    },
 
-      // let tmpDisplayedItems = JSON.parse(JSON.stringify(this.displayedItems))
+    putFirstItemLast(product) {
+      let tmpDisplayedItems = JSON.parse(JSON.stringify(this.displayedItems))
+      let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
+      console.log(elementPos)
+      tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
 
-      // let elementPos = tmpDisplayedItems.map(function(x) {return x._id; }).indexOf(product._id);
-
-      // console.log(elementPos)
-
-      // console.log(tmpDisplayedItems.push(
-      //   tmpDisplayedItems.splice(
-      //     elementPos,
-      //               1
-      //             )[0]
-      //           ))
-
-      // console.log(tmpDisplayedItems)
+      console.log(tmpDisplayedItems)
 
       // tmpDisplayedItems.forEach(Element => {
       //   console.log(Element._source.name)
       // })
 
-      // setTimeout(() => {
-      //   this.$store.commit(
-      //     'mvpPrep/mutate_displayedItems', tmpDisplayedItems
-
-      //   )
-      //   console.log('-------------------------', this.displayedItems)
-      // }, 300)
-
-      this.$emit('success', product)
+      setTimeout(() => {
+        this.$store.commit('mvpPrep/mutate_displayedItems', tmpDisplayedItems)
+        console.log('-------------------------', this.displayedItems)
+      }, 300)
     },
+
     incrementClick(product) {
       if (
         product._source.prep_status === '' ||

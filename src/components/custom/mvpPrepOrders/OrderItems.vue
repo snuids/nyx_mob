@@ -1,7 +1,7 @@
 <template>
   <q-list class="q-pa-none">
     <OrderItem
-      v-for="(item, idx) in displayedItems"
+      v-for="(item, idx) in itemsDisplayed"
       :key="item._id + idx"
       :product="item"
       @remb="addProductToPreparedItems"
@@ -29,7 +29,10 @@ export default {
       'displayedItems',
       'currentOrderItems',
       'modeFilter'
-    ])
+    ]),
+    itemsDisplayed() {
+      return this.sortedItemsList()
+    }
   },
   components: { OrderItem },
   methods: {
@@ -47,6 +50,7 @@ export default {
         )
       }
     },
+
     update(products, product) {
       const eltIdx = products.findIndex(elt => elt._id === product._id)
       let newProductsArray = [...products]
@@ -55,13 +59,12 @@ export default {
       }
       this.$store.commit('mvpPrep/mutate_preparedItems', newProductsArray)
     },
+
     sortedItemsList: function() {
       console.log('sortedList')
       console.log(this.currentOrderItems)
 
-      let sortedList = []
-
-      sortedList = this.currentOrderItems.sort((a, b) => {
+      let sortedList = this.currentOrderItems.sort((a, b) => {
         if (a._source.prep_status === '' || b._source.prep_status === '') {
           return b._source.prep_status !== '' ? -1 : 1
         } else if (
@@ -74,15 +77,16 @@ export default {
         }
       })
       let displayed = sortedList.filter(element => {
-        if (
-          this.modeFilter === 'all' ||
-          (this.modeFilter === 'fresh' && element._source.fresh) ||
-          (this.modeFilter === 'dry' && !element._source.fresh)
-        )
+        if (this.modeFilter === 'fresh') {
+          return element._source.fresh
+        } else if (this.modeFilter === 'dry') {
+          return !element._source.fresh
+        } else {
           return true
-        else return false
+        }
       })
       this.$store.commit('mvpPrep/mutate_displayedItems', displayed)
+      return displayed
     }
   },
   watch: {
@@ -91,9 +95,6 @@ export default {
         this.sortedItemsList()
       }
     }
-  },
-  beforeCreate() {
-    this.sortedItemsList()
   }
 }
 </script>

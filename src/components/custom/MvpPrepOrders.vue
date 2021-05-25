@@ -41,13 +41,13 @@ import ItemsFilter from './mvpPrepOrders/ItemsFilter'
 import { mapState, mapGetters } from 'vuex'
 
 export default {
+  name: 'MvpPrepOrders',
+
   components: {
     OrdersList,
     StickyBanner,
     ItemsFilter
   },
-
-  name: 'MvpPrepOrders',
 
   data() {
     return {
@@ -61,8 +61,15 @@ export default {
   computed: {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders']),
-    ...mapGetters('mvpPrep', ['modeFilter']),
 
+    modeFilter: {
+      get() {
+        return this.$store.getters['mvpPrep/modeFilter']
+      },
+      set(newMode) {
+        this.$store.commit('mvpPrep/mutate_modeFilter', newMode)
+      }
+    },
     userName() {
       return this.creds.user.firstname
     },

@@ -1,5 +1,5 @@
 <template>
-  <q-page v-if="itemsToDisplay" style="padding-top: 170px">
+  <q-page v-if="displayedItems" style="padding-top: 170px">
     <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
@@ -98,7 +98,8 @@ export default {
     ...mapState('mvpPrep', [
       'currentOrder',
       'currentOrderItems',
-      'itemsClicked'
+      'itemsClicked',
+      'displayedItems'
     ]),
 
     userName: function() {
@@ -117,36 +118,14 @@ export default {
       'missingFresh',
       'rembDry',
       'rembFresh'
-    ]),
-    itemsToDisplay: function() {
-      console.log('itemsToDisplay')
-      let itemList
-      if (this.filterHasFrais === 'Pas de Frais') {
-        itemList = this.currentOrderItems.filter(
-          product => !this.isFrais(product)
-        )
-        if (this.filterHasSec === 'Pas de Sec') {
-          itemList = itemList.filter(product => this.isFrais(product))
-        }
-      } else if (this.filterHasSec === 'Pas de Sec') {
-        itemList = this.currentOrderItems.filter(product =>
-          this.isFrais(product)
-        )
-      } else {
-        itemList = this.currentOrderItems
-      }
-      // this.$store.commit('mvpPrep/mutate_displayedItems', itemList)
-      return itemList
-    }
+    ])
   },
   props: ['orderId'],
   methods: {
-    setItemsToDisplay() {
-      this.$store.commit('mvpPrep/mutate_displayedItems', this.itemsToDisplay)
-    },
     isFrais(item) {
       return item._source.fresh
     },
+
     async unlock() {
       console.table(this.preparedProducts)
       let fresh = this.preparedProducts.filter(
@@ -268,6 +247,7 @@ export default {
       console.log(this.$store.state.mvpPrep.updated_items)
       console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
+
     async sendUnlockOrder() {
       console.table(this.currentOrder._source.rembFresh)
       console.table(this.currentOrder._source.rembDry)
@@ -430,8 +410,6 @@ export default {
     if (localStorage.filterHasFrais) {
       this.filterHasFrais = localStorage.filterHasFrais
     }
-
-    this.setItemsToDisplay()
   },
 
   created() {
