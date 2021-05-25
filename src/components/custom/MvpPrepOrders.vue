@@ -19,43 +19,8 @@
         <div class="row col-xs-6  justify-center text-h6 ">
           {{ ordersToDisplay.length }} commandes
           <div class="float-right">
-            <q-btn-toggle
-              v-model="modeFilter"
-              spread
-              class="my-custom-toggle"
-              no-caps
-              rounded
-              unelevated
-              toggle-color="primary"
-              color="white"
-              text-color="primary"
-              :options="[
-                {label: 'Frais', value: 'fresh'},
-                {label: 'Sec', value: 'dry'},
-                {label: 'Tout', value: 'all'},
-              ]"
-            ></q-btn-toggle>
+            <ItemsFilter />
           </div>
-          <!-- <div class="float-right">
-            <q-toggle
-              :label="filterHasFrais"
-              color="green"
-              false-value="Pas de Frais"
-              true-value="Frais"
-              v-model="filterHasFrais"
-              toggle-order="tf"
-              @click="ordersToDisplay"
-            ></q-toggle>
-            <q-toggle
-              :label="filterHasSec"
-              color="green"
-              false-value="Pas de Sec"
-              true-value="Sec"
-              v-model="filterHasSec"
-              toggle-order="tf"
-              @click="ordersToDisplay"
-            ></q-toggle>
-          </div> -->
         </div>
         <StickyBanner
           class="row items-center"
@@ -72,12 +37,14 @@
 <script>
 import StickyBanner from './MvpPicking/StickyBanner'
 import OrdersList from './mvpPrepOrders/OrdersList'
+import ItemsFilter from './mvpPrepOrders/ItemsFilter'
 import { mapState, mapGetters } from 'vuex'
 
 export default {
   components: {
     OrdersList,
-    StickyBanner
+    StickyBanner,
+    ItemsFilter
   },
 
   name: 'MvpPrepOrders',
@@ -85,8 +52,6 @@ export default {
   data() {
     return {
       products: [],
-      filterHasSec: 'Sec',
-      filterHasFrais: 'Frais',
       //indiceOrders: 'dev_shopify_order',
       indiceOrders: 'mvp_app_order'
       //indiceProducts: 'dev_shopify_line_item'
@@ -96,15 +61,8 @@ export default {
   computed: {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders']),
-    modeFilter: {
-        get(){
-          return this.$store.getters['mvpPrep/modeFilter']
-        },
-        set(newMode){
-          return this.$store.commit('mvpPrep/mutate_modeFilter', newMode)
-          return newMode
-        } 
-    },
+    ...mapGetters('mvpPrep', ['modeFilter']),
+
     userName() {
       return this.creds.user.firstname
     },
@@ -113,34 +71,16 @@ export default {
     },
     ordersToDisplay: function() {
       let orderList
-      if (
-        this.filterHasSec === 'Pas de Sec' &&
-        this.filterHasFrais === 'Pas de Frais'
-      ) {
-        this.$store.commit('mvpPrep/mutate_lockDry', false)
-        this.$store.commit('mvpPrep/mutate_lockFresh', false)
-        orderList = this.orders.filter(
-          order => !order._source.has_sec && !order._source.has_frais
-        )
-      } else if (
-        this.filterHasFrais === 'Frais' &&
-        this.filterHasSec === 'Sec'
-      ) {
+      if (this.modeFilter === 'all') {
         this.$store.commit('mvpPrep/mutate_lockDry', false)
         this.$store.commit('mvpPrep/mutate_lockFresh', false)
         orderList = this.orders.filter(
           order => order._source.has_sec || order._source.has_frais
         )
-      } else if (
-        this.filterHasSec === 'Sec' &&
-        this.filterHasFrais === 'Pas de Frais'
-      ) {
+      } else if (this.modeFilter === 'dry') {
         this.$store.commit('mvpPrep/mutate_lockDry', true)
         orderList = this.orders.filter(order => order._source.has_sec)
-      } else if (
-        this.filterHasFrais === 'Frais' &&
-        this.filterHasSec === 'Pas de Sec'
-      ) {
+      } else if (this.modeFilter === 'fresh') {
         this.$store.commit('mvpPrep/mutate_lockFresh', true)
         orderList = this.orders.filter(order => order._source.has_frais)
       }
@@ -156,16 +96,17 @@ export default {
         })
       },
       deep: true
-    },
+    }
+
+    /*
     filterHasSec(newFilter) {
       localStorage.filterHasSec = newFilter
     },
     filterHasFrais: function(newFilter) {
       localStorage.filterHasFrais = newFilter
-    },
-    // modeFilter: function(newFilter) {
-    //   this.$store.commit('mvpPrep/mutate_modeFilter', newFilter)
-    // }
+    }
+
+     */
   },
 
   async created() {
@@ -180,11 +121,9 @@ export default {
       this.filterHasFrais = localStorage.filterHasFrais
     }
 
-
-  if (localStorage.modeFilter){
-    this.modeFilter = localStorage.modeFilter
-  }
-
+    if (localStorage.modeFilter) {
+      this.modeFilter = localStorage.modeFilter
+    }
 
     const timer = this.$store.getters['mvp/timer'] * 1000
     this.interval = setInterval(

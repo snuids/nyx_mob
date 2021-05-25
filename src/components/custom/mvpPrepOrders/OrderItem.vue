@@ -12,7 +12,7 @@
         <div class="flex row items-center" style="max-height: 50px">
           <div
             style="font-weight: bold; font-size: 16px"
-            class="row col-xs-4 justify-start "
+            class="row col-xs-6 justify-start "
           >
             {{ product._source.name }}
           </div>
@@ -129,9 +129,7 @@ export default {
       this.addToHistory('success')
       this.$set(this.product._source, 'prep_status', 'success')
 
-
       // let tmpDisplayedItems = JSON.parse(JSON.stringify(this.displayedItems))
-
 
       // let elementPos = tmpDisplayedItems.map(function(x) {return x._id; }).indexOf(product._id);
 
@@ -153,11 +151,10 @@ export default {
       // setTimeout(() => {
       //   this.$store.commit(
       //     'mvpPrep/mutate_displayedItems', tmpDisplayedItems
-          
+
       //   )
       //   console.log('-------------------------', this.displayedItems)
       // }, 300)
-
 
       this.$emit('success', product)
     },

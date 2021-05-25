@@ -32,42 +32,7 @@
           Commande #{{ orderId }} <br />
         </div>
         <div class="row col-xs-6 justify-center">
-          <q-btn-toggle
-              v-model="modeFilter"
-              spread
-              class="my-custom-toggle"
-              no-caps
-              rounded
-              unelevated
-              toggle-color="primary"
-              color="white"
-              text-color="primary"
-              :options="[
-                {label: 'Frais', value: 'fresh'},
-                {label: 'Sec', value: 'dry'},
-                {label: 'Tout', value: 'all'},
-              ]"
-            ></q-btn-toggle>
-          <!-- <q-toggle
-            :label="filterHasFrais"
-            color="green"
-            false-value="Pas de Frais"
-            true-value="Frais"
-            v-model="filterHasFrais"
-            toggle-order="tf"
-            @click="itemsToDisplay"
-            class="col-xs-3 "
-          ></q-toggle>
-          <q-toggle
-            :label="filterHasSec"
-            color="green"
-            false-value="Pas de Sec"
-            true-value="Sec"
-            v-model="filterHasSec"
-            toggle-order="tf"
-            @click="itemsToDisplay"
-            class="col-xs-3  "
-          ></q-toggle> -->
+          <ItemsFilter />
         </div>
       </div>
     </q-page-sticky>
@@ -103,16 +68,17 @@ import moment from 'moment'
 import { mapState, mapGetters } from 'vuex'
 import CallAction from './CallAction'
 import OrderItem from './OrderItem'
+import ItemsFilter from './ItemsFilter'
 
 export default {
   name: 'ShowOrder',
-  components: { CallAction, OrderItems, OrderItem },
+  components: { ItemsFilter, CallAction, OrderItems, OrderItem },
   data() {
     return {
       preparedProducts: [],
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
-      isEditing: false,
+      isEditing: false
     }
   },
   computed: {
@@ -134,15 +100,7 @@ export default {
       'currentOrderItems',
       'itemsClicked'
     ]),
-    modeFilter: {
-        get(){
-          return this.$store.getters['mvpPrep/modeFilter']
-        },
-        set(newMode){
-          return this.$store.commit('mvpPrep/mutate_modeFilter', newMode)
-          return newMode
-        } 
-    },
+
     userName: function() {
       return this.creds.user.firstname
       //' ' +
@@ -158,7 +116,7 @@ export default {
       'missingDry',
       'missingFresh',
       'rembDry',
-      'rembFresh',
+      'rembFresh'
     ]),
     itemsToDisplay: function() {
       console.log('itemsToDisplay')
