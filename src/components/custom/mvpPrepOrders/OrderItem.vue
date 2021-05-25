@@ -5,8 +5,11 @@
       :class="[`bg-${bgColor}-2`, 'item']"
       v-if="prepStatus !== 'success' || !prepa"
     >
-      <q-item-section style="max-width: 100px">
-        <img src="https://via.placeholder.com/100" />
+      <q-item-section style="max-width: 50px; ">
+        <img
+          :src="product._source.smallImage"
+          style="width: 50px; height: 50px"
+        />
       </q-item-section>
       <q-item-section>
         <div class="flex row items-center" style="max-height: 50px">

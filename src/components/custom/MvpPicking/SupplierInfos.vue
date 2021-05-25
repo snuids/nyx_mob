@@ -162,6 +162,16 @@
 
             <q-item>
               <q-item-section>
+                Poids total (en kg) :
+              </q-item-section>
+              <!--Ajouter le poids des produits ici-->
+              <q-item-section avatar class="text-weight-medium">
+                {{ currentOrder.total_products_ordered }}
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
                 Nb total de produits reçus :
               </q-item-section>
               <q-item-section avatar class="text-weight-medium">
