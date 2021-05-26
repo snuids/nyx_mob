@@ -6,10 +6,10 @@
     no-caps
     rounded
     unelevated
-    toggle-color="primary"
+    toggle-color="black"
     color="white"
     size="20px"
-    text-color="primary"
+    text-color="black"
     :options="[
       { label: 'Frais', value: 'fresh' },
       { label: 'Sec', value: 'dry' },

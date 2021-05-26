@@ -53,7 +53,7 @@
           </div>
 
           <div
-            class="row col-xs-4 justify-center items-center text-green-7 "
+            class="row col-xs-4 justify-center items-center text-black "
             style="border-radius: 10px;  height: 60px;"
           >
             Aujourd'hui -
