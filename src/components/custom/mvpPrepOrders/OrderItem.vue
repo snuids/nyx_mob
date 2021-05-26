@@ -3,7 +3,7 @@
     <q-item
       clickable
       :class="[`bg-${bgColor}-2`, 'item']"
-      v-if="prepStatus !== 'success' || !prepa"
+      v-if="prepStatus !== '' || !prepa"
     >
       <q-item-section
         v-if="product._source.smallImage !== undefined"
@@ -83,7 +83,8 @@ export default {
     ...mapState('mvpPrep', [
       'currentOrderStatus',
       'itemsClicked',
-      'displayedItems'
+      'displayedItems',
+      'currentOrderItems'
     ]),
     prepStatus() {
       return this.product._source.prep_status
@@ -147,7 +148,7 @@ export default {
     },
 
     putFirstItemLast(product) {
-      let tmpDisplayedItems = JSON.parse(JSON.stringify(this.displayedItems))
+      let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
       console.log(elementPos)
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
@@ -159,8 +160,11 @@ export default {
       // })
 
       setTimeout(() => {
-        this.$store.commit('mvpPrep/mutate_displayedItems', tmpDisplayedItems)
-        console.log('-------------------------', this.displayedItems)
+        this.$store.commit(
+          'mvpPrep/mutate_currentOrderItems',
+          tmpDisplayedItems
+        )
+        console.log('-------------------------', this.currentOrderItems)
       }, 300)
     },
 
