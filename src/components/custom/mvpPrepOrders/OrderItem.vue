@@ -3,7 +3,7 @@
     <q-item
       clickable
       :class="[`bg-${bgColor}-2`, 'item']"
-      v-if="prepStatus !== '' || !prepa"
+      v-if="prepStatus !== 'success' || !prepa"
     >
       <q-item-section
         v-if="product._source.smallImage !== undefined"
@@ -89,6 +89,7 @@ export default {
     prepStatus() {
       return this.product._source.prep_status
     },
+
     isFrais() {
       return this.product._source.fresh
     },
@@ -102,6 +103,7 @@ export default {
         return 'green'
       }
     },
+
     history() {
       return this.product._source.history
     }
@@ -124,6 +126,7 @@ export default {
         ]
       }
     },
+
     remb(product) {
       this.incrementClick(product)
       this.addToHistory('remb')
@@ -131,6 +134,7 @@ export default {
       this.putFirstItemLast(product)
       this.$emit('remb', product)
     },
+
     manq(product) {
       this.decrementClick(product)
       this.addToHistory('manq')
@@ -138,6 +142,7 @@ export default {
       this.putFirstItemLast(product)
       this.$emit('manq', product)
     },
+
     success(product) {
       this.prepa = true
       this.incrementClick(product)
@@ -154,10 +159,6 @@ export default {
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
 
       console.log(tmpDisplayedItems)
-
-      // tmpDisplayedItems.forEach(Element => {
-      //   console.log(Element._source.name)
-      // })
 
       setTimeout(() => {
         this.$store.commit(

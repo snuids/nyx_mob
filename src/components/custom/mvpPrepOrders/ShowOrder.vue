@@ -82,6 +82,13 @@ export default {
     }
   },
   computed: {
+    ...mapState('mvpPrep', [
+      'currentOrder',
+      'currentOrderItems',
+      'itemsClicked',
+      'displayedItems'
+    ]),
+
     progress() {
       let alreadyMadeProgress
       if (this.preparedFresh != undefined) {
@@ -95,17 +102,9 @@ export default {
       }
       return alreadyMadeProgress + this.itemsClicked
     },
-    ...mapState('mvpPrep', [
-      'currentOrder',
-      'currentOrderItems',
-      'itemsClicked',
-      'displayedItems'
-    ]),
 
     userName: function() {
       return this.creds.user.firstname
-      //' ' +
-      //this.$store.getters.creds.user.lastname
     },
     ...mapGetters(['creds']),
     ...mapGetters('mvpPrep', [
