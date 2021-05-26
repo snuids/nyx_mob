@@ -1,19 +1,19 @@
 <template>
-  <q-page v-if="displayedItems" style="padding-top: 170px">
+  <q-page v-if="currentOrderItems" style="padding-top: 205px">
     <div class="row text-h6 flex full-width"></div>
 
     <OrderItems
-      style="padding-bottom: 80px"
+      style="padding-bottom: 85px"
       :preparedProducts="preparedProducts"
     />
 
     <q-page-sticky expand position="top">
-      <div class="row full-width flex bg-blue-grey-2 items-center text-h6">
+      <div class="row full-width flex bg-blue-grey-1 items-center text-h6">
         <div
           class="row col-xs-12 justify-center bg-green-7  items-center text-white"
-          style="height: 100px"
+          style="height: 100px; box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
         >
-          <div>
+          <div class="row col-xs-6 justify-center">
             <q-btn
               :to="{ name: 'orders' }"
               icon="arrow_back_ios"
@@ -21,23 +21,56 @@
               size="20px"
               unelevated
               round
-              outline
             />
           </div>
-
-          {{ userName }}
+          <div class="row col-xs-6 justify-start">
+            {{ userName }}
+          </div>
         </div>
 
-        <div class="col-xs-6 row justify-start">
-          Commande #{{ orderId }} <br />
-        </div>
-        <div class="row col-xs-6 justify-center">
-          <ItemsFilter />
+        <div
+          class="row flex col-xs-12 items-center"
+          style="box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
+        >
+          <div
+            class="col-xs-4 row justify-center items-center"
+            style="height: 100px;   "
+          >
+            <q-icon
+              size="40px"
+              name="directions_bike"
+              style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+            ></q-icon>
+            &nbsp; &nbsp;
+            <div class="row flex">
+              <div class="col-xs-12" style="font-weight: bold;">
+                #{{ orderId }} <br />
+              </div>
+              <div class="col-xs-12" style="font-weight: lighter">
+                Livraison à vélo
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="row col-xs-4 justify-center items-center text-green-7 "
+            style="border-radius: 10px;  height: 60px;"
+          >
+            Aujourd'hui -
+            {{ currentOrder._source.tags.split(',')[0].split('-')[0] }}
+          </div>
+
+          <div class="row col-xs-4 justify-center items-center">
+            <ItemsFilter />
+          </div>
         </div>
       </div>
     </q-page-sticky>
     <q-page-sticky expand position="bottom">
-      <div class="row full-width flex items-center bg-blue-5 text-h6">
+      <div
+        class="row full-width flex items-center bg-blue-5 text-h6"
+        style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2);"
+      >
         <div class="row col-xs-6 justify-end ">
           <q-circular-progress
             show-value

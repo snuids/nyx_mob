@@ -8,6 +8,7 @@
     unelevated
     toggle-color="primary"
     color="white"
+    size="20px"
     text-color="primary"
     :options="[
       { label: 'Frais', value: 'fresh' },

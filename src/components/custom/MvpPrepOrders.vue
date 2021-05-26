@@ -9,24 +9,27 @@
       </div>
     </div>
     <q-page-sticky expand position="top">
-      <div class="row full-width flex bg-blue-grey-2 items-center">
+      <div
+        class="row full-width flex bg-blue-grey-2 items-center text-h6"
+        style="height: 80px"
+      >
         <div
-          class="row col-xs-6 justify-center  text-h6 items-center "
+          class="row col-xs-4 justify-center  items-center "
           style="height: 50px"
         >
           {{ userName }}
         </div>
-        <div class="row col-xs-6  justify-center text-h6 ">
+        <div class="row col-xs-4 justify-center">
           {{ ordersToDisplay.length }} commandes
-          <div class="float-right">
-            <ItemsFilter />
-          </div>
         </div>
-        <StickyBanner
-          class="row items-center"
-          style="height: 50px"
-        ></StickyBanner>
+        <div class="row col-xs-4 justify-center">
+          <ItemsFilter />
+        </div>
       </div>
+      <StickyBanner
+        class="row items-center"
+        style="height: 50px"
+      ></StickyBanner>
     </q-page-sticky>
     <q-page-container>
       <router-view />

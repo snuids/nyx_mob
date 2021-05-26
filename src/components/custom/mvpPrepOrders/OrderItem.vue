@@ -1,10 +1,6 @@
 <template>
   <transition appear leave-active-class="animated fadeOutDown" duration="250">
-    <q-item
-      clickable
-      :class="[`bg-${bgColor}-2`, 'item']"
-      v-if="prepStatus !== 'success' || !prepa"
-    >
+    <q-item clickable :class="[`bg-${bgColor}-2`, 'item']" v-if="!prepa">
       <q-item-section
         v-if="product._source.smallImage !== undefined"
         style="max-width: 50px; "
@@ -28,7 +24,7 @@
           >
             {{ product._source.name }}
           </div>
-          <q-badge class="frais row col-xs-2 justify-center ">
+          <q-badge class="frais row col-xs-2 justify-start ">
             {{ this.isFrais ? 'Frais' : 'Sec' }}
           </q-badge>
         </div>
@@ -128,6 +124,7 @@ export default {
     },
 
     remb(product) {
+      this.prepa = true
       this.incrementClick(product)
       this.addToHistory('remb')
       this.$set(this.product._source, 'prep_status', 'remb')
@@ -136,6 +133,7 @@ export default {
     },
 
     manq(product) {
+      this.prepa = true
       this.decrementClick(product)
       this.addToHistory('manq')
       this.$set(this.product._source, 'prep_status', 'manq')
@@ -208,7 +206,6 @@ export default {
 }
 
 .item {
-  border-radius: 20px;
   box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
   margin-bottom: 5px;
 }

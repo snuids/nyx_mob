@@ -64,19 +64,7 @@ export default {
       console.log('sortedList')
       console.log(this.currentOrderItems)
 
-      let sortedList = this.currentOrderItems.sort((a, b) => {
-        if (a._source.prep_status === '' || b._source.prep_status === '') {
-          return b._source.prep_status !== '' ? -1 : 1
-        } else if (
-          a._source.prep_status === 'manq' ||
-          b._source.prep_status === 'manq'
-        ) {
-          return b._source.prep_status !== 'manq' ? -1 : 1
-        } else if (a._source.prep_status === 'remb') {
-          return b._source.prep_status !== 'remb' ? -1 : 1
-        }
-      })
-      let displayed = sortedList.filter(element => {
+      let displayed = this.currentOrderItems.filter(element => {
         if (this.modeFilter === 'fresh') {
           return element._source.fresh
         } else if (this.modeFilter === 'dry') {
@@ -85,7 +73,7 @@ export default {
           return true
         }
       })
-      this.$store.commit('mvpPrep/mutate_displayedItems', displayed)
+      //this.$store.commit('mvpPrep/mutate_displayedItems', displayed)
       return displayed
     }
   },

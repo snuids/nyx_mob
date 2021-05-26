@@ -56,7 +56,7 @@ export default {
       state.lock_fresh = payload
     },
     mutate_modeFilter(state, payload) {
-      //localStorage.modeFilter = payload
+      localStorage.modeFilter = payload
       state.modeFilter = payload
     }
   },
