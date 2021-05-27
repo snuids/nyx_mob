@@ -1,7 +1,7 @@
 <template>
   <q-list class="q-pa-none">
     <OrderItem
-      v-for="(item, idx) in itemsDisplayed"
+      v-for="(item, idx) in sortedItemsList"
       :key="item._id + idx"
       :product="item"
       @remb="addProductToPreparedItems"
@@ -30,8 +30,21 @@ export default {
       'currentOrderItems',
       'modeFilter'
     ]),
-    itemsDisplayed() {
-      return this.sortedItemsList()
+
+    sortedItemsList: function() {
+      console.log('sortedList')
+      console.log(this.currentOrderItems)
+
+      return this.currentOrderItems.filter(element => {
+        if (this.modeFilter === 'fresh') {
+          return element._source.fresh
+        } else if (this.modeFilter === 'dry') {
+          return !element._source.fresh
+        } else {
+          return true
+        }
+      })
+      //this.$store.commit('mvpPrep/mutate_displayedItems', displayed)
     }
   },
   components: { OrderItem },
@@ -58,23 +71,6 @@ export default {
         ...product
       }
       this.$store.commit('mvpPrep/mutate_preparedItems', newProductsArray)
-    },
-
-    sortedItemsList: function() {
-      console.log('sortedList')
-      console.log(this.currentOrderItems)
-
-      let displayed = this.currentOrderItems.filter(element => {
-        if (this.modeFilter === 'fresh') {
-          return element._source.fresh
-        } else if (this.modeFilter === 'dry') {
-          return !element._source.fresh
-        } else {
-          return true
-        }
-      })
-      //this.$store.commit('mvpPrep/mutate_displayedItems', displayed)
-      return displayed
     }
   },
   watch: {

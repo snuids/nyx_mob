@@ -1,5 +1,5 @@
 <template>
-  <transition appear leave-active-class="animated fadeOutDown" duration="250">
+  <transition leave-active-class="animated fadeOutDown" duration="250">
     <q-item clickable :class="[`bg-${bgColor}-2`, 'item']" v-if="!prepa">
       <q-item-section
         v-if="product._source.smallImage !== undefined"
@@ -206,6 +206,7 @@ export default {
 }
 
 .item {
+  border-radius: 15px 0 0 15px;
   box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
   margin-bottom: 5px;
 }

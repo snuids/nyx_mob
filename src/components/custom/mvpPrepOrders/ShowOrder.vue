@@ -68,7 +68,7 @@
     </q-page-sticky>
     <q-page-sticky expand position="bottom">
       <div
-        class="row full-width flex items-center bg-blue-5 text-h6"
+        class="row full-width flex items-center bg-blue-grey-1 text-h6"
         style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2);"
       >
         <div class="row col-xs-6 justify-end ">
