@@ -192,43 +192,9 @@ export default {
     cardClick() {
       console.log(this.cardDisabled)
       if (this.cardDisabled) return
-      this.updateOrderStatus()
-      this.$store.commit('mvpPrep/mutate_currentOrder', this.order)
-      this.$q.loading.show()
-      this.$store
-        .dispatch('mvpPrep/getOrderItems')
-        .then(() => {
-          this.$q.loading.hide()
-          console.log('these are the items sent when the card was cliked')
-          console.log(this.currentOrderItems)
-        })
-        .then(() => {
-          //let orderId = this.order._source.order_number.replace('#', '')
-          this.$router.push({
-            name: 'order-display',
-            params: { orderId: this.order._id }
-          })
-        })
-    },
-    updateOrderStatus() {
-      this.order._source.prep_status = 'started'
-      this.order._source.lock = true
-      this.order._source.lock_type = this.lock_fresh
-        ? 'fresh'
-        : this.lock_dry
-        ? 'dry'
-        : 'none'
-      this.order._source.updatedAt = moment().format(
-        'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
-      )
-      console.log('lock type: ', this.order._source.lock_type)
-      console.log('this is the current order on which ive clicked')
-      console.log(this.$store.state.mvpPrep.currentOrder)
-      /* UNCOMMENT TO COMMIT REAL UPDATE */
-      // send the update request
-      this.$store.dispatch({
-        type: 'mvpPrep/updateOrder',
-        data: this.order
+      
+      this.$router.push({
+        query: { showOrder: this.order._id } 
       })
     }
   }

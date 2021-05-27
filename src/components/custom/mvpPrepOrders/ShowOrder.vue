@@ -2,20 +2,17 @@
   <q-page v-if="currentOrderItems" style="padding-top: 205px">
     <div class="row text-h6 flex full-width"></div>
 
-    <OrderItems
-      style="padding-bottom: 85px"
-      :preparedProducts="preparedProducts"
-    />
+    <OrderItems style="padding-bottom: 85px" :preparedProducts="preparedProducts" />
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-1 items-center text-h6">
         <div
-          class="row col-xs-12 justify-center bg-green-7  items-center text-white"
+          class="row col-xs-12 justify-center bg-green-7 items-center text-white"
           style="height: 100px; box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
         >
           <div class="row col-xs-6 justify-center">
             <q-btn
-              :to="{ name: 'orders' }"
+              @click="goBackToList"
               icon="arrow_back_ios"
               style="margin-right: 60px"
               size="20px"
@@ -23,37 +20,30 @@
               round
             />
           </div>
-          <div class="row col-xs-6 justify-start">
-            {{ userName }}
-          </div>
+          <div class="row col-xs-6 justify-start">{{ userName }}</div>
         </div>
 
         <div
           class="row flex col-xs-12 items-center"
           style="box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
         >
-          <div
-            class="col-xs-4 row justify-center items-center"
-            style="height: 100px;   "
-          >
+          <div class="col-xs-4 row justify-center items-center" style="height: 100px;   ">
             <q-icon
               size="40px"
               name="directions_bike"
               style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
-            ></q-icon>
-            &nbsp; &nbsp;
+            ></q-icon>&nbsp; &nbsp;
             <div class="row flex">
               <div class="col-xs-12" style="font-weight: bold;">
-                #{{ orderId }} <br />
+                #{{ orderId }}
+                <br />
               </div>
-              <div class="col-xs-12" style="font-weight: lighter">
-                Livraison à vélo
-              </div>
+              <div class="col-xs-12" style="font-weight: lighter">Livraison à vélo</div>
             </div>
           </div>
 
           <div
-            class="row col-xs-4 justify-center items-center text-black "
+            class="row col-xs-4 justify-center items-center text-black"
             style="border-radius: 10px;  height: 60px;"
           >
             Aujourd'hui -
@@ -71,7 +61,7 @@
         class="row full-width flex items-center bg-blue-grey-1 text-h6"
         style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2);"
       >
-        <div class="row col-xs-6 justify-end ">
+        <div class="row col-xs-6 justify-end">
           <q-circular-progress
             show-value
             font-size="12px"
@@ -82,13 +72,11 @@
             color="teal"
             track-color="grey-3"
             class="q-ma-md float-right"
-          >
-            {{ Math.round((progress * 100) / currentOrderItems.length) }}%
-          </q-circular-progress>
+          >{{ Math.round((progress * 100) / currentOrderItems.length) }}%</q-circular-progress>
         </div>
-        <div class="row col-xs-6 justify-start ">
-          {{ this.currentOrderItems.length - progress }} produits restants
-        </div>
+        <div
+          class="row col-xs-6 justify-start"
+        >{{ this.currentOrderItems.length - progress }} produits restants</div>
         <!---->
       </div>
     </q-page-sticky>
@@ -116,12 +104,18 @@ export default {
   },
   computed: {
     ...mapState('mvpPrep', [
-      'currentOrder',
       'currentOrderItems',
       'itemsClicked',
       'displayedItems'
     ]),
-
+    currentOrder: {
+      get() {
+        return this.$store.getters['mvpPrep/currentOrder']
+      },
+      set(newCurrentOrder) {
+        this.$store.commit('mvpPrep/mutate_currentOrder', newCurrentOrder)
+      }
+    },
     progress() {
       let alreadyMadeProgress
       if (this.preparedFresh != undefined) {
@@ -149,7 +143,8 @@ export default {
       'missingDry',
       'missingFresh',
       'rembDry',
-      'rembFresh'
+      'rembFresh',
+      'orders'
     ])
   },
   props: ['orderId'],
@@ -157,9 +152,13 @@ export default {
     isFrais(item) {
       return item._source.fresh
     },
-
+    goBackToList() {
+      let query = Object.assign({}, this.$route.query)
+      delete query.showOrder
+      this.$router.replace({ query })
+    },
     async unlock() {
-      console.table(this.preparedProducts)
+      // console.table(this.preparedProducts)
       let fresh = this.preparedProducts.filter(
         product =>
           product._source.fresh && product._source.prep_status === 'success'
@@ -276,15 +275,15 @@ export default {
       }
       await this.sendUnlockOrder()
       await this.$store.dispatch('mvpPrep/getOrders')
-      console.log(this.$store.state.mvpPrep.updated_items)
-      console.log(this.$store.getters['mvpPrep/preparedItems'])
+      // console.log(this.$store.state.mvpPrep.updated_items)
+      // console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
 
     async sendUnlockOrder() {
-      console.table(this.currentOrder._source.rembFresh)
-      console.table(this.currentOrder._source.rembDry)
-      console.table(this.currentOrder._source.preparedDry)
-      console.table(this.currentOrder._source.preparedFresh)
+      // console.table(this.currentOrder._source.rembFresh)
+      // console.table(this.currentOrder._source.rembDry)
+      // console.table(this.currentOrder._source.preparedDry)
+      // console.table(this.currentOrder._source.preparedFresh)
       if (
         this.currentOrder._source.rembDry.length +
           this.currentOrder._source.rembFresh.length +
@@ -301,7 +300,7 @@ export default {
           this.currentOrder._source.prep_status = 'finished'
         }
       } else {
-        console.log('really wow you deceive me')
+        // console.log('really wow you deceive me')
         this.currentOrder._source.prep_status = 'unfinished'
       }
       this.currentOrder._source.lock = false
@@ -309,14 +308,14 @@ export default {
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
 
-      console.log('bouton retour cliqué')
+      // console.log('bouton retour cliqué')
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
       await this.$store.dispatch({
         type: 'mvpPrep/updateOrder',
         data: this.$store.state.mvpPrep.currentOrder
       })
-      console.log('sendunlockorder terminé')
+      // console.log('sendunlockorder terminé')
     },
 
     updateArrayPreparedItems(preparedArray, arrayToInsertIn) {
@@ -398,10 +397,54 @@ export default {
         ],
         timeout: 500
       })
+    },
+
+    updateOrderStatus() {
+      this.currentOrder._source.prep_status = 'started'
+      this.currentOrder._source.lock = true
+      this.currentOrder._source.lock_type = this.lock_fresh
+        ? 'fresh'
+        : this.lock_dry
+        ? 'dry'
+        : 'none'
+      this.currentOrder._source.updatedAt = moment().format(
+        'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
+      )
+      console.log('lock type: ', this.currentOrder._source.lock_type)
+      console.log('this is the current order on which ive clicked')
+      /* UNCOMMENT TO COMMIT REAL UPDATE */
+      // send the update request
+      this.$store.dispatch({
+        type: 'mvpPrep/updateOrder',
+        data: this.currentOrder
+      })
+    },
+    prepareData() {
+      console.log(this.orders)
+      console.log(this.orderId)
+      this.currentOrder = this.orders.filter(o => o._id === this.orderId)[0]
+
+      this.updateOrderStatus()
+
+      this.$q.loading.show()
+      this.$store
+        .dispatch('mvpPrep/getOrderItems')
+        .then(() => {
+          this.$q.loading.hide()
+          console.log('these are the items sent when the card was cliked')
+          console.log(this.currentOrderItems)
+        })
+        .then(() => {
+          //let orderId = this.order._source.order_number.replace('#', '')
+        })
     }
   },
 
   watch: {
+    $route(to, from) {
+      console.log('url changed')
+      this.prepareData()
+    },
     filterHasSec(newFilter) {
       localStorage.filterHasSec = newFilter
     },
@@ -412,11 +455,12 @@ export default {
       if (newValue === this.currentOrderItems.length) {
         this.showNotif('center')
         setTimeout(() => {
-          this.unlock().then(() =>
-            this.$router.push({
-              name: 'orders'
-            })
-          )
+          this.unlock().then(() => {
+            this.goBackToList()
+            // this.$router.push({
+            //   name: 'orders'
+            // })
+          })
         }, 2000)
       }
     }
@@ -424,7 +468,7 @@ export default {
 
   created() {
     this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
-    this.$store.dispatch('mvpPrep/getOrderItems')
+    this.prepareData()
   },
 
   beforeMount() {

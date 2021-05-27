@@ -1,44 +1,51 @@
 <template>
   <q-page>
-    <div class="row full-width flex flex-center column" v-if="orders">
-      <div
-        class="row col-xs-12 justify-between q-mt-sm q-pa-xl"
-        style="min-height: 400px; padding-top: 130px"
-      >
-        <OrdersList :orders="ordersToDisplay" />
-      </div>
+    <div v-if="urlOrderId">
+        <ShowOrder :orderId="urlOrderId"></ShowOrder>
     </div>
-    <q-page-sticky expand position="top">
-      <div
-        class="row full-width flex bg-blue-grey-2 items-center text-h6"
-        style="height: 80px"
-      >
+    <div v-else>
+      <div class="row full-width flex flex-center column">
         <div
-          class="row col-xs-4 justify-center  items-center "
-          style="height: 50px"
+          class="row col-xs-12 justify-between q-mt-sm q-pa-xl"
+          style="min-height: 400px; padding-top: 130px"
         >
-          {{ userName }}
-        </div>
-        <div class="row col-xs-4 justify-center">
-          {{ ordersToDisplay.length }} commandes
-        </div>
-        <div class="row col-xs-4 justify-center">
-          <ItemsFilter />
+          <OrdersList/>
         </div>
       </div>
-      <StickyBanner
-        class="row items-center"
-        style="height: 50px"
-      ></StickyBanner>
-    </q-page-sticky>
-    <q-page-container>
-      <router-view />
-    </q-page-container>
+      <q-page-sticky expand position="top">
+        <div
+          class="row full-width flex bg-blue-grey-2 items-center text-h6"
+          style="height: 80px"
+        >
+          <div
+            class="row col-xs-4 justify-center  items-center "
+            style="height: 50px"
+          >
+            {{ userName }}
+          </div>
+          <div class="row col-xs-4 justify-center">
+            {{ ordersToDisplay.length }} commandes      {{urlOrderId}}
+
+          </div>
+          <div class="row col-xs-4 justify-center">
+            <ItemsFilter />
+          </div>
+        </div>
+        <StickyBanner
+          class="row items-center"
+          style="height: 50px"
+        ></StickyBanner>
+      </q-page-sticky>
+      <q-page-container>
+        <router-view />
+      </q-page-container>
+    </div>
   </q-page>
 </template>
 
 <script>
 import StickyBanner from './MvpPicking/StickyBanner'
+import ShowOrder from './mvpPrepOrders/ShowOrder'
 import OrdersList from './mvpPrepOrders/OrdersList'
 import ItemsFilter from './mvpPrepOrders/ItemsFilter'
 import { mapState, mapGetters } from 'vuex'
@@ -49,22 +56,28 @@ export default {
   components: {
     OrdersList,
     StickyBanner,
-    ItemsFilter
+    ItemsFilter,
+    ShowOrder,
   },
 
   data() {
     return {
       products: [],
-      //indiceOrders: 'dev_shopify_order',
       indiceOrders: 'mvp_app_order'
-      //indiceProducts: 'dev_shopify_line_item'
     }
   },
 
   computed: {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders']),
-
+    urlOrderId () {
+      console.log(this.$route.fullPath)
+      let url = this.$route.fullPath
+      if (url.indexOf('showOrder=')>-1) {
+        return url.split('showOrder=')[1]
+      }
+      return null
+    },
     modeFilter: {
       get() {
         return this.$store.getters['mvpPrep/modeFilter']
@@ -107,16 +120,6 @@ export default {
       },
       deep: true
     }
-
-    /*
-    filterHasSec(newFilter) {
-      localStorage.filterHasSec = newFilter
-    },
-    filterHasFrais: function(newFilter) {
-      localStorage.filterHasFrais = newFilter
-    }
-
-     */
   },
 
   async created() {
@@ -134,19 +137,9 @@ export default {
     if (localStorage.modeFilter) {
       this.modeFilter = localStorage.modeFilter
     }
-
-    const timer = this.$store.getters['mvp/timer'] * 1000
-    this.interval = setInterval(
-      async function() {
-        await this.$store.dispatch('mvpPrep/getOrders')
-      }.bind(this),
-      timer
-    )
   },
 
-  beforeDestroy() {
-    clearInterval(this.interval)
-  }
+  
 }
 </script>
 

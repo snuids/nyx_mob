@@ -72,7 +72,7 @@ export default {
   watch: {
     modeFilter: {
       handler: function() {
-        this.sortedItemsList()
+        // this.sortedItemsList()
       }
     }
   }

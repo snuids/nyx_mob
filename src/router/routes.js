@@ -20,17 +20,17 @@ const routes = [
         name: 'GenericComponent',
         component: GenericComponent
       },
-      {
-        path: ':recid/orders',
-        name: 'orders',
-        component: MvpPrepOrders
-      },
-      {
-        path: ':recid/orders/:orderId',
-        name: 'order-display',
-        component: ShowOrder,
-        props: true
-      }
+      // {
+      //   path: ':recid/orders',
+      //   name: 'orders',
+      //   component: MvpPrepOrders
+      // },
+      // {
+      //   path: ':recid/orders/:orderId',
+      //   name: 'order-display',
+      //   component: ShowOrder,
+      //   props: true
+      // }
     ]
   }
 ]
