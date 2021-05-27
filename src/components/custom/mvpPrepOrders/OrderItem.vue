@@ -153,17 +153,12 @@ export default {
     putFirstItemLast(product) {
       let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
-      console.log(elementPos)
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
-
-      console.log(tmpDisplayedItems)
-
       setTimeout(() => {
         this.$store.commit(
           'mvpPrep/mutate_currentOrderItems',
           tmpDisplayedItems
         )
-        console.log('-------------------------', this.currentOrderItems)
       }, 300)
     },
 
@@ -172,10 +167,10 @@ export default {
         product._source.prep_status === '' ||
         product._source.prep_status === 'manq'
       ) {
-        console.log('ok')
         this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
       }
     },
+
     decrementClick(product) {
       if (
         product._source.prep_status === 'remb' ||

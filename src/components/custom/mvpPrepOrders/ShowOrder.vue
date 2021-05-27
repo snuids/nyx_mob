@@ -286,12 +286,11 @@ export default {
       console.table(this.currentOrder._source.preparedDry)
       console.table(this.currentOrder._source.preparedFresh)
       if (
-        this.currentOrder._source.rembDry &&
         this.currentOrder._source.rembDry.length +
           this.currentOrder._source.rembFresh.length +
           this.currentOrder._source.preparedFresh.length +
           this.currentOrder._source.preparedDry.length ===
-          this.freshItems.length + this.dryItems.length
+        this.freshItems.length + this.dryItems.length
       ) {
         if (
           this.currentOrder._source.rembDry.length > 0 ||
@@ -310,19 +309,8 @@ export default {
       this.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
-      let newId = this.currentOrder._id.replace('#', '')
-      // forge the query
-      console.log('we are in sendunlockorder')
-      console.log(this.currentOrder)
-      /*
-      const updatedOrder = {
-        _index: this.$store.state.mvpPrep.currentOrder._index,
-        _source: this.$store.state.mvpPrep.currentOrder._source,
-        _id: newId
-      }
-      */
+
       console.log('bouton retour cliqué')
-      //console.log(updatedOrder)
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
       await this.$store.dispatch({

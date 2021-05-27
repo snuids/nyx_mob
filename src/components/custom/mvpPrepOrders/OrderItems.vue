@@ -32,9 +32,6 @@ export default {
     ]),
 
     sortedItemsList: function() {
-      console.log('sortedList')
-      console.log(this.currentOrderItems)
-
       return this.currentOrderItems.filter(element => {
         if (this.modeFilter === 'fresh') {
           return element._source.fresh
@@ -44,7 +41,6 @@ export default {
           return true
         }
       })
-      //this.$store.commit('mvpPrep/mutate_displayedItems', displayed)
     }
   },
   components: { OrderItem },

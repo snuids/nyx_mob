@@ -102,6 +102,7 @@
 
 <script>
 import moment from 'moment'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'MainMenu',
@@ -177,12 +178,9 @@ export default {
   //mounted() {}
 
   computed: {
+    ...mapGetters(['creds']),
     username() {
-      return (
-        this.$store.getters.creds.user.firstname +
-        ' ' +
-        this.$store.getters.creds.user.lastname
-      )
+      return this.creds.user.firstname + ' ' + this.creds.user.lastname
       this.id = this.$store.getters.creds.user.id
     },
     isLandscape: function() {

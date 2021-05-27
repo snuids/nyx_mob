@@ -157,6 +157,7 @@ export default {
           console.error(error)
         })
     },
+
     updateOrderItems({ state, commit }, payload) {
       Loading.show({
         delay: 300
@@ -177,6 +178,7 @@ export default {
           console.error(error)
         })
     },
+
     getOrders({ state, rootState, commit }, dateObj = null) {
       Loading.show({
         delay: 2000
@@ -240,6 +242,7 @@ export default {
               orders[i]._source.missingDry = []
               orders[i]._source.rembDry = []
               orders[i]._source.rembFresh = []
+              orders[i]._source.lock = false
             }
           }
           commit('mutate_allOrders', orders)
