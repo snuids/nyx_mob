@@ -12,7 +12,6 @@ export default {
     orders: [],
     itemsClicked: 0,
     currentOrder: {},
-    currentOrderStatus: null,
     currentItem: {},
     currentOrderItems: null,
     modeFilter: 'all',
@@ -46,9 +45,7 @@ export default {
     mutate_updated_items(state, payload) {
       state.updated_items = payload
     },
-    mutate_currentOrderStatus(state, payload) {
-      state.currentOrderStatus = payload
-    },
+
     mutate_lockDry(state, payload) {
       state.lock_dry = payload
     },
@@ -277,9 +274,9 @@ export default {
   },
 
   getters: {
+    currentOrder: state => state.currentOrder,
     modeFilter: state => state.modeFilter,
     orders: state => state.orders,
-    displayedItems: state => state.displayedItems,
     orderItems: state => state.currentOrderItems,
     preparedItems: state => state.currentOrderPreparedItems,
     lock: state => state.currentOrder._source.lock,

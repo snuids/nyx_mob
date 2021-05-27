@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="header">
-      <span v-if="open" @click="open = !open">
+      <span v-if="open" @click.stop="open = !open">
         &#x25b2; &nbsp; &nbsp; Fermer</span
       >
-      <span v-if="!open" @click="open = !open">
+      <span v-if="!open" @click.stop="open = !open">
         &#x25bc; &nbsp; &nbsp; Voir le status des produits</span
       >
     </div>

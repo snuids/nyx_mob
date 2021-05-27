@@ -299,7 +299,6 @@ export default {
           this.currentOrder._source.prep_status = 'finishedWithRemb'
         } else {
           this.currentOrder._source.prep_status = 'finished'
-          this.$store.commit('mvpPrep/mutate_currentOrderStatus', 'finished')
         }
       } else {
         console.log('really wow you deceive me')
@@ -423,15 +422,6 @@ export default {
     }
   },
 
-  mounted() {
-    if (localStorage.filterHasSec) {
-      this.filterHasSec = localStorage.filterHasSec
-    }
-    if (localStorage.filterHasFrais) {
-      this.filterHasFrais = localStorage.filterHasFrais
-    }
-  },
-
   created() {
     this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
     this.$store.dispatch('mvpPrep/getOrderItems')
@@ -448,6 +438,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('beforeunload', this.preventNav)
+    this.unlock()
   }
 }
 </script>

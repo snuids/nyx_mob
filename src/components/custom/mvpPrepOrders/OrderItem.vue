@@ -77,7 +77,6 @@ export default {
   },
   computed: {
     ...mapState('mvpPrep', [
-      'currentOrderStatus',
       'itemsClicked',
       'displayedItems',
       'currentOrderItems'
