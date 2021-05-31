@@ -78,14 +78,14 @@ module.exports = function(ctx) {
           backButton: true
         },
         brand: {
-          primary: '#409EFF',
+          primary: '#70B937',
           secondary: '#26A69A',
           accent: '#9C27B0',
 
           dark: '#1d1d1d',
 
           positive: '#67C23A',
-          negative: '#F56C6C',
+          negative: 'orange',
           info: '#909399',
           warning: '#E6A23C'
         }

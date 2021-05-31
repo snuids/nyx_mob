@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@quasar/app": "^2.1.6",
+    "@quasar/cli": "^1.2.0",
     "@quasar/extras": "^1.9.10",
     "axios": "^0.18.1",
     "moment": "^2.23.0",

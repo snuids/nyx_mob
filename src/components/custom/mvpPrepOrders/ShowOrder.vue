@@ -2,13 +2,16 @@
   <q-page v-if="currentOrderItems" style="padding-top: 205px">
     <div class="row text-h6 flex full-width"></div>
 
-    <OrderItems style="padding-bottom: 85px" :preparedProducts="preparedProducts" />
+    <OrderItems
+      style="padding-bottom: 85px"
+      :preparedProducts="preparedProducts"
+    />
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-1 items-center text-h6">
         <div
-          class="row col-xs-12 justify-center bg-green-7 items-center text-white"
-          style="height: 100px; box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
+          class="row col-xs-12 justify-center items-center text-white"
+          style="height: 100px; box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
         >
           <div class="row col-xs-6 justify-center">
             <q-btn
@@ -27,18 +30,24 @@
           class="row flex col-xs-12 items-center"
           style="box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
         >
-          <div class="col-xs-4 row justify-center items-center" style="height: 100px;   ">
+          <div
+            class="col-xs-4 row justify-center items-center"
+            style="height: 100px;   "
+          >
             <q-icon
               size="40px"
               name="directions_bike"
               style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
-            ></q-icon>&nbsp; &nbsp;
+            ></q-icon
+            >&nbsp; &nbsp;
             <div class="row flex">
               <div class="col-xs-12" style="font-weight: bold;">
                 #{{ orderId }}
                 <br />
               </div>
-              <div class="col-xs-12" style="font-weight: lighter">Livraison à vélo</div>
+              <div class="col-xs-12" style="font-weight: lighter">
+                Livraison à vélo
+              </div>
             </div>
           </div>
 
@@ -58,8 +67,8 @@
     </q-page-sticky>
     <q-page-sticky expand position="bottom">
       <div
-        class="row full-width flex items-center bg-blue-grey-1 text-h6"
-        style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2);"
+        class="row full-width flex items-center text-h6 text-white"
+        style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
       >
         <div class="row col-xs-6 justify-end">
           <q-circular-progress
@@ -68,15 +77,18 @@
             :value="progress"
             :max="this.currentOrderItems.length"
             size="50px"
-            :thickness="0.22"
-            color="teal"
-            track-color="grey-3"
+            :thickness="0.15"
+            color="white"
+            track-color="grey-6"
             class="q-ma-md float-right"
-          >{{ Math.round((progress * 100) / currentOrderItems.length) }}%</q-circular-progress>
+            >{{
+              Math.round((progress * 100) / currentOrderItems.length)
+            }}%</q-circular-progress
+          >
         </div>
-        <div
-          class="row col-xs-6 justify-start"
-        >{{ this.currentOrderItems.length - progress }} produits restants</div>
+        <div class="row col-xs-6 justify-start">
+          {{ this.currentOrderItems.length - progress }} produits restants
+        </div>
         <!---->
       </div>
     </q-page-sticky>
@@ -90,6 +102,7 @@ import { mapState, mapGetters } from 'vuex'
 import CallAction from './CallAction'
 import OrderItem from './OrderItem'
 import ItemsFilter from './ItemsFilter'
+import _ from 'lodash'
 
 export default {
   name: 'ShowOrder',
@@ -117,6 +130,9 @@ export default {
       }
     },
     progress() {
+      if (_.isEmpty(this.currentOrder)) {
+        return 0
+      }
       let alreadyMadeProgress
       if (this.preparedFresh != undefined) {
         alreadyMadeProgress =
@@ -144,7 +160,8 @@ export default {
       'missingFresh',
       'rembDry',
       'rembFresh',
-      'orders'
+      'orders',
+      'modeFilter'
     ])
   },
   props: ['orderId'],
@@ -152,29 +169,36 @@ export default {
     isFrais(item) {
       return item._source.fresh
     },
+
     goBackToList() {
       let query = Object.assign({}, this.$route.query)
       delete query.showOrder
       this.$router.replace({ query })
     },
+
     async unlock() {
+      console.log('I am in unlock so wowo that is amazing')
       // console.table(this.preparedProducts)
       let fresh = this.preparedProducts.filter(
         product =>
           product._source.fresh && product._source.prep_status === 'success'
       )
+
       let dry = this.preparedProducts.filter(
         product =>
           !product._source.fresh && product._source.prep_status === 'success'
       )
+
       let manqFresh = this.preparedProducts.filter(
         product =>
           product._source.fresh && product._source.prep_status === 'manq'
       )
+
       let manqDry = this.preparedProducts.filter(
         product =>
           !product._source.fresh && product._source.prep_status === 'manq'
       )
+
       let rembFresh = this.preparedProducts.filter(
         product =>
           product._source.fresh && product._source.prep_status === 'remb'
@@ -269,6 +293,7 @@ export default {
 
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
+        console.log('we are going to updateOrders on the server')
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
           line_items: this.preparedProducts
         })
@@ -280,6 +305,7 @@ export default {
     },
 
     async sendUnlockOrder() {
+      console.log('i am in sendunlockorder')
       // console.table(this.currentOrder._source.rembFresh)
       // console.table(this.currentOrder._source.rembDry)
       // console.table(this.currentOrder._source.preparedDry)
@@ -402,11 +428,12 @@ export default {
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
       this.currentOrder._source.lock = true
-      this.currentOrder._source.lock_type = this.lock_fresh
-        ? 'fresh'
-        : this.lock_dry
-        ? 'dry'
-        : 'none'
+      this.currentOrder._source.lock_type =
+        this.modeFilter === 'fresh'
+          ? 'fresh'
+          : this.modeFilter === 'dry'
+          ? 'dry'
+          : 'none'
       this.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
@@ -419,56 +446,47 @@ export default {
         data: this.currentOrder
       })
     },
-    prepareData() {
+
+    async prepareData() {
+      /*
       console.log(this.orders)
       console.log(this.orderId)
-      this.currentOrder = this.orders.filter(o => o._id === this.orderId)[0]
 
-      this.updateOrderStatus()
+       */
+
+      await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
+      await this.updateOrderStatus()
+      console.log('this is the order we clicked on', this.currentOrder)
 
       this.$q.loading.show()
-      this.$store
-        .dispatch('mvpPrep/getOrderItems')
-        .then(() => {
-          this.$q.loading.hide()
-          console.log('these are the items sent when the card was cliked')
-          console.log(this.currentOrderItems)
-        })
-        .then(() => {
-          //let orderId = this.order._source.order_number.replace('#', '')
-        })
+      await this.$store.dispatch('mvpPrep/getOrderItems')
+
+      this.$q.loading.hide()
+      console.log('these are the items sent when the card was cliked')
+      console.log(this.currentOrderItems)
     }
   },
 
   watch: {
     $route(to, from) {
       console.log('url changed')
-      this.prepareData()
+      this.unlock()
     },
-    filterHasSec(newFilter) {
-      localStorage.filterHasSec = newFilter
-    },
-    filterHasFrais: function(newFilter) {
-      localStorage.filterHasFrais = newFilter
-    },
+
     progress: function(newValue) {
+      console.log('this is the progress: ', this.progress)
       if (newValue === this.currentOrderItems.length) {
-        this.showNotif('center')
-        setTimeout(() => {
-          this.unlock().then(() => {
-            this.goBackToList()
-            // this.$router.push({
-            //   name: 'orders'
-            // })
-          })
-        }, 2000)
+        this.unlock().then(() => {
+          this.showNotif('center')
+          this.goBackToList()
+        })
       }
     }
   },
 
-  created() {
+  async created() {
     this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
-    this.prepareData()
+    await this.prepareData()
   },
 
   beforeMount() {

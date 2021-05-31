@@ -1,6 +1,7 @@
 <template>
-  <div v-if="order">
+  <div>
     <q-card
+      v-if="order"
       :disabled="cardDisabled"
       v-ripple
       :class="[status, 'cursor-pointer q-hoverable myCard']"
@@ -192,9 +193,9 @@ export default {
     cardClick() {
       console.log(this.cardDisabled)
       if (this.cardDisabled) return
-      
+
       this.$router.push({
-        query: { showOrder: this.order._id } 
+        query: { showOrder: this.order._id }
       })
     }
   }

@@ -12,7 +12,13 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer side="left" v-model="showLeft">
+    <q-drawer
+      overlay
+      behavior="mobile"
+      side="left"
+      ref="mainDrawer"
+      v-model="showLeft"
+    >
       <div class="bg-brown-1 account-container">
         <q-icon
           size="80px"
@@ -82,7 +88,7 @@ export default {
 
   data: () => ({
     title: 'NYX Mobile',
-    showLeft: false,
+    showLeft: false
   }),
   computed: {
     apiurl() {
@@ -100,7 +106,7 @@ export default {
     },
     filteredmenus() {
       return this.$store.getters.filteredmenus
-    },
+    }
   },
   methods: {
     clickLogout() {
@@ -110,7 +116,7 @@ export default {
           message: 'Are you sure you want to logout ?',
           color: 'negative',
           ok: true,
-          cancel: true,
+          cancel: true
           //position: 'top',
         })
         .onOk(() => {
@@ -124,7 +130,7 @@ export default {
       console.log('BEFCOMMIT')
       this.$store.commit({
         type: 'logout',
-        data: {},
+        data: {}
       })
       console.log('AFTERCOMMIT')
 
@@ -133,7 +139,7 @@ export default {
         message: this.$t('notifications.bye'),
         type: 'positive',
         position: 'bottom',
-        timeout: 500,
+        timeout: 500
       })
       this.$router.push('/')
     },
@@ -141,16 +147,18 @@ export default {
       if (e.type == 'external') {
         window.open(e.config.url)
       }
-    },
+      this.$refs.mainDrawer.hide()
+    }
   },
-  created: async function () {
+  created: async function() {
     var vars = {}
-    window.location.href.replace(
-      /[?&]+([^=&]+)=([^&]*)/gi,
-      function (m, key, value) {
-        vars[key] = value
-      }
-    )
+    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(
+      m,
+      key,
+      value
+    ) {
+      vars[key] = value
+    })
 
     if (vars['api'] != undefined) {
       this.$store.state.apiurl = vars['api'].split('#')[0]
@@ -179,22 +187,22 @@ export default {
         if (response.status == 200 && response.data.error == '') {
           this.$store.commit({
             type: 'login',
-            data: authResponse.data,
+            data: authResponse.data
           })
 
           this.$store.commit({
             type: 'changeApp',
-            data: rec_id,
+            data: rec_id
           })
 
           if (authResponse.data.cred.user.privileges.includes('admin')) {
             this.$store.commit({
               type: 'privileges',
-              data: authResponse.data.all_priv,
+              data: authResponse.data.all_priv
             })
             this.$store.commit({
               type: 'filters',
-              data: authResponse.data.all_filters,
+              data: authResponse.data.all_filters
             })
           }
         }
@@ -203,8 +211,8 @@ export default {
       }
     }
   },
-  mounted: function () {},
-  beforeDestroy: function () {},
+  mounted: function() {},
+  beforeDestroy: function() {}
 }
 </script>
 <style scoped>

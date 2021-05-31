@@ -90,7 +90,8 @@ export default {
                   ],
                   minimum_should_match: 1
                 }
-              },
+              }
+              /*
               {
                 range: {
                   date: {
@@ -99,6 +100,8 @@ export default {
                   }
                 }
               }
+
+               */
             ],
             should: [],
             must_not: []
@@ -106,12 +109,15 @@ export default {
         }
       }
       const indiceProducts = 'mvp_app_line_item'
+      /*
       queryList2.query.bool.filter[1].range.date.gte = mvpStore.targetDate.dateFrom.format(
         'YYYY/MM/DD'
       )
       queryList2.query.bool.filter[1].range.date.lte = mvpStore.targetDate.dateTo.format(
         'YYYY/MM/DD'
       )
+
+       */
       queryList2.query.bool.filter[0].bool.should[0].match.order =
         '#' + state.currentOrder._source.order_number.replace('#', '')
       url += 'generic_search/' + indiceProducts
@@ -153,6 +159,30 @@ export default {
           Loading.hide()
           console.error(error)
         })
+    },
+
+    requestOrder({ state, rootState }, id) {
+      Loading.show({
+        delay: 300
+      })
+      let url =
+        rootState.apiurl +
+        'generic/' +
+        'mvp_app_order' +
+        '/' +
+        id +
+        '?token=' +
+        rootState.creds.token
+
+      return axios
+        .get(url)
+        .then(response => {
+          Loading.hide()
+          // saving original order for later comparison,
+          // and current order to work with
+          state.currentOrder = response.data.data
+        })
+        .catch(error => {})
     },
 
     updateOrderItems({ state, commit }, payload) {
@@ -249,6 +279,7 @@ export default {
           console.error(error)
         })
     },
+
     updateOrder({ state, rootState }, payload) {
       const url =
         rootState.apiurl +
