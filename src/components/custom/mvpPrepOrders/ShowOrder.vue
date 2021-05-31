@@ -55,8 +55,12 @@
             class="row col-xs-4 justify-center items-center text-black"
             style="border-radius: 10px;  height: 60px;"
           >
-            Aujourd'hui -
-            {{ currentOrder._source.tags.split(',')[0].split('-')[0] }}
+            Aujourd'hui --
+            {{
+              currentOrder._source.tags
+                .split(',')
+                .filter(elt => elt.includes('-'))[0]
+            }}
           </div>
 
           <div class="row col-xs-4 justify-center items-center">
@@ -121,34 +125,6 @@ export default {
       'itemsClicked',
       'displayedItems'
     ]),
-    currentOrder: {
-      get() {
-        return this.$store.getters['mvpPrep/currentOrder']
-      },
-      set(newCurrentOrder) {
-        this.$store.commit('mvpPrep/mutate_currentOrder', newCurrentOrder)
-      }
-    },
-    progress() {
-      if (_.isEmpty(this.currentOrder)) {
-        return 0
-      }
-      let alreadyMadeProgress
-      if (this.preparedFresh != undefined) {
-        alreadyMadeProgress =
-          this.preparedDry.length +
-          this.preparedFresh.length +
-          this.rembDry.length +
-          this.rembFresh.length
-      } else {
-        alreadyMadeProgress = this.itemsClicked
-      }
-      return alreadyMadeProgress + this.itemsClicked
-    },
-
-    userName: function() {
-      return this.creds.user.firstname
-    },
     ...mapGetters(['creds']),
     ...mapGetters('mvpPrep', [
       'preparedItems',
@@ -162,7 +138,41 @@ export default {
       'rembFresh',
       'orders',
       'modeFilter'
-    ])
+    ]),
+    currentOrder: {
+      get() {
+        return this.$store.getters['mvpPrep/currentOrder']
+      },
+      set(newCurrentOrder) {
+        this.$store.commit('mvpPrep/mutate_currentOrder', newCurrentOrder)
+      }
+    },
+    progress() {
+      if (_.isEmpty(this.currentOrder)) {
+        return 0
+      }
+      let alreadyMadeProgress
+      // this is to make sure that values in store have been updated
+      if (
+        this.preparedFresh !== undefined &&
+        this.currentOrder._id === this.orderId
+      ) {
+        alreadyMadeProgress =
+          this.preparedDry.length +
+          this.preparedFresh.length +
+          this.rembDry.length +
+          this.rembFresh.length
+      } else {
+        alreadyMadeProgress = this.itemsClicked
+      }
+      console.log('this is already made progress ', alreadyMadeProgress)
+      console.log('these are the items clicked ', this.itemsClicked)
+      return alreadyMadeProgress + this.itemsClicked
+    },
+
+    userName: function() {
+      return this.creds.user.firstname
+    }
   },
   props: ['orderId'],
   methods: {
@@ -339,7 +349,7 @@ export default {
       // send the update request
       await this.$store.dispatch({
         type: 'mvpPrep/updateOrder',
-        data: this.$store.state.mvpPrep.currentOrder
+        data: this.currentOrder
       })
       // console.log('sendunlockorder terminé')
     },
@@ -477,17 +487,26 @@ export default {
     progress: function(newValue) {
       console.log('this is the progress: ', this.progress)
       if (newValue === this.currentOrderItems.length) {
-        this.unlock().then(() => {
-          this.showNotif('center')
-          this.goBackToList()
-        })
+        this.showNotif('center')
+        setTimeout(() => {
+          this.unlock().then(() => {
+            this.goBackToList()
+          })
+        }, 2000)
       }
     }
   },
 
-  async created() {
+  beforeCreate() {
     this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
+  },
+
+  async created() {
+    this.$q.loading.show({
+      delay: 300
+    })
     await this.prepareData()
+    this.$q.loading.hide()
   },
 
   beforeMount() {

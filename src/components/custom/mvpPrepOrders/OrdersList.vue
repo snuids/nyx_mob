@@ -1,6 +1,6 @@
 <template>
-  <div id="parent" class="row col-xs-12 q-col-gutter-md" >
-    <div 
+  <div id="parent" class="row col-xs-12 q-col-gutter-md">
+    <div
       v-for="(order, idx) in ordersToDisplay.sort((a, b) => {
         return a._id - b._id
       })"
@@ -18,8 +18,9 @@ export default {
   name: 'OrdersList',
   data() {
     return {
-      interval: null,
-  }},
+      interval: null
+    }
+  },
   computed: {
     ...mapState('mvpPrep', ['orders', 'modeFilter']),
     ordersToDisplay: function() {
@@ -41,17 +42,15 @@ export default {
     }
   },
   components: { OrderCard },
-  
-  methods: {
-  },
+
+  methods: {},
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
-
-    console.log(timer)
 
     this.interval = setInterval(
       async function() {
         await this.$store.dispatch('mvpPrep/getOrders')
+        console.log('these are the updated orders ', this.ordersToDisplay)
       }.bind(this),
       timer
     )
