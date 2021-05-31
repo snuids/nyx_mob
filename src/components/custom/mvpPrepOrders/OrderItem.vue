@@ -1,6 +1,11 @@
 <template>
   <transition leave-active-class="animated fadeOutDown" duration="250">
-    <q-item clickable :class="[`bg-${bgColor}-2`, 'item']" v-if="!prepa">
+    <q-item
+      clickable
+      :class="[`bg-${bgColor}-2`, 'item']"
+      v-if="!prepa"
+      @click="success(product)"
+    >
       <q-item-section
         v-if="product._source.smallImage !== undefined"
         style="max-width: 50px; "
@@ -48,14 +53,6 @@
           text-color="black"
           push
           label="MANQ"
-          unelevated
-        ></q-btn>
-        <q-btn
-          @click="success(product)"
-          color="green-4"
-          text-color="black"
-          push
-          label="ok"
           unelevated
         ></q-btn>
       </q-btn-group>

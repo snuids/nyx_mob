@@ -364,6 +364,7 @@ export default {
     addProductToPrepared(productsArray, arrayToInsertIn, product) {
       productsArray.forEach(products => {
         if (products === arrayToInsertIn) {
+          console.log('ok equality between the two arrays')
           if (products.filter(item => item._id === product._id).length === 0) {
             arrayToInsertIn.push(product)
           }

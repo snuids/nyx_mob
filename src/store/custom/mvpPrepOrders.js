@@ -180,7 +180,21 @@ export default {
           Loading.hide()
           // saving original order for later comparison,
           // and current order to work with
-          state.currentOrder = response.data.data
+          console.log(response.data)
+          let order = response.data.data
+          state.currentOrder = order
+
+          if (order._source.dryItems === undefined) {
+            order._source.preparedDry = []
+            order._source.preparedFresh = []
+            order._source.dryItems = []
+            order._source.freshItems = []
+            order._source.missingFresh = []
+            order._source.missingDry = []
+            order._source.rembDry = []
+            order._source.rembFresh = []
+            order._source.lock = false
+          }
         })
         .catch(error => {})
     },
