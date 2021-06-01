@@ -18,7 +18,11 @@
       <q-tab class="row col-xs-4 justify-center" name="client" label="Client" />
     </q-tabs>
     <q-tab-panels animated v-model="tab">
-      <q-tab-panel name="articles" style="overflow: auto;">
+      <q-tab-panel
+        class="q-pa-none"
+        name="articles"
+        style="height:calc(100vh - 100px); overflow: scroll;"
+      >
         <OrderItems :preparedProducts="prepared" />
       </q-tab-panel>
       <q-tab-panel name="resume">
