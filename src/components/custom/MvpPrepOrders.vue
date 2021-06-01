@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div v-if="urlOrderId">
-        <ShowOrder :orderId="urlOrderId"></ShowOrder>
+      <ShowOrder :orderId="urlOrderId"></ShowOrder>
     </div>
     <div v-else>
       <div class="row full-width flex flex-center column">
@@ -9,7 +9,7 @@
           class="row col-xs-12 justify-between q-mt-sm q-pa-xl"
           style="min-height: 400px; padding-top: 130px"
         >
-          <OrdersList/>
+          <OrdersList />
         </div>
       </div>
       <q-page-sticky expand position="top">
@@ -24,8 +24,7 @@
             {{ userName }}
           </div>
           <div class="row col-xs-4 justify-center">
-            {{ ordersToDisplay.length }} commandes      {{urlOrderId}}
-
+            {{ ordersToDisplay.length }} commandes
           </div>
           <div class="row col-xs-4 justify-center">
             <ItemsFilter />
@@ -57,7 +56,7 @@ export default {
     OrdersList,
     StickyBanner,
     ItemsFilter,
-    ShowOrder,
+    ShowOrder
   },
 
   data() {
@@ -70,10 +69,10 @@ export default {
   computed: {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders']),
-    urlOrderId () {
+    urlOrderId() {
       console.log(this.$route.fullPath)
       let url = this.$route.fullPath
-      if (url.indexOf('showOrder=')>-1) {
+      if (url.indexOf('showOrder=') > -1) {
         return url.split('showOrder=')[1]
       }
       return null
@@ -127,19 +126,10 @@ export default {
   },
 
   async mounted() {
-    if (localStorage.filterHasSec) {
-      this.filterHasSec = localStorage.filterHasSec
-    }
-    if (localStorage.filterHasFrais) {
-      this.filterHasFrais = localStorage.filterHasFrais
-    }
-
     if (localStorage.modeFilter) {
       this.modeFilter = localStorage.modeFilter
     }
-  },
-
-
+  }
 }
 </script>
 

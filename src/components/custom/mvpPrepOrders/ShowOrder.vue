@@ -116,7 +116,8 @@ export default {
       preparedProducts: [],
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
-      isEditing: false
+      isEditing: false,
+      open: false
     }
   },
   computed: {
@@ -183,6 +184,7 @@ export default {
     goBackToList() {
       let query = Object.assign({}, this.$route.query)
       delete query.showOrder
+      this.unlock()
       this.$router.replace({ query })
     },
 
@@ -478,23 +480,20 @@ export default {
       this.$q.loading.show({
         message: 'Fetching data'
       })
-      
-      await this.unlock()
       await this.prepareData()
       setTimeout(() => {
-            this.$q.loading.hide()
+        this.$q.loading.hide()
       }, 500)
     },
     progress: function(newValue) {
       console.log('this is the progress: ', this.progress)
-      if (newValue === this.currentOrderItems.length) {
+      if (newValue === this.currentOrderItems.length && this.open) {
         this.showNotif('center')
         setTimeout(() => {
-          this.unlock().then(() => {
-            this.goBackToList()
-          })
+          this.goBackToList()
         }, 2000)
       }
+      this.open = true
     }
   },
 
@@ -502,28 +501,19 @@ export default {
     this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
   },
 
-  async created() {
-    this.$q.loading.show({
-      message: 'Fetching data'
-    })
-    await this.prepareData()
-    setTimeout(() => {
-          this.$q.loading.hide()
-    }, 500)
-  },
-
   beforeMount() {
     window.addEventListener('beforeunload', this.preventNav)
+    this.$q.loading.show({
+      message: 'Fetching data',
+      delay: 100
+    })
+    this.prepareData()
+    this.$q.loading.hide()
   },
 
-  async beforeRouteLeave(to, from, next) {
-    await this.unlock()
-    next()
-  },
-
-  beforeDestroy() {
+  destroyed() {
+    console.log('wow')
     window.removeEventListener('beforeunload', this.preventNav)
-    this.unlock()
   }
 }
 </script>
