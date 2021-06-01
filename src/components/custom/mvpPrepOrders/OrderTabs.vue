@@ -1,11 +1,10 @@
 <template>
   <div>
     <q-tabs
-      active-bg-color="primary"
+      active-bg-color="grey-4"
       v-model="tab"
       dense
       class="row flex justify-center  items-center text-black"
-      active-color="white"
       indicator-color="primary"
       align="justify"
     >
@@ -21,7 +20,7 @@
       <q-tab-panel
         class="q-pa-none"
         name="articles"
-        style="height:calc(100vh - 100px); overflow: scroll;"
+        style="height: calc(100vh - 280px); overflow: scroll;"
       >
         <OrderItems :preparedProducts="prepared" />
       </q-tab-panel>
