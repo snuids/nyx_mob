@@ -467,23 +467,24 @@ export default {
 
       await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
       await this.updateOrderStatus()
-      console.log('this is the order we clicked on', this.currentOrder)
-
-      this.$q.loading.show()
       await this.$store.dispatch('mvpPrep/getOrderItems')
-
-      this.$q.loading.hide()
       console.log('these are the items sent when the card was cliked')
       console.log(this.currentOrderItems)
     }
   },
 
   watch: {
-    $route(to, from) {
-      console.log('url changed')
-      this.unlock()
+    async $route(to, from) {
+      this.$q.loading.show({
+        message: 'Fetching data'
+      })
+      
+      await this.unlock()
+      await this.prepareData()
+      setTimeout(() => {
+            this.$q.loading.hide()
+      }, 500)
     },
-
     progress: function(newValue) {
       console.log('this is the progress: ', this.progress)
       if (newValue === this.currentOrderItems.length) {
@@ -503,10 +504,12 @@ export default {
 
   async created() {
     this.$q.loading.show({
-      delay: 300
+      message: 'Fetching data'
     })
     await this.prepareData()
-    this.$q.loading.hide()
+    setTimeout(() => {
+          this.$q.loading.hide()
+    }, 500)
   },
 
   beforeMount() {

@@ -68,7 +68,7 @@ module.exports = function(ctx) {
       // Quasar plugins
       plugins: ['Notify', 'Dialog', 'Loading', 'AppFullscreen'],
       config: {
-        loading: { delay: 400 },
+        loading: { delay: 100 },
         capacitor: {
           backButtonExit: false,
           backButton: false
