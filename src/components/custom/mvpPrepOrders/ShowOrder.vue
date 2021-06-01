@@ -1,16 +1,11 @@
 <template>
-  <q-page v-if="currentOrderItems" style="padding-top: 205px">
+  <q-page v-if="currentOrderItems" style="padding-top: 200px">
     <div class="row text-h6 flex full-width"></div>
 
-    <OrderItems
-      style="padding-bottom: 85px"
-      :preparedProducts="preparedProducts"
-    />
-
     <q-page-sticky expand position="top">
-      <div class="row full-width flex bg-blue-grey-1 items-center text-h6">
+      <div class="row full-width flex bg-blue-grey-1 items-center">
         <div
-          class="row col-xs-12 justify-center items-center text-white"
+          class="row col-xs-12 justify-center items-center text-white text-h6"
           style="height: 100px; box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
         >
           <div class="row col-xs-6 justify-center">
@@ -26,10 +21,7 @@
           <div class="row col-xs-6 justify-start">{{ userName }}</div>
         </div>
 
-        <div
-          class="row flex col-xs-12 items-center"
-          style="box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);"
-        >
+        <div class="row flex col-xs-12 items-center text-h6">
           <div
             class="col-xs-4 row justify-center items-center"
             style="height: 100px;   "
@@ -66,6 +58,10 @@
           <div class="row col-xs-4 justify-center items-center">
             <ItemsFilter />
           </div>
+        </div>
+
+        <div class="col-xs-12">
+          <OrderTabs :prepared="preparedProducts" />
         </div>
       </div>
     </q-page-sticky>
@@ -106,11 +102,12 @@ import { mapState, mapGetters } from 'vuex'
 import CallAction from './CallAction'
 import OrderItem from './OrderItem'
 import ItemsFilter from './ItemsFilter'
+import OrderTabs from './OrderTabs'
 import _ from 'lodash'
 
 export default {
   name: 'ShowOrder',
-  components: { ItemsFilter, CallAction, OrderItems, OrderItem },
+  components: { ItemsFilter, CallAction, OrderItems, OrderItem, OrderTabs },
   data() {
     return {
       preparedProducts: [],
