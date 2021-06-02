@@ -1,11 +1,11 @@
 <template>
   <q-btn-toggle
     v-model="modeFilter"
-    spread
     class="my-custom-toggle"
+    dense
     no-caps
     rounded
-    unelevated
+    padding="10px"
     toggle-color="positive"
     color="white"
     text-color="black"

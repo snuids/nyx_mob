@@ -25,7 +25,7 @@
           <q-icon
             size="40px"
             name="directions_bike"
-            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px;"
           ></q-icon
           >&nbsp; &nbsp;
           <div class="row flex">
@@ -63,7 +63,7 @@
 
         <div
           class="row col-xs-3 col-md-2 justify-center items-center text-white"
-          style="border-radius: 10px;  height: 60px; background-color: #70B937;"
+          style="border-radius: 10px;  height: 60px; background-color: #70B937; font-weight: bold"
         >
           {{
             currentOrder._source.tags
@@ -79,7 +79,7 @@
     </q-page-sticky>
     <q-page-sticky expand position="bottom">
       <div
-        class="row full-width flex items-center text-h6 text-white"
+        class="row full-width flex items-center text-white"
         style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
       >
         <div class="row col-xs-6 justify-end">
