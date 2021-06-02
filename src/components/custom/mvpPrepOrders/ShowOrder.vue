@@ -4,60 +4,72 @@
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-1 items-center">
-        <div
-          class="row col-xs-12 justify-center items-center text-white text-h6"
-          style="height: 100px; box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
-        >
-          <div class="row col-xs-6 justify-center">
-            <q-btn
-              @click="goBackToList"
-              icon="arrow_back_ios"
-              style="margin-right: 60px"
-              size="20px"
-              unelevated
-              round
-            />
-          </div>
-          <div class="row col-xs-6 justify-start">{{ userName }}</div>
+        <div class="row col-xs-5 col-md-2 justify-center">
+          <q-btn
+            @click="goBackToList"
+            icon="arrow_back_ios"
+            style="margin-right: 60px"
+            size="20px"
+            unelevated
+            round
+          />
         </div>
-
-        <div class="row flex col-xs-12 items-center text-h6">
-          <div
-            class="col-xs-4 row justify-center items-center"
-            style="height: 100px;   "
-          >
-            <q-icon
-              size="40px"
-              name="directions_bike"
-              style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
-            ></q-icon
-            >&nbsp; &nbsp;
-            <div class="row flex">
-              <div class="col-xs-12" style="font-weight: bold;">
-                #{{ orderId }}
-                <br />
-              </div>
-              <div class="col-xs-12" style="font-weight: lighter">
-                Livraison à vélo
-              </div>
+        <div class="row col-xs-7 col-md-4 justify-center items-center">
+          <ItemsFilter />
+        </div>
+        <div
+          v-if="currentOrder._source.to_customer === 'delivery'"
+          class="col-xs-8 col-md-3 row justify-center items-center"
+          style="height: 100px;   "
+        >
+          <q-icon
+            size="40px"
+            name="directions_bike"
+            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+          ></q-icon
+          >&nbsp; &nbsp;
+          <div class="row flex">
+            <div class="col-xs-12" style="font-weight: bold;">
+              #{{ orderId }}
+              <br />
+            </div>
+            <div class="col-xs-12" style="font-weight: lighter">
+              Livraison à vélo
             </div>
           </div>
+        </div>
 
-          <div
-            class="row col-xs-4 justify-center items-center text-black"
-            style="border-radius: 10px;  height: 60px;"
-          >
-            Aujourd'hui --
-            {{
-              currentOrder._source.tags
-                .split(',')
-                .filter(elt => elt.includes('-'))[0]
-            }}
+        <div
+          v-if="currentOrder._source.to_customer === 'pickup'"
+          class="col-xs-8 col-md-3 row justify-center items-center"
+          style="height: 100px;   "
+        >
+          <q-icon
+            size="40px"
+            name="shopping_bag"
+            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+          ></q-icon
+          >&nbsp; &nbsp;
+          <div class="row flex">
+            <div class="col-xs-12" style="font-weight: bold;">
+              #{{ orderId }}
+              <br />
+            </div>
+            <div class="col-xs-12" style="font-weight: lighter">
+              Commande à récupérer
+            </div>
           </div>
+        </div>
 
-          <div class="row col-xs-4 justify-center items-center">
-            <ItemsFilter />
-          </div>
+        <div
+          class="row col-xs-3 col-md-2 justify-center items-center text-white"
+          style="border-radius: 10px;  height: 60px; background-color: #70B937;"
+        >
+          {{
+            currentOrder._source.tags
+              .split(',')
+              .filter(elt => elt.includes('-'))[0]
+          }}
         </div>
 
         <div class="col-xs-12">
@@ -488,7 +500,7 @@ export default {
         this.showNotif('center')
         setTimeout(() => {
           this.goBackToList()
-        }, 2000)
+        }, 2500)
       }
       this.open = true
     }
@@ -511,6 +523,7 @@ export default {
   destroyed() {
     console.log('wow')
     window.removeEventListener('beforeunload', this.preventNav)
+    this.unlock()
   }
 }
 </script>

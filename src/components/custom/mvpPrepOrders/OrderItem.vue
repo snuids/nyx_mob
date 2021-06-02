@@ -22,23 +22,29 @@
         />
       </q-item-section>
       <q-item-section>
-        <div class="flex row items-center" style="max-height: 50px">
+        <div class="flex row items-center" style="">
           <div
-            style="font-weight: bold; font-size: 16px"
-            class="row col-xs-6 justify-start "
+            style="font-weight: bold; font-size: 15px; max-width: 800px"
+            class="row col-xs-8 justify-start "
           >
             {{ product._source.name }}
           </div>
-          <q-badge class="frais row col-xs-2 justify-start ">
+          <q-badge
+            :class="[
+              `${isFrais ? 'frais' : 'sec'}`,
+              'row col-xs-3 justify-center'
+            ]"
+            style="max-width: 40px"
+          >
             {{ this.isFrais ? 'Frais' : 'Sec' }}
           </q-badge>
         </div>
         <div>
           <q-icon name="location_on"></q-icon>
-          LOC {{ product._source.loc }} | {{ product._source.vendor }}
+          LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
         </div>
       </q-item-section>
-      <q-btn-group class="float-right" rounded>
+      <q-btn-group class="float-right glossy" rounded style="max-height: 80px">
         <q-btn
           @click="remb(product)"
           color="red-4"
@@ -193,7 +199,11 @@ export default {
 }
 
 .frais {
-  max-width: 40px;
+  background-color: deepskyblue;
+}
+
+.sec {
+  background-color: mediumseagreen;
 }
 
 .item {

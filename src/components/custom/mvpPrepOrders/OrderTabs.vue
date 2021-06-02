@@ -20,41 +20,38 @@
       <q-tab-panel
         class="q-pa-none"
         name="articles"
-        style="height: calc(100vh - 280px); overflow: scroll;"
+        style="height: calc(100vh - 260px); overflow: scroll;"
       >
         <OrderItems :preparedProducts="prepared" />
       </q-tab-panel>
-      <q-tab-panel name="resume">
-        <div class="text-h6">Résumé</div>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet
-          consequatur dolores doloribus eum, ipsum laborum magni minus molestias
-          nobis quasi repellendus repudiandae sapiente sint sunt tenetur!
-          Eligendi molestias mollitia soluta.
-        </p>
+      <q-tab-panel
+        name="resume"
+        style="height: calc(100vh - 260px); overflow: scroll;"
+      >
+        <OrderInfos style="padding-bottom: 80px" />
       </q-tab-panel>
       <q-tab-panel name="client">
-        <div class="text-h6">Client</div>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium
-          aliquam aut dignissimos dolores, ea enim eum excepturi fuga id illum
-          inventore iste magni, nesciunt numquam optio provident quo
-          reprehenderit voluptates!
-        </p>
+        <ClientInfos />
       </q-tab-panel>
     </q-tab-panels>
   </div>
 </template>
 <script>
 import OrderItems from './OrderItems'
+import OrderInfos from './OrderInfos'
+import { mapState } from 'vuex'
+import ClientInfos from './ClientInfos'
 export default {
   name: 'OrderTabs',
-  components: { OrderItems },
+  components: { ClientInfos, OrderItems, OrderInfos },
   props: ['prepared'],
   data() {
     return {
       tab: 'articles'
     }
+  },
+  computed: {
+    ...mapState('mvpPrep', ['currentOrder', 'currentOrderItems'])
   }
 }
 </script>

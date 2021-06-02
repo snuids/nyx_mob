@@ -6,14 +6,13 @@
     no-caps
     rounded
     unelevated
-    toggle-color="black"
+    toggle-color="positive"
     color="white"
-    size="20px"
     text-color="black"
     :options="[
       { label: 'Frais', value: 'fresh' },
       { label: 'Sec', value: 'dry' },
-      { label: 'Tout', value: 'all' }
+      { label: 'Frais & Sec', value: 'all' }
     ]"
   ></q-btn-toggle>
 </template>
