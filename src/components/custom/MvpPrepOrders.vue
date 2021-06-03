@@ -52,7 +52,7 @@
         <router-view />
       </q-page-container>
     </div>
-    <div v-else style="padding-top: 200px">
+    <div v-else style="padding-top: 100px">
       <OrdersDashboard />
     </div>
   </q-page>

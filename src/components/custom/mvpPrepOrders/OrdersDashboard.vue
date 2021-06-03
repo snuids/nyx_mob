@@ -1,37 +1,63 @@
 <template>
-  <q-list class=" row flex fullwidth">
-    <q-item
-      clickable
-      @click="goToOrdersList"
-      class="row col-xs-12 justify-center"
-      style="background-color: lawngreen;"
+  <div>
+    <div
+      class="row justify-center"
+      style="font-size: 20px; font-weight: bold; padding-bottom: 50px"
     >
-      <q-item-section>
-        Commandes du jour
-      </q-item-section>
-      <q-item-section>
-        {{ orders.length }}
-      </q-item-section>
-    </q-item>
-    <q-item
-      class="row col-xs-12 justify-center"
-      style="background-color: greenyellow"
-    >
-      <q-item-section>
-        Commandes prêtes à expédier
-      </q-item-section>
-      <q-item-section>
-        {{
-          orders.filter(elt => {
-            if (elt._source.prep_status !== undefined) {
-              return elt._source.prep_status === 'finished'
-            }
-            return false
-          }).length
-        }}
-      </q-item-section>
-    </q-item>
-  </q-list>
+      DASHBOARD
+    </div>
+    <q-list class=" row flex justify-center fullwidth">
+      <q-item
+        clickable
+        @click="goToOrdersList"
+        class="row col-xs-10 justify-center text-white"
+        style="background-color: #EABD5A; padding: 30px; margin-bottom: 30px; border-radius: 20px"
+      >
+        <div class="row col-xs-10 justify-center text-h6">
+          Commandes du jour
+          <div
+            class="row col-xs-10 justify-center text-h4"
+            style="font-weight: bold"
+          >
+            {{ orders.length }}
+          </div>
+        </div>
+      </q-item>
+      <q-item
+        class="row col-xs-10 justify-center text-white"
+        style="background-color: seagreen; padding-bottom: 30px; border-radius: 20px"
+      >
+        <div
+          class="row col-xs-10 justify-center text-h6"
+          style="text-align: center"
+        >
+          Commandes prêtes à expédier
+          <div
+            class="row col-xs-10 justify-center text-h4"
+            style="font-weight: bold"
+          >
+            {{
+              orders.filter(elt => {
+                if (elt._source.prep_status !== undefined) {
+                  return (
+                    elt._source.prep_status === 'finished' ||
+                    elt._source.prep_status === 'finishedWithRemb'
+                  )
+                }
+                return false
+              }).length
+            }}
+          </div>
+        </div>
+      </q-item>
+    </q-list>
+    <q-page-sticky expand position="top">
+      <StickyBanner
+        class="row items-center"
+        style="height: 50px"
+      ></StickyBanner>
+    </q-page-sticky>
+  </div>
 </template>
 
 <script>
