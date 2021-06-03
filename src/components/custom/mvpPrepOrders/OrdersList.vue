@@ -50,7 +50,6 @@ export default {
     this.interval = setInterval(
       async function() {
         await this.$store.dispatch('mvpPrep/getOrders')
-        console.log('these are the updated orders ', this.ordersToDisplay)
       }.bind(this),
       timer
     )

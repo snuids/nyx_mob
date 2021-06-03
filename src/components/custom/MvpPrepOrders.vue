@@ -1,13 +1,16 @@
 <template>
   <q-page>
+    <div style="padding-top: 200px">
+      <OrdersDashboard />
+    </div>
     <div v-if="urlOrderId">
       <ShowOrder :orderId="urlOrderId"></ShowOrder>
     </div>
-    <div v-else>
+    <div v-else-if="urlOrderList">
       <div class="row full-width flex flex-center column">
         <div
           class="row col-xs-12 justify-between q-mt-sm q-pa-xl"
-          style="min-height: 400px; padding-top: 130px"
+          style="min-height: 400px; padding-top: 200px"
         >
           <OrdersList />
         </div>
@@ -51,11 +54,13 @@ import ShowOrder from './mvpPrepOrders/ShowOrder'
 import OrdersList from './mvpPrepOrders/OrdersList'
 import ItemsFilter from './mvpPrepOrders/ItemsFilter'
 import { mapState, mapGetters } from 'vuex'
+import OrdersDashboard from './mvpPrepOrders/OrdersDashboard'
 
 export default {
   name: 'MvpPrepOrders',
 
   components: {
+    OrdersDashboard,
     OrdersList,
     StickyBanner,
     ItemsFilter,
@@ -80,6 +85,15 @@ export default {
       }
       return null
     },
+
+    urlOrderList() {
+      let url = this.$route.fullPath
+      if (url.indexOf('ordersList') > -1) {
+        return true
+      }
+      return null
+    },
+
     modeFilter: {
       get() {
         return this.$store.getters['mvpPrep/modeFilter']
