@@ -47,7 +47,7 @@ export default {
     goToOrdersList() {
       console.log('go to orders list')
       this.$router.push({
-        query: { ordersList: 'ordersList' }
+        query: { path: 'ordersList' }
       })
     }
   }

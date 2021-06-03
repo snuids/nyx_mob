@@ -6,7 +6,7 @@
       <div class="row full-width flex bg-blue-grey-1 items-center">
         <div
           v-if="currentOrder._source.to_customer === 'delivery'"
-          class="col-xs-8 col-md-3 row justify-center items-center"
+          class="col-xs-8 col-md-4 row justify-center items-center"
           style="height: 100px;   "
         >
           <q-icon
@@ -78,6 +78,7 @@
         </div>
       </div>
     </q-page-sticky>
+
     <q-page-sticky expand position="bottom">
       <div
         class="row full-width flex items-center text-white"
@@ -194,13 +195,14 @@ export default {
     goBackToList() {
       let query = Object.assign({}, this.$route.query)
       delete query.showOrder
-      this.unlock()
       this.$router.replace({ query })
+      this.$router.push({
+        query: { path: 'ordersList' }
+      })
     },
 
     async unlock() {
       console.log('I am in unlock so wowo that is amazing')
-      // console.table(this.preparedProducts)
       let fresh = this.preparedProducts.filter(
         product =>
           product._source.fresh && product._source.prep_status === 'success'

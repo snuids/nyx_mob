@@ -1,8 +1,5 @@
 <template>
   <q-page>
-    <div style="padding-top: 200px">
-      <OrdersDashboard />
-    </div>
     <div v-if="urlOrderId">
       <ShowOrder :orderId="urlOrderId"></ShowOrder>
     </div>
@@ -17,20 +14,30 @@
       </div>
       <q-page-sticky expand position="top">
         <div class="row full-width flex items-center bg-blue-grey-1" style="">
+          <div class="row col-xs-5 col-md-6 justify-center">
+            <q-btn
+              @click="goBackToDashboard"
+              icon="arrow_back_ios"
+              style="margin-right: 60px"
+              size="20px"
+              unelevated
+              round
+            />
+          </div>
           <div
-            class="row col-md-4 col-xs-12 justify-center text-h6  items-center "
+            class="row col-md-6 col-xs-6 justify-center text-h6  items-center "
             style="height: 50px"
           >
             {{ userName }}
           </div>
           <div
-            class="row col-md-4 col-xs-6 justify-center text-h6"
+            class="row col-md-6 col-xs-6 justify-center text-h6"
             style="height: 50px"
           >
             {{ ordersToDisplay.length }} commandes
           </div>
           <div
-            class="row col-md-4 col-xs-6 justify-center"
+            class="row col-md-6 col-xs-6 justify-center"
             style="margin-bottom: 15px"
           >
             <ItemsFilter />
@@ -44,6 +51,9 @@
       <q-page-container>
         <router-view />
       </q-page-container>
+    </div>
+    <div v-else style="padding-top: 200px">
+      <OrdersDashboard />
     </div>
   </q-page>
 </template>
@@ -135,6 +145,13 @@ export default {
         })
       },
       deep: true
+    }
+  },
+  methods: {
+    goBackToDashboard() {
+      let query = Object.assign({}, this.$route.query)
+      delete query.path
+      this.$router.replace({ query })
     }
   },
 
