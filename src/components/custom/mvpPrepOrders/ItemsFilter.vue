@@ -2,17 +2,15 @@
   <q-btn-toggle
     v-model="modeFilter"
     class="my-custom-toggle"
-    dense
-    no-caps
-    rounded
-    padding="10px"
-    toggle-color="positive"
+    unelevated
+    style="border: 1px solid black; margin-right: 20px; margin-top: 10px; font-weight: lighter;"
+    toggle-color="brown-4"
     color="white"
     text-color="black"
     :options="[
-      { label: 'Frais', value: 'fresh' },
-      { label: 'Sec', value: 'dry' },
-      { label: 'Frais & Sec', value: 'all' }
+      { label: 'Frais', value: 'fresh', icon: 'ac_unit' },
+      { label: 'Sec', value: 'dry', icon: 'grass' },
+      { value: 'all', icon: 'grass ac_unit', style: 'padding: 10px' }
     ]"
   ></q-btn-toggle>
 </template>

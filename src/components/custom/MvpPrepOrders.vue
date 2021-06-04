@@ -18,8 +18,8 @@
             <q-btn
               @click="goBackToDashboard"
               icon="arrow_back_ios"
-              style="margin-right: 60px"
-              size="20px"
+              style="margin-right: 60px; background-color: dimgrey; color: white"
+              size="15px"
               unelevated
               round
             />

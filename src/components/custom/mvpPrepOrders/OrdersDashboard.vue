@@ -11,9 +11,12 @@
         clickable
         @click="goToOrdersList"
         class="row col-xs-10 justify-center text-white"
-        style="background-color: #EABD5A; padding: 30px; margin-bottom: 30px; border-radius: 20px"
+        style="background-color: #EABD5A; padding-bottom: 30px; margin-bottom: 30px; border-radius: 20px"
       >
-        <div class="row col-xs-10 justify-center text-h6">
+        <div
+          class="row col-xs-10 justify-center text-h6"
+          style="text-align: center"
+        >
           Commandes du jour
           <div
             class="row col-xs-10 justify-center text-h4"

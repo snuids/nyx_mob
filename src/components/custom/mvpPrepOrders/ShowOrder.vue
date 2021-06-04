@@ -4,6 +4,21 @@
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-1 items-center">
+        <div class="row col-xs-5 col-md-2 justify-center">
+          <q-btn
+            @click="goBackToList"
+            icon="arrow_back_ios"
+            style="margin-right: 60px; background-color: dimgrey; color: white"
+            size="15px"
+            unelevated
+            round
+          />
+        </div>
+
+        <div class="row col-xs-7 col-md-4 justify-center items-center">
+          <ItemsFilter />
+        </div>
+
         <div
           v-if="currentOrder._source.to_customer === 'delivery'"
           class="col-xs-8 col-md-4 row justify-center items-center"
@@ -57,20 +72,6 @@
               .split(',')
               .filter(elt => elt.includes('-'))[0]
           }}
-        </div>
-        <div class="row col-xs-5 col-md-2 justify-end">
-          <q-btn
-            @click="goBackToList"
-            icon="arrow_back_ios"
-            style="margin-right: 60px"
-            size="20px"
-            unelevated
-            round
-          />
-        </div>
-
-        <div class="row col-xs-7 col-md-4 justify-center items-center">
-          <ItemsFilter />
         </div>
 
         <div class="col-xs-12">
