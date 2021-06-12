@@ -8,9 +8,9 @@
       @click="cardClick"
     >
       <span class="q-focus-helper"></span>
-      <q-card-section class="text-h6">{{
-        order._source.order_number
-      }}</q-card-section>
+      <q-card-section class="text-h6">
+        # {{ order._source.order_number }}</q-card-section
+      >
       <q-card-section>
         <ul>
           <li>
@@ -54,119 +54,6 @@
         </ul>
       </q-card-section>
       <q-separator />
-      <CollapsibleSection>
-        <q-card-section>
-          <p>
-            Produits ajoutés avec succès:
-            {{
-              order._source.preparedDry.length +
-                order._source.preparedFresh.length
-            }}
-          </p>
-
-          <q-circular-progress
-            v-show="order._source.dryItems.length > 0"
-            show-value
-            class="text-light-blue q-ma-md"
-            :value="order._source.preparedDry.length"
-            :max="order._source.dryItems.length"
-            size="80px"
-            color="green"
-            >{{ order._source.preparedDry.length }}/{{
-              order._source.dryItems.length
-            }}
-            <br />
-            Sec</q-circular-progress
-          >
-
-          <q-circular-progress
-            v-show="order._source.freshItems.length > 0"
-            show-value
-            class="text-light-blue q-ma-md"
-            :value="order._source.preparedFresh.length"
-            :max="order._source.freshItems.length"
-            size="80px"
-            color="green"
-            >{{ order._source.preparedFresh.length }}/{{
-              order._source.freshItems.length
-            }}<br />
-            Frais</q-circular-progress
-          >
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <p>
-            Produits en attente producteur:
-            {{
-              order._source.missingDry.length +
-                order._source.missingFresh.length
-            }}
-          </p>
-          <q-circular-progress
-            v-show="order._source.dryItems.length > 0"
-            show-value
-            class="text-light-blue q-ma-md"
-            :value="order._source.missingDry.length"
-            :max="order._source.dryItems.length"
-            size="80px"
-            color="orange"
-            >{{ order._source.missingDry.length }}/{{
-              order._source.dryItems.length
-            }}
-            <br />
-            Sec</q-circular-progress
-          >
-
-          <q-circular-progress
-            v-show="order._source.freshItems.length > 0"
-            show-value
-            class="text-light-blue q-ma-md"
-            :value="order._source.missingFresh.length"
-            :max="order._source.freshItems.length"
-            size="80px"
-            color="orange"
-            >{{ order._source.missingFresh.length }}/{{
-              order._source.freshItems.length
-            }}<br />
-            Frais</q-circular-progress
-          >
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <p>
-            Produits à rembourser:
-            {{ order._source.rembDry.length + order._source.rembFresh.length }}
-          </p>
-          <q-circular-progress
-            v-show="order._source.dryItems.length > 0"
-            show-value
-            class="text-light-blue q-ma-md"
-            :value="order._source.rembDry.length"
-            :max="order._source.dryItems.length"
-            size="80px"
-            color="red"
-            >{{ order._source.rembDry.length }}/{{
-              order._source.dryItems.length
-            }}
-            <br />
-            Sec</q-circular-progress
-          >
-
-          <q-circular-progress
-            v-show="order._source.freshItems.length > 0"
-            show-value
-            class="text-light-blue q-ma-md"
-            :value="order._source.rembFresh.length"
-            :max="order._source.freshItems.length"
-            size="80px"
-            color="red"
-            >{{ order._source.rembFresh.length }}/{{
-              order._source.freshItems.length
-            }}<br />
-            Frais</q-circular-progress
-          >
-        </q-card-section>
-      </CollapsibleSection>
     </q-card>
   </div>
 </template>
@@ -209,20 +96,20 @@ export default {
 }
 
 .started {
-  border-top: 20px solid cornflowerblue;
+  border-left: 40px solid cornflowerblue;
   color: green;
 }
 
 .finished {
-  border-top: 20px solid green;
+  border-left: 40px solid green;
 }
 
 .unfinished {
-  border-top: 20px solid orange;
+  border-left: 40px solid orange;
 }
 
 .finishedWithRemb {
-  border-top: 20px solid #ff8a80;
+  border-left: 40px solid #ff8a80;
 }
 
 .myCard {

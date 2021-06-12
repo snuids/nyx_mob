@@ -1,10 +1,11 @@
 <template>
-  <div id="parent" class="row col-xs-12 q-col-gutter-md">
+  <div class="row full-width">
     <div
       v-for="(order, idx) in ordersToDisplay.sort((a, b) => {
         return a._id - b._id
       })"
       :key="idx"
+      class="col-xs-12 col-md-12 q-px-md q-py-xs"
     >
       <OrderCard :order="order" />
     </div>

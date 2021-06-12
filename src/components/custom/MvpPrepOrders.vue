@@ -4,17 +4,15 @@
       <ShowOrder :orderId="urlOrderId"></ShowOrder>
     </div>
     <div v-else-if="urlOrderList">
-      <div class="row full-width flex flex-center column">
-        <div
-          class="row col-xs-12 justify-between q-mt-sm q-pa-xl"
-          style="min-height: 400px; padding-top: 200px"
-        >
-          <OrdersList />
-        </div>
+      <div
+        class=" flex flex-center"
+        style="min-height: 400px; padding-top: 200px;"
+      >
+        <OrdersList />
       </div>
       <q-page-sticky expand position="top">
         <div class="row full-width flex items-center bg-blue-grey-1" style="">
-          <div class="row col-xs-5 col-md-6 justify-center">
+          <div class="row col-xs-5 col-md-3 justify-center">
             <q-btn
               @click="goBackToDashboard"
               icon="arrow_back_ios"
@@ -25,19 +23,19 @@
             />
           </div>
           <div
-            class="row col-md-6 col-xs-6 justify-center text-h6  items-center "
+            class="row col-md-3 col-xs-6 justify-center text-h6"
             style="height: 50px"
           >
             {{ userName }}
           </div>
           <div
-            class="row col-md-6 col-xs-6 justify-center text-h6"
+            class="row col-md-3 col-xs-6 justify-center text-h6"
             style="height: 50px"
           >
             {{ ordersToDisplay.length }} commandes
           </div>
           <div
-            class="row col-md-6 col-xs-6 justify-center"
+            class="row col-md-3 col-xs-6 justify-center"
             style="margin-bottom: 15px"
           >
             <ItemsFilter />
