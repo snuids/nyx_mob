@@ -5,7 +5,7 @@
         return a._id - b._id
       })"
       :key="idx"
-      class="col-xs-12 col-md-12 q-px-md q-py-xs"
+      class="col-xs-12 col-md-12 q-pa-xs"
     >
       <OrderCard :order="order" />
     </div>

@@ -6,7 +6,7 @@
     <div v-else-if="urlOrderList">
       <div
         class=" flex flex-center"
-        style="min-height: 400px; padding-top: 200px;"
+        style="min-height: 400px; padding-top: 185px;"
       >
         <OrdersList />
       </div>

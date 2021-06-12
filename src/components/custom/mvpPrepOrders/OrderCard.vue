@@ -1,6 +1,9 @@
 <template>
   <div>
     <q-card
+      square
+      flat
+      bordered
       v-if="order"
       :disabled="cardDisabled"
       v-ripple
@@ -8,12 +11,20 @@
       @click="cardClick"
     >
       <span class="q-focus-helper"></span>
-      <q-card-section class="text-h6">
-        # {{ order._source.order_number }}</q-card-section
-      >
-      <q-card-section>
+      <q-card-section class="text-subtitle1">
+        <div style="font-weight: bold"># {{ order._source.order_number }}</div>
         <ul>
-          <li>
+          <li v-if="order._source.prep_status === 'started'">
+            En cours de preparation
+            {{
+              order._source.lock_type === 'dry'
+                ? 'Sec'
+                : order._source.lock_type === 'fresh'
+                ? 'Frais'
+                : ''
+            }}
+          </li>
+          <li v-else>
             Préparation:
             {{
               order._source.prep_status
@@ -29,31 +40,8 @@
                 : 'Non préparé'
             }}
           </li>
-          <li v-if="order._source.prep_status === 'started'">
-            En cours de preparation
-            {{
-              order._source.lock_type === 'dry'
-                ? 'Sec'
-                : order._source.lock_type === 'fresh'
-                ? 'Frais'
-                : ''
-            }}
-          </li>
-          <li>Client: {{ order._source.last_name }}</li>
-          <li v-if="order._source.preparedFresh">
-            Nombre de produits préparés:
-            {{
-              order._source.preparedDry.length +
-                order._source.preparedFresh.length +
-                order._source.rembDry.length +
-                order._source.rembFresh.length
-            }}/{{
-              order._source.freshItems.length + order._source.dryItems.length
-            }}
-          </li>
         </ul>
       </q-card-section>
-      <q-separator />
     </q-card>
   </div>
 </template>
