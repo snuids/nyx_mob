@@ -1,5 +1,5 @@
 <template>
-  <q-list class="q-pa-none" style="padding-bottom: 85px">
+  <q-list class="q-pa-none" style="padding-bottom: 85px" separator>
     <OrderItem
       v-for="(item, idx) in sortedItemsList"
       :key="item._id + idx"

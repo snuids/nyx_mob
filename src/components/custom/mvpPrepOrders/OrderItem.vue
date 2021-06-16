@@ -5,63 +5,68 @@
       :class="[`bg-${bgColor}-2`, 'item']"
       v-if="!prepa"
       @click="success(product)"
+      dense
     >
       <q-item-section
         v-if="product._source.smallImage !== undefined"
-        style="max-width: 50px; "
+        style="max-width: 60px"
       >
         <img
           :src="product._source.smallImage"
           style="width: 50px; height: 50px"
         />
       </q-item-section>
-      <q-item-section v-else style="max-width: 50px; ">
+      <q-item-section v-else style="max-width: 60px; ">
         <img
           src="https://via.placeholder.com/50"
           style="width: 50px; height: 50px"
         />
       </q-item-section>
-      <q-item-section>
-        <div class="flex row items-center" style="">
+      <div class="flex row col-xs-10">
+        <div class="row col-xs-10 items-center">
           <div
-            style="font-weight: bold; font-size: 15px; max-width: 800px"
+            style="font-weight: bold; font-size: 15px; "
             class="row col-xs-8 justify-start "
           >
             {{ product._source.name }}
           </div>
-          <q-badge
-            :class="[
-              `${isFrais ? 'frais' : 'sec'}`,
-              'row col-xs-3 justify-center'
-            ]"
-            style="max-width: 40px"
-          >
-            {{ this.isFrais ? 'Frais' : 'Sec' }}
-          </q-badge>
+          <div class="row col-xs-4 justify-start">
+            <q-badge
+              :class="[`${isFrais ? 'frais' : 'sec'}`, 'justify-center']"
+              style="max-width: 40px"
+            >
+              {{ this.isFrais ? 'Frais' : 'Sec' }}
+            </q-badge>
+          </div>
         </div>
-        <div>
-          <q-icon name="location_on"></q-icon>
-          LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
+        <div class="row col-xs-11 items-center">
+          <q-icon name="location_on" />
+          <div class="row col-xs-6 col-md-8 justify-start">
+            LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
+          </div>
+          <div class="row col-xs-5 col-md-2 justify-end">
+            <q-btn
+              @click="remb(product)"
+              icon="close"
+              color="red-4"
+              style="color: white; max-width: 40px"
+              size="15px"
+              unelevated
+              rounded
+            ></q-btn>
+            &nbsp; &nbsp;
+            <q-btn
+              @click="manq(product)"
+              icon="hourglass_bottom"
+              color="orange-4"
+              style="color: white; max-width: 40px; margin-left: 20px"
+              size="15px"
+              unelevated
+              rounded
+            ></q-btn>
+          </div>
         </div>
-      </q-item-section>
-      <q-btn-group class="float-right glossy" rounded style="max-height: 80px">
-        <q-btn
-          @click="remb(product)"
-          color="red-4"
-          text-color="black"
-          push
-          label="REMB"
-          unelevated
-        ></q-btn>
-        <q-btn
-          @click="manq(product)"
-          color="orange-4"
-          text-color="black"
-          push
-          label="MANQ"
-          unelevated
-        ></q-btn>
-      </q-btn-group>
+      </div>
     </q-item>
   </transition>
 </template>
@@ -206,9 +211,10 @@ export default {
   background-color: mediumseagreen;
 }
 
+/*
 .item {
-  border-radius: 15px 0 0 15px;
-  box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
   margin-bottom: 5px;
 }
+
+ */
 </style>
