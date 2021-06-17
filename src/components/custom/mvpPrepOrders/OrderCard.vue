@@ -7,7 +7,7 @@
       v-if="order"
       :disabled="cardDisabled"
       v-ripple
-      :class="[status, 'cursor-pointer q-hoverable myCard']"
+      :class="[status, 'cursor-pointer q-hoverable bg-grey-11']"
       @click="cardClick"
     >
       <span class="q-focus-helper"></span>
@@ -55,21 +55,31 @@ export default {
   name: 'OrderCard',
   props: ['order'],
   components: { CollapsibleSection },
+
   computed: {
     cardDisabled() {
       return this.order._source.lock
     },
-    ...mapState('mvpPrep', ['lock_fresh', 'lock_dry', 'currentOrderItems']),
+    ...mapState('mvpPrep', [
+      'lock_fresh',
+      'lock_dry',
+      'currentOrderItems',
+      'currentOrder'
+    ]),
     status() {
       return this.order._source.prep_status
     }
   },
   methods: {
-    cardClick() {
+    async cardClick() {
       console.log(this.cardDisabled)
-      if (this.cardDisabled) return
-
-      this.$router.push({
+      await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
+      if (
+        this.cardDisabled ||
+        this.currentOrder._source.prep_status === 'started'
+      )
+        return
+      await this.$router.push({
         query: { showOrder: this.order._id }
       })
     }

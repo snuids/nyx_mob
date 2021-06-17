@@ -194,6 +194,7 @@ export default {
             order._source.rembDry = []
             order._source.rembFresh = []
             order._source.lock = false
+            order._source.prep_status = ''
           }
         })
         .catch(error => {})

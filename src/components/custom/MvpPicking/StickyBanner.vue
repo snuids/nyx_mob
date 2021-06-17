@@ -1,18 +1,18 @@
 <template>
-  <div class="bg-grey-8 full-width grey-banner">
-    <div class="whole-container">
-      <div class="text-white date-banner">
-        <div v-if="dateFromShort === dateToShort" class="text-center">
-          Date : <b>{{ dateFrom | dateFrench }}</b>
-        </div>
-        <div v-else class="text-center">
-          Période : du <b>{{ dateFrom | dateFrench }}</b> au
-          <b>{{ dateTo | dateFrench }}</b>
-        </div>
+  <div class="bg-brown-2 full-width flex row grey-banner">
+    <div
+      class="text-black text-subtitle1 date-banner row col-xs-10 justify-center"
+    >
+      <div v-if="dateFromShort === dateToShort" class="text-center">
+        Date : <b>{{ dateFrom | dateFrench }}</b>
       </div>
-      <div class="menu-banner float-right">
-        <MainMenu @today="onToday" @newDates="onNewDates" />
+      <div v-else class="text-center">
+        Période : du <b>{{ dateFrom | dateFrench }}</b> au
+        <b>{{ dateTo | dateFrench }}</b>
       </div>
+    </div>
+    <div class="menu-banner row col-xs-2 justify-center">
+      <MainMenu @today="onToday" @newDates="onNewDates" />
     </div>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
       dateFrom: null,
       dateTo: null,
       dateFromShort: null,
-      dateToShort: null,
+      dateToShort: null
     }
   },
   methods: {
@@ -48,7 +48,7 @@ export default {
         dateFrom: this.dateFrom,
         dateTo: this.dateTo,
         dateFromShort: this.dateFromShort,
-        dateToShort: this.dateToShort,
+        dateToShort: this.dateToShort
       }
       this.$store.commit('mvp/mutate_targetDate', { dateObj: obj })
     },
@@ -59,7 +59,7 @@ export default {
     },
     onNewDates(event) {
       this.setNewDates(event.data.fr, event.data.to)
-    },
+    }
   },
   created() {
     if (this.$store.getters['mvp/targetDate'].dateFrom === '') this.onToday()
@@ -76,11 +76,12 @@ export default {
     this.dateFromShort = null
     this.dateToShort = null
   },
-  computed: {},
+  computed: {}
 }
 </script>
 
 <style>
+/*
 .date-banner {
   font-size: 1.1em;
   max-width: 400px;
@@ -101,4 +102,6 @@ export default {
   height: 100%;
   display: flex;
 }
+
+ */
 </style>

@@ -23,14 +23,14 @@
         />
       </q-item-section>
       <div class="flex row col-xs-10">
-        <div class="row col-xs-10 items-center">
+        <div class="row col-xs-12 items-center">
           <div
             style="font-weight: bold; font-size: 15px; "
-            class="row col-xs-8 justify-start "
+            class="row col-xs-10 justify-start "
           >
             {{ product._source.name }}
           </div>
-          <div class="row col-xs-4 justify-start">
+          <div class="row col-xs-2 justify-end">
             <q-badge
               :class="[`${isFrais ? 'frais' : 'sec'}`, 'justify-center']"
               style="max-width: 40px"
@@ -39,9 +39,9 @@
             </q-badge>
           </div>
         </div>
-        <div class="row col-xs-11 items-center">
+        <div class="row full-width items-center">
           <q-icon name="location_on" />
-          <div class="row col-xs-6 col-md-8 justify-start">
+          <div class="row col-xs-6 col-md-9 justify-start">
             LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
           </div>
           <div class="row col-xs-5 col-md-2 justify-end">

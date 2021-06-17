@@ -1,7 +1,7 @@
 <template>
   <div>
     <!--  MENU  -->
-    <q-btn dense flat color="primary" label="menu" class="text-white q-px-md">
+    <q-btn dense flat icon="menu" color="primary" class="text-black q-px-md">
       <q-menu anchor="bottom right" self="top right">
         <q-list style="min-width: 100px">
           <q-item v-close-popup>
