@@ -4,9 +4,7 @@
       v-for="(item, idx) in sortedItemsList"
       :key="item._id + idx"
       :product="item"
-      @remb="addProductToPreparedItems"
-      @manq="addProductToPreparedItems"
-      @success="addProductToPreparedItems"
+      @prep="addProductToPreparedItems"
     >
     </OrderItem>
   </q-list>
@@ -46,6 +44,7 @@ export default {
   components: { OrderItem },
   methods: {
     addProductToPreparedItems(product) {
+      console.log('prep')
       if (
         this.preparedProducts.filter(item => item._id === product._id).length >
         0

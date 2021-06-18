@@ -4,7 +4,7 @@
       clickable
       :class="[`bg-${bgColor}-2`, 'item']"
       v-if="!prepa"
-      @click="success(product)"
+      @click="changeStatus(product, 'success')"
       dense
     >
       <q-item-section
@@ -46,7 +46,7 @@
           </div>
           <div class="row col-xs-5 col-md-2 justify-end">
             <q-btn
-              @click="remb(product)"
+              @click.stop="changeStatus(product, 'remb')"
               icon="close"
               color="red-4"
               style="color: white; max-width: 40px"
@@ -56,7 +56,7 @@
             ></q-btn>
             &nbsp; &nbsp;
             <q-btn
-              @click="manq(product)"
+              @click.stop="changeStatus(product, 'manq')"
               icon="hourglass_bottom"
               color="orange-4"
               style="color: white; max-width: 40px; margin-left: 20px"
@@ -130,6 +130,25 @@ export default {
       }
     },
 
+    changeStatus(product, status) {
+      console.log(status)
+
+      this.prepa = true
+      this.incrementClick(product)
+      this.addToHistory(status)
+      this.$set(this.product._source, 'prep_status', status)
+
+
+
+
+      setTimeout(() => {
+        this.putFirstItemLast(product)
+        this.prepa = false
+        this.$emit('prep', product)
+      }, 300)
+
+    },
+
     remb(product) {
       this.prepa = true
       this.incrementClick(product)
@@ -160,13 +179,17 @@ export default {
     putFirstItemLast(product) {
       let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
+
+      console.log(elementPos)
+      console.log(tmpDisplayedItems.length-1)
+
+
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
-      setTimeout(() => {
         this.$store.commit(
           'mvpPrep/mutate_currentOrderItems',
           tmpDisplayedItems
         )
-      }, 300)
+      
     },
 
     incrementClick(product) {
