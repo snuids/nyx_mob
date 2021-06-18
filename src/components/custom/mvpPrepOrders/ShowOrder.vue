@@ -1,6 +1,117 @@
 <template>
+  <q-page-container v-if="currentOrderItems">
+    <q-page padding style="padding-top: 120px; padding-bottom: 75px;">
+      <div>
+        <OrderTabs :prepared="preparedProducts" />
+      </div>
+     
+      <q-page-sticky expand position="top">
+        <div class="row full-width flex bg-blue-grey-1 items-center">
+        <div class="row col-xs-5 col-md-2 justify-center">
+          <q-btn
+            @click="goBackToList"
+            icon="arrow_back_ios"
+            style="margin-right: 60px; background-color: dimgrey; color: white"
+            size="15px"
+            unelevated
+            round
+          />
+        </div>
+
+        <div class="row col-xs-7 col-md-4 justify-center items-center">
+          <ItemsFilter />
+        </div>
+
+        <div
+          v-if="currentOrder._source.to_customer === 'delivery'"
+          class="col-xs-8 col-md-4 row justify-center items-center"
+          style="height: 100px;   "
+        >
+          <q-icon
+            size="40px"
+            name="directions_bike"
+            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px;"
+          ></q-icon
+          >&nbsp; &nbsp;
+          <div class="row flex">
+            <div class="col-xs-12" style="font-weight: bold;">
+              #{{ orderId }}
+              <br />
+            </div>
+            <div class="col-xs-12" style="font-weight: lighter">
+              Livraison à vélo
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="currentOrder._source.to_customer === 'pickup'"
+          class="col-xs-8 col-md-3 row justify-center items-center"
+          style="height: 100px;   "
+        >
+          <q-icon
+            size="40px"
+            name="shopping_bag"
+            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+          ></q-icon
+          >&nbsp; &nbsp;
+          <div class="row flex">
+            <div class="col-xs-12" style="font-weight: bold;">
+              #{{ orderId }}
+              <br />
+            </div>
+            <div class="col-xs-12" style="font-weight: lighter">
+              Commande à récupérer
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="row col-xs-3 col-md-2 justify-center items-center text-white"
+          style="border-radius: 10px;  height: 60px; background-color: #70B937; font-weight: bold"
+        >
+          {{
+            currentOrder._source.tags
+              .split(',')
+              .filter(elt => elt.includes('-'))[0]
+          }}
+        </div>
+
+      </div>
+      </q-page-sticky>
+      <q-page-sticky expand position="bottom">
+        <div
+          class="row full-width flex items-center text-white"
+          style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
+        >
+          <div class="row col-xs-6 justify-end">
+            <q-circular-progress
+              show-value
+              font-size="12px"
+              :value="progress"
+              :max="this.currentOrderItems.length"
+              size="50px"
+              :thickness="0.15"
+              color="white"
+              track-color="grey-6"
+              class="q-ma-md float-right"
+            >
+              {{
+              Math.round((progress * 100) / currentOrderItems.length)
+              }}%
+            </q-circular-progress>
+          </div>
+          <div
+            class="row col-xs-6 justify-start"
+          >{{ this.currentOrderItems.length - progress }} produits restants</div>
+        </div>
+      </q-page-sticky>
+    </q-page>
+  </q-page-container>
+
+  <!-- 
+
   <q-page v-if="currentOrderItems" style="padding-top: 200px">
-    <div class="row text-h6 flex full-width"></div>
 
     <q-page-sticky expand position="top">
       <div class="row full-width flex bg-blue-grey-1 items-center">
@@ -74,11 +185,11 @@
           }}
         </div>
 
-        <div class="col-xs-12">
-          <OrderTabs :prepared="preparedProducts" />
-        </div>
       </div>
     </q-page-sticky>
+    <div style="position:absolute; top:200px;">
+      <OrderTabs :prepared="preparedProducts" />
+    </div>
 
     <q-page-sticky expand position="bottom">
       <div
@@ -104,10 +215,10 @@
         <div class="row col-xs-6 justify-start">
           {{ this.currentOrderItems.length - progress }} produits restants
         </div>
-        <!---->
+        
       </div>
     </q-page-sticky>
-  </q-page>
+  </q-page>-->
 </template>
 
 <script>
