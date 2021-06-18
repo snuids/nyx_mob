@@ -1,5 +1,9 @@
 <template>
-  <transition leave-active-class="animated fadeOutDown" duration="250">
+  <transition
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOut"
+    duration="200"
+  >
     <q-item
       clickable
       :class="[`bg-${bgColor}-2`, 'item']"
@@ -86,6 +90,8 @@ export default {
   computed: {
     ...mapState('mvpPrep', [
       'itemsClicked',
+      'itemsClickedDry',
+      'itemsClickedFresh',
       'displayedItems',
       'currentOrderItems'
     ]),
@@ -130,6 +136,8 @@ export default {
       }
     },
 
+    // TODO changer les fonctions remb, manq et success en une seule fonction
+
     remb(product) {
       this.prepa = true
       this.incrementClick(product)
@@ -141,7 +149,7 @@ export default {
 
     manq(product) {
       this.prepa = true
-      this.decrementClick(product)
+      this.incrementClick(product)
       this.addToHistory('manq')
       this.$set(this.product._source, 'prep_status', 'manq')
       this.putFirstItemLast(product)
@@ -170,20 +178,19 @@ export default {
     },
 
     incrementClick(product) {
-      if (
-        product._source.prep_status === '' ||
-        product._source.prep_status === 'manq'
-      ) {
+      if (product._source.prep_status === '') {
         this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
-      }
-    },
-
-    decrementClick(product) {
-      if (
-        product._source.prep_status === 'remb' ||
-        product._source.prep_status === 'success'
-      ) {
-        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked - 1)
+        if (product._source.fresh) {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClickedFresh',
+            this.itemsClickedFresh + 1
+          )
+        } else {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClickedDry',
+            this.itemsClickedDry + 1
+          )
+        }
       }
     }
   }

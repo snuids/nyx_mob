@@ -79,4 +79,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.q-list:last-child {
+  animation: none !important;
+}
+</style>
