@@ -1,8 +1,8 @@
 <template>
   <transition
-    enter-active-class="animated fadeIn"
-    leave-active-class="animated fadeOutDown"
-    duration="100"
+    enter-active-class="animated fadeInUp"
+    leave-active-class="animated fadeOutUp"
+    duration="150"
   >
     <q-item
       clickable
@@ -137,8 +137,6 @@ export default {
     },
 
     changeStatus(product, status) {
-      console.log(status)
-
       this.prepa = true
       this.incrementClick(product)
       this.addToHistory(status)
