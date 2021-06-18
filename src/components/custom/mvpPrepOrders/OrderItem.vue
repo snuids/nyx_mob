@@ -1,83 +1,85 @@
 <template>
-  <!-- <transition
+  <transition
     enter-active-class="animated fadeIn"
-    leave-active-class="animated fadeOut"
-    duration="200"
-  > -->
-  <q-item
-    clickable
-    :class="[`bg-${bgColor}-2`, 'item']"
-    v-if="!prepa"
-    @click="success(product)"
-    dense
+    leave-active-class="animated fadeOutDown"
+    duration="100"
   >
-    <q-item-section
-      v-if="product._source.smallImage !== undefined"
-      style="max-width: 60px"
+    <q-item
+      clickable
+      :class="[`bg-${bgColor}-2`, 'item']"
+      v-if="!prepa"
+      @click="changeStatus(product, 'success')"
+      dense
     >
-      <img
-        :src="product._source.smallImage"
-        style="width: 50px; height: 50px"
-      />
-    </q-item-section>
-    <q-item-section v-else style="max-width: 60px; ">
-      <img
-        src="https://via.placeholder.com/50"
-        style="width: 50px; height: 50px"
-      />
-    </q-item-section>
-    <div class="flex row col-xs-10">
-      <div class="row col-xs-12 items-center">
-        <div
-          style="font-weight: bold; font-size: 15px; "
-          class="row col-xs-10 justify-start "
-        >
-          {{ product._source.name }}
-        </div>
-        <div class="row col-xs-2 justify-end">
-          <q-badge
-            :class="[`${isFrais ? 'frais' : 'sec'}`, 'justify-center']"
-            style="max-width: 40px"
+      <q-item-section
+        v-if="product._source.smallImage !== undefined"
+        style="max-width: 60px"
+      >
+        <img
+          :src="product._source.smallImage"
+          style="width: 50px; height: 50px"
+        />
+      </q-item-section>
+      <q-item-section v-else style="max-width: 60px; ">
+        <img
+          src="https://via.placeholder.com/50"
+          style="width: 50px; height: 50px"
+        />
+      </q-item-section>
+      <div class="flex row col-xs-10">
+        <div class="row col-xs-12 items-center">
+          <div
+            style="font-weight: bold; font-size: 15px; "
+            class="row col-xs-10 justify-start "
           >
-            {{ this.isFrais ? 'Frais' : 'Sec' }}
-          </q-badge>
+            {{ product._source.name }}
+          </div>
+          <div class="row col-xs-2 justify-end">
+            <q-badge
+              :class="[`${isFrais ? 'frais' : 'sec'}`, 'justify-center']"
+              style="max-width: 40px"
+            >
+              {{ this.isFrais ? 'Frais' : 'Sec' }}
+            </q-badge>
+          </div>
+        </div>
+        <div class="row full-width items-center">
+          <q-icon name="location_on" />
+          <div class="row col-xs-6 col-md-9 justify-start">
+            LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
+          </div>
+          <div class="row col-xs-5 col-md-2 justify-end">
+            <q-btn
+              @click.stop="changeStatus(product, 'remb')"
+              icon="close"
+              color="red-4"
+              style="color: white; max-width: 40px"
+              size="15px"
+              unelevated
+              rounded
+            ></q-btn>
+            &nbsp; &nbsp;
+            <q-btn
+              @click.stop="changeStatus(product, 'manq')"
+              icon="hourglass_bottom"
+              color="orange-4"
+              style="color: white; max-width: 40px; margin-left: 20px"
+              size="15px"
+              unelevated
+              rounded
+            ></q-btn>
+          </div>
         </div>
       </div>
-      <div class="row full-width items-center">
-        <q-icon name="location_on" />
-        <div class="row col-xs-6 col-md-9 justify-start">
-          LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
-        </div>
-        <div class="row col-xs-5 col-md-2 justify-end">
-          <q-btn
-            @click="remb(product)"
-            icon="close"
-            color="red-4"
-            style="color: white; max-width: 40px"
-            size="15px"
-            unelevated
-            rounded
-          ></q-btn>
-          &nbsp; &nbsp;
-          <q-btn
-            @click="manq(product)"
-            icon="hourglass_bottom"
-            color="orange-4"
-            style="color: white; max-width: 40px; margin-left: 20px"
-            size="15px"
-            unelevated
-            rounded
-          ></q-btn>
-        </div>
-      </div>
-    </div>
-  </q-item>
-  <!-- </transition> -->
+    </q-item>
+  </transition>
 </template>
 
 <script>
 import moment from 'moment'
 import { mapState } from 'vuex'
+
+// TODO gérer latence
 
 export default {
   name: 'OrderItem',
@@ -90,8 +92,6 @@ export default {
   computed: {
     ...mapState('mvpPrep', [
       'itemsClicked',
-      'itemsClickedDry',
-      'itemsClickedFresh',
       'displayedItems',
       'currentOrderItems'
     ]),
@@ -136,7 +136,20 @@ export default {
       }
     },
 
-    // TODO changer les fonctions remb, manq et success en une seule fonction
+    changeStatus(product, status) {
+      console.log(status)
+
+      this.prepa = true
+      this.incrementClick(product)
+      this.addToHistory(status)
+      this.$set(this.product._source, 'prep_status', status)
+
+      setTimeout(() => {
+        this.putFirstItemLast(product)
+        this.prepa = false
+        this.$emit('prep', product)
+      }, 300)
+    },
 
     remb(product) {
       this.prepa = true
@@ -149,7 +162,7 @@ export default {
 
     manq(product) {
       this.prepa = true
-      this.incrementClick(product)
+      this.decrementClick(product)
       this.addToHistory('manq')
       this.$set(this.product._source, 'prep_status', 'manq')
       this.putFirstItemLast(product)
@@ -168,29 +181,29 @@ export default {
     putFirstItemLast(product) {
       let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
+
+      console.log(elementPos)
+      console.log(tmpDisplayedItems.length - 1)
+
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
-      setTimeout(() => {
-        this.$store.commit(
-          'mvpPrep/mutate_currentOrderItems',
-          tmpDisplayedItems
-        )
-      }, 300)
+      this.$store.commit('mvpPrep/mutate_currentOrderItems', tmpDisplayedItems)
     },
 
     incrementClick(product) {
-      if (product._source.prep_status === '') {
+      if (
+        product._source.prep_status === '' ||
+        product._source.prep_status === 'manq'
+      ) {
         this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
-        if (product._source.fresh) {
-          this.$store.commit(
-            'mvpPrep/mutate_itemsClickedFresh',
-            this.itemsClickedFresh + 1
-          )
-        } else {
-          this.$store.commit(
-            'mvpPrep/mutate_itemsClickedDry',
-            this.itemsClickedDry + 1
-          )
-        }
+      }
+    },
+
+    decrementClick(product) {
+      if (
+        product._source.prep_status === 'remb' ||
+        product._source.prep_status === 'success'
+      ) {
+        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked - 1)
       }
     }
   }

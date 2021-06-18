@@ -5,11 +5,11 @@
       flat
       bordered
       v-if="order"
-      :disabled="cardDisabled"
       v-ripple
       :class="[status, 'cursor-pointer q-hoverable bg-grey-11']"
       @click="cardClick"
     >
+      <!-- :disabled="cardDisabled" -->
       <span class="q-focus-helper"></span>
       <q-card-section class="text-subtitle1">
         <div style="font-weight: bold"># {{ order._source.order_number }}</div>
@@ -70,18 +70,35 @@ export default {
       return this.order._source.prep_status
     }
   },
+
   methods: {
+    // TODO finish la dialog
     async cardClick() {
-      console.log(this.cardDisabled)
-      await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
-      if (
-        this.cardDisabled ||
-        this.currentOrder._source.prep_status === 'started'
-      )
-        return
-      await this.$router.push({
-        query: { showOrder: this.order._id }
-      })
+      if (this.cardDisabled) {
+        this.$q
+          .dialog({
+            title: 'Lock',
+            message: 'Commande déjà bloquée, voulez-vous continuer',
+            cancel: true
+          })
+          .onOk(() => {
+            console.log('OK')
+          })
+          .onCancel(() => {
+            console.log('Cancel')
+          })
+      } else {
+        console.log(this.cardDisabled)
+        await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
+        if (
+          this.cardDisabled ||
+          this.currentOrder._source.prep_status === 'started'
+        )
+          return
+        await this.$router.push({
+          query: { showOrder: this.order._id }
+        })
+      }
     }
   }
 }
