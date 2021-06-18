@@ -70,24 +70,24 @@ export default {
       return this.order._source.prep_status
     }
   },
+
   methods: {
+    // TODO finish la dialog
     async cardClick() {
       if (this.cardDisabled) {
-        this.$q.dialog({
-          title: 'Lock',
-          message: 'Commande déjà bloquée, voulez-vous continuer',
-          cancel: true,
-        }).onOk(() => {
-          console.log('OK')
-
-         
-        }).onCancel(() => {
-          console.log('Cancel')
-          
-        })
-      }
-      else {
-
+        this.$q
+          .dialog({
+            title: 'Lock',
+            message: 'Commande déjà bloquée, voulez-vous continuer',
+            cancel: true
+          })
+          .onOk(() => {
+            console.log('OK')
+          })
+          .onCancel(() => {
+            console.log('Cancel')
+          })
+      } else {
         console.log(this.cardDisabled)
         await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
         if (
@@ -99,12 +99,6 @@ export default {
           query: { showOrder: this.order._id }
         })
       }
-
-      
-
-      
-
-
     }
   }
 }

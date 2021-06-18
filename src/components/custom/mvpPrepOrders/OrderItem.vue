@@ -1,5 +1,9 @@
 <template>
-  <transition leave-active-class="animated fadeOutDown" duration="250">
+  <transition
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOutDown"
+    duration="100"
+  >
     <q-item
       clickable
       :class="[`bg-${bgColor}-2`, 'item']"
@@ -75,6 +79,8 @@
 import moment from 'moment'
 import { mapState } from 'vuex'
 
+// TODO gérer latence
+
 export default {
   name: 'OrderItem',
   props: ['product'],
@@ -138,15 +144,11 @@ export default {
       this.addToHistory(status)
       this.$set(this.product._source, 'prep_status', status)
 
-
-
-
       setTimeout(() => {
         this.putFirstItemLast(product)
         this.prepa = false
         this.$emit('prep', product)
       }, 300)
-
     },
 
     remb(product) {
@@ -181,15 +183,10 @@ export default {
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
 
       console.log(elementPos)
-      console.log(tmpDisplayedItems.length-1)
-
+      console.log(tmpDisplayedItems.length - 1)
 
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
-        this.$store.commit(
-          'mvpPrep/mutate_currentOrderItems',
-          tmpDisplayedItems
-        )
-      
+      this.$store.commit('mvpPrep/mutate_currentOrderItems', tmpDisplayedItems)
     },
 
     incrementClick(product) {
