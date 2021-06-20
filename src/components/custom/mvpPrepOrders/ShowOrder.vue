@@ -98,7 +98,7 @@
             track-color="grey-6"
             class="q-ma-md float-right"
             >{{
-              Math.round((progress * 100) / currentOrderItems.length)
+              Math.round((progress * 100) / currentOrderItems.length) || 0
             }}%</q-circular-progress
           >
         </div>
@@ -129,7 +129,7 @@
               Math.round(
                 (progress * 100) /
                   currentOrderItems.filter(elt => elt._source.fresh).length
-              )
+              ) || 0
             }}%</q-circular-progress
           >
         </div>
@@ -164,7 +164,7 @@
               Math.round(
                 (progress * 100) /
                   currentOrderItems.filter(elt => !elt._source.fresh).length
-              )
+              ) || 0
             }}%</q-circular-progress
           >
         </div>
@@ -201,7 +201,9 @@ export default {
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
       isEditing: false,
-      open: false
+      open: false,
+      openFresh: false,
+      openDry: false
     }
   },
   computed: {
@@ -235,32 +237,39 @@ export default {
       }
     },
     progress() {
+      console.log('you have entered progress computed')
       if (_.isEmpty(this.currentOrder)) {
         return 0
       }
       let alreadyMadeProgress
-      // this is to make sure that values in store have been updated
-      if (
-        this.preparedFresh !== undefined &&
-        this.currentOrder._id === this.orderId
-      ) {
+      if (this.modeFilter === 'all') {
         alreadyMadeProgress =
           this.preparedDry.length +
           this.preparedFresh.length +
           this.rembDry.length +
-          this.rembFresh.length
+          this.rembFresh.length +
+          this.missingFresh.length +
+          this.missingDry.length
+        return alreadyMadeProgress + this.itemsClicked
       } else {
         if (this.modeFilter === 'dry') {
-          alreadyMadeProgress = this.itemsClickedDry
+          alreadyMadeProgress =
+            this.preparedDry.length +
+            this.rembDry.length +
+            this.missingDry.length
+          return this.itemsClickedDry + alreadyMadeProgress
         } else if (this.modeFilter === 'fresh') {
-          alreadyMadeProgress = this.itemsClickedFresh
-        } else {
-          alreadyMadeProgress = this.itemsClicked
+          alreadyMadeProgress =
+            this.preparedFresh.length +
+            this.rembFresh.length +
+            this.missingFresh.length
+          return this.itemsClickedFresh + alreadyMadeProgress
         }
       }
       console.log('this is already made progress ', alreadyMadeProgress)
       console.log('these are the items clicked ', this.itemsClicked)
-      console.log('these are the items', this.currentOrderItems)
+      console.log('these are the dry items clicked ', this.itemsClickedDry)
+      console.log('these are the fresh items clicked ', this.itemsClickedFresh)
       if (this.modeFilter === 'dry') {
         return alreadyMadeProgress + this.itemsClickedDry
       } else if (this.modeFilter === 'fresh') {
@@ -501,18 +510,26 @@ export default {
       const alerts = [
         {
           color: 'green',
-          message: "Wow! tu te dépasses aujourd'hui",
+          message: 'Préparation frais terminée',
           icon: 'thumb_up'
         },
         {
           color: 'teal',
-          message: 'Commande préparée avec succès',
+          message: 'Préparation sec terminée',
+          icon: 'tag_faces'
+        },
+        {
+          color: 'teal',
+          message: 'Préparation terminée',
           icon: 'tag_faces'
         }
       ]
-      const { color, textColor, multiLine, icon, message, avatar } = alerts[
-        Math.floor(Math.random() * 10) % alerts.length
-      ]
+      const { color, textColor, multiLine, icon, message, avatar } =
+        this.modeFilter === 'dry'
+          ? alerts[1]
+          : this.modeFilter === 'fresh'
+          ? alerts[0]
+          : alerts[2]
 
       this.$q.notify({
         color,
@@ -575,30 +592,41 @@ export default {
         this.$q.loading.hide()
       }, 500)
     },
+
     progress: function(newValue) {
-      console.log('this is the progress: ', this.progress)
-      if (
-        this.modeFilter === 'fresh' &&
-        newValue ===
-          this.currentOrderItems.filter(elt => elt._source.fresh).length &&
-        this.open
-      ) {
-        this.showNotif('center')
-        setTimeout(() => {
-          this.goBackToList()
-        }, 2500)
-      } else if (
-        this.modeFilter === 'dry' &&
-        newValue ===
-          this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
-        this.open
-      ) {
-        this.showNotif('bottom')
-        setTimeout(() => {
-          this.goBackToList()
-        })
+      if (this.modeFilter === 'fresh') {
+        if (
+          newValue ===
+            this.currentOrderItems.filter(elt => elt._source.fresh).length &&
+          this.openFresh
+        ) {
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 2500)
+        }
+        this.openFresh = true
+      } else if (this.modeFilter === 'dry') {
+        if (
+          newValue ===
+            this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
+          this.openDry
+        ) {
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 2500)
+        }
+        this.openDry = true
+      } else if (this.modeFilter === 'all') {
+        if (newValue === this.currentOrderItems.length && this.open) {
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 2500)
+        }
+        this.open = true
       }
-      this.open = true
     }
   },
 

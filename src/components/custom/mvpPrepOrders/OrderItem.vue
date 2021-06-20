@@ -1,8 +1,8 @@
 <template>
   <transition
-    enter-active-class="animated fadeInUp"
-    leave-active-class="animated fadeOutUp"
-    duration="150"
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOutDown"
+    duration="200"
   >
     <q-item
       clickable
@@ -92,17 +92,18 @@ export default {
   computed: {
     ...mapState('mvpPrep', [
       'itemsClicked',
+      'itemsClickedFresh',
+      'itemsClickedDry',
+      'modeFilter',
       'displayedItems',
       'currentOrderItems'
     ]),
     prepStatus() {
       return this.product._source.prep_status
     },
-
     isFrais() {
       return this.product._source.fresh
     },
-
     bgColor() {
       if (this.product._source.prep_status === 'remb') {
         return 'red'
@@ -112,7 +113,6 @@ export default {
         return 'green'
       }
     },
-
     history() {
       return this.product._source.history
     }
@@ -135,45 +135,16 @@ export default {
         ]
       }
     },
-
     changeStatus(product, status) {
       this.prepa = true
       this.incrementClick(product)
       this.addToHistory(status)
       this.$set(this.product._source, 'prep_status', status)
-
       setTimeout(() => {
         this.putFirstItemLast(product)
         this.prepa = false
         this.$emit('prep', product)
       }, 300)
-    },
-
-    remb(product) {
-      this.prepa = true
-      this.incrementClick(product)
-      this.addToHistory('remb')
-      this.$set(this.product._source, 'prep_status', 'remb')
-      this.putFirstItemLast(product)
-      this.$emit('remb', product)
-    },
-
-    manq(product) {
-      this.prepa = true
-      this.decrementClick(product)
-      this.addToHistory('manq')
-      this.$set(this.product._source, 'prep_status', 'manq')
-      this.putFirstItemLast(product)
-      this.$emit('manq', product)
-    },
-
-    success(product) {
-      this.prepa = true
-      this.incrementClick(product)
-      this.addToHistory('success')
-      this.$set(this.product._source, 'prep_status', 'success')
-      this.putFirstItemLast(product)
-      this.$emit('success', product)
     },
 
     putFirstItemLast(product) {
@@ -188,11 +159,31 @@ export default {
     },
 
     incrementClick(product) {
-      if (
-        product._source.prep_status === '' ||
-        product._source.prep_status === 'manq'
-      ) {
-        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
+      if (product._source.prep_status === '') {
+        if (this.modeFilter === 'all') {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClicked',
+            this.itemsClicked + 1
+          )
+        } else if (this.modeFilter === 'fresh') {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClickedFresh',
+            this.itemsClickedFresh + 1
+          )
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClicked',
+            this.itemsClicked + 1
+          )
+        } else if (this.modeFilter === 'dry') {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClickedDry',
+            this.itemsClickedDry + 1
+          )
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClicked',
+            this.itemsClicked + 1
+          )
+        }
       }
     },
 

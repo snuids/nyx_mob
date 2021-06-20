@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import CollapsibleSection from './CollapsibleSection'
 import { mapState, mapGetters } from 'vuex'
 
@@ -60,6 +59,7 @@ export default {
     cardDisabled() {
       return this.order._source.lock
     },
+    ...mapGetters(['creds']),
     ...mapState('mvpPrep', [
       'lock_fresh',
       'lock_dry',
@@ -68,6 +68,9 @@ export default {
     ]),
     status() {
       return this.order._source.prep_status
+    },
+    userName: function() {
+      return this.creds.user.firstname
     }
   },
 
@@ -78,14 +81,17 @@ export default {
         this.$q
           .dialog({
             title: 'Lock',
-            message: 'Commande déjà bloquée, voulez-vous continuer',
+            message: `Commande bloquée par ${this.userName}, voulez-vous continuer`,
             cancel: true
           })
           .onOk(() => {
             console.log('OK')
+            this.$router.push({
+              query: { showOrder: this.order._id }
+            })
           })
           .onCancel(() => {
-            console.log('Cancel')
+            return
           })
       } else {
         console.log(this.cardDisabled)
@@ -93,8 +99,9 @@ export default {
         if (
           this.cardDisabled ||
           this.currentOrder._source.prep_status === 'started'
-        )
+        ) {
           return
+        }
         await this.$router.push({
           query: { showOrder: this.order._id }
         })
