@@ -193,6 +193,7 @@
 
     <q-page-sticky expand position="bottom">
       <div
+        v-if="modeFilter === 'all'"
         class="row full-width flex items-center text-white"
         style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
       >
@@ -208,20 +209,91 @@
             track-color="grey-6"
             class="q-ma-md float-right"
             >{{
-              Math.round((progress * 100) / currentOrderItems.length)
+              Math.round((progress * 100) / currentOrderItems.length) || 0
             }}%</q-circular-progress
           >
         </div>
         <div class="row col-xs-6 justify-start">
           {{ this.currentOrderItems.length - progress }} produits restants
         </div>
-        
+      </div>
+
+      <div
+        v-if="modeFilter === 'fresh'"
+        class="row full-width flex items-center text-white"
+        style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
+      >
+        <div class="row col-xs-6 justify-end">
+          <q-circular-progress
+            show-value
+            font-size="12px"
+            :value="progress"
+            :max="
+              this.currentOrderItems.filter(elt => elt._source.fresh).length
+            "
+            size="50px"
+            :thickness="0.15"
+            color="white"
+            track-color="grey-6"
+            class="q-ma-md float-right"
+            >{{
+              Math.round(
+                (progress * 100) /
+                  currentOrderItems.filter(elt => elt._source.fresh).length
+              ) || 0
+            }}%</q-circular-progress
+          >
+        </div>
+        <div class="row col-xs-6 justify-start">
+          {{
+            this.currentOrderItems.filter(elt => elt._source.fresh).length -
+              progress
+          }}
+          produits restants
+        </div>
+      </div>
+
+      <div
+        v-if="modeFilter === 'dry'"
+        class="row full-width flex items-center text-white"
+        style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
+      >
+        <div class="row col-xs-6 justify-end">
+          <q-circular-progress
+            show-value
+            font-size="12px"
+            :value="progress"
+            :max="
+              this.currentOrderItems.filter(elt => !elt._source.fresh).length
+            "
+            size="50px"
+            :thickness="0.15"
+            color="white"
+            track-color="grey-6"
+            class="q-ma-md float-right"
+            >{{
+              Math.round(
+                (progress * 100) /
+                  currentOrderItems.filter(elt => !elt._source.fresh).length
+              ) || 0
+            }}%</q-circular-progress
+          >
+        </div>
+        <div class="row col-xs-6 justify-start">
+          {{
+            this.currentOrderItems.filter(elt => !elt._source.fresh).length -
+              progress
+          }}
+          produits restants
+        </div>
       </div>
     </q-page-sticky>
   </q-page>-->
 </template>
 
 <script>
+// TODO   <q-list-header>Files</q-list-header>
+
 import OrderItems from './OrderItems'
 import moment from 'moment'
 import { mapState, mapGetters } from 'vuex'
@@ -240,13 +312,17 @@ export default {
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
       isEditing: false,
-      open: false
+      open: false,
+      openFresh: false,
+      openDry: false
     }
   },
   computed: {
     ...mapState('mvpPrep', [
       'currentOrderItems',
       'itemsClicked',
+      'itemsClickedDry',
+      'itemsClickedFresh',
       'displayedItems'
     ]),
     ...mapGetters(['creds']),
@@ -272,26 +348,46 @@ export default {
       }
     },
     progress() {
+      console.log('you have entered progress computed')
       if (_.isEmpty(this.currentOrder)) {
         return 0
       }
       let alreadyMadeProgress
-      // this is to make sure that values in store have been updated
-      if (
-        this.preparedFresh !== undefined &&
-        this.currentOrder._id === this.orderId
-      ) {
+      if (this.modeFilter === 'all') {
         alreadyMadeProgress =
           this.preparedDry.length +
           this.preparedFresh.length +
           this.rembDry.length +
-          this.rembFresh.length
+          this.rembFresh.length +
+          this.missingFresh.length +
+          this.missingDry.length
+        return alreadyMadeProgress + this.itemsClicked
       } else {
-        alreadyMadeProgress = this.itemsClicked
+        if (this.modeFilter === 'dry') {
+          alreadyMadeProgress =
+            this.preparedDry.length +
+            this.rembDry.length +
+            this.missingDry.length
+          return this.itemsClickedDry + alreadyMadeProgress
+        } else if (this.modeFilter === 'fresh') {
+          alreadyMadeProgress =
+            this.preparedFresh.length +
+            this.rembFresh.length +
+            this.missingFresh.length
+          return this.itemsClickedFresh + alreadyMadeProgress
+        }
       }
       console.log('this is already made progress ', alreadyMadeProgress)
       console.log('these are the items clicked ', this.itemsClicked)
-      return alreadyMadeProgress + this.itemsClicked
+      console.log('these are the dry items clicked ', this.itemsClickedDry)
+      console.log('these are the fresh items clicked ', this.itemsClickedFresh)
+      if (this.modeFilter === 'dry') {
+        return alreadyMadeProgress + this.itemsClickedDry
+      } else if (this.modeFilter === 'fresh') {
+        return alreadyMadeProgress + this.itemsClickedFresh
+      } else {
+        return alreadyMadeProgress + this.itemsClicked
+      }
     },
 
     userName: function() {
@@ -442,10 +538,6 @@ export default {
 
     async sendUnlockOrder() {
       console.log('i am in sendunlockorder')
-      // console.table(this.currentOrder._source.rembFresh)
-      // console.table(this.currentOrder._source.rembDry)
-      // console.table(this.currentOrder._source.preparedDry)
-      // console.table(this.currentOrder._source.preparedFresh)
       if (
         this.currentOrder._source.rembDry.length +
           this.currentOrder._source.rembFresh.length +
@@ -529,18 +621,26 @@ export default {
       const alerts = [
         {
           color: 'green',
-          message: "Wow! tu te dépasses aujourd'hui",
+          message: 'Préparation frais terminée',
           icon: 'thumb_up'
         },
         {
           color: 'teal',
-          message: 'Commande préparée avec succès',
+          message: 'Préparation sec terminée',
+          icon: 'tag_faces'
+        },
+        {
+          color: 'teal',
+          message: 'Préparation terminée',
           icon: 'tag_faces'
         }
       ]
-      const { color, textColor, multiLine, icon, message, avatar } = alerts[
-        Math.floor(Math.random() * 10) % alerts.length
-      ]
+      const { color, textColor, multiLine, icon, message, avatar } =
+        this.modeFilter === 'dry'
+          ? alerts[1]
+          : this.modeFilter === 'fresh'
+          ? alerts[0]
+          : alerts[2]
 
       this.$q.notify({
         color,
@@ -585,12 +685,6 @@ export default {
     },
 
     async prepareData() {
-      /*
-      console.log(this.orders)
-      console.log(this.orderId)
-
-       */
-
       await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
       await this.updateOrderStatus()
       await this.$store.dispatch('mvpPrep/getOrderItems')
@@ -609,20 +703,51 @@ export default {
         this.$q.loading.hide()
       }, 500)
     },
+
     progress: function(newValue) {
-      console.log('this is the progress: ', this.progress)
-      if (newValue === this.currentOrderItems.length && this.open) {
-        this.showNotif('center')
-        setTimeout(() => {
-          this.goBackToList()
-        }, 2500)
+      if (this.modeFilter === 'fresh') {
+        if (
+          newValue ===
+            this.currentOrderItems.filter(elt => elt._source.fresh).length &&
+          this.itemsClickedFresh > 0
+        ) {
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 2500)
+        }
+        this.openFresh = true
+      } else if (this.modeFilter === 'dry') {
+        if (
+          newValue ===
+            this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
+          this.itemsClickedDry > 0
+        ) {
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 2500)
+        }
+        this.openDry = true
+      } else if (this.modeFilter === 'all') {
+        if (
+          newValue === this.currentOrderItems.length &&
+          this.itemsClicked > 0
+        ) {
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 2500)
+        }
+        this.open = true
       }
-      this.open = true
     }
   },
 
   beforeCreate() {
     this.$store.commit('mvpPrep/mutate_itemsClicked', 0)
+    this.$store.commit('mvpPrep/mutate_itemsClickedDry', 0)
+    this.$store.commit('mvpPrep/mutate_itemsClickedFresh', 0)
   },
 
   beforeMount() {

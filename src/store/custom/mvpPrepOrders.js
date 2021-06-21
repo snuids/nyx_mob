@@ -11,6 +11,8 @@ export default {
     lock_fresh: false,
     orders: [],
     itemsClicked: 0,
+    itemsClickedFresh: 0,
+    itemsClickedDry: 0,
     currentOrder: {},
     currentItem: {},
     currentOrderItems: null,
@@ -19,6 +21,7 @@ export default {
     updated_items: null,
     displayedItems: []
   },
+
   mutations: {
     mutate_displayedItems(state, payload) {
       console.log(payload)
@@ -26,6 +29,12 @@ export default {
     },
     mutate_itemsClicked: function(state, payload) {
       state.itemsClicked = payload
+    },
+    mutate_itemsClickedFresh: function(state, payload) {
+      state.itemsClickedFresh = payload
+    },
+    mutate_itemsClickedDry: function(state, payload) {
+      state.itemsClickedDry = payload
     },
     mutate_allOrders(state, payload) {
       state.orders = payload
@@ -45,7 +54,6 @@ export default {
     mutate_updated_items(state, payload) {
       state.updated_items = payload
     },
-
     mutate_lockDry(state, payload) {
       state.lock_dry = payload
     },
@@ -57,6 +65,7 @@ export default {
       state.modeFilter = payload
     }
   },
+
   actions: {
     getOrderItems({ state, commit, rootState }) {
       Loading.show({
@@ -160,7 +169,6 @@ export default {
           console.error(error)
         })
     },
-
     requestOrder({ state, rootState }, id) {
       Loading.show({
         delay: 300
@@ -199,7 +207,6 @@ export default {
         })
         .catch(error => {})
     },
-
     updateOrderItems({ state, commit }, payload) {
       Loading.show({
         delay: 300
@@ -220,7 +227,6 @@ export default {
           console.error(error)
         })
     },
-
     getOrders({ state, rootState, commit }, dateObj = null) {
       Loading.show({
         delay: 2000
@@ -294,7 +300,6 @@ export default {
           console.error(error)
         })
     },
-
     updateOrder({ state, rootState }, payload) {
       const url =
         rootState.apiurl +
