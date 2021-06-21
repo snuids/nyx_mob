@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import moment from 'moment'
 import CollapsibleSection from './CollapsibleSection'
 import { mapState, mapGetters } from 'vuex'
 
@@ -60,6 +59,7 @@ export default {
     cardDisabled() {
       return this.order._source.lock
     },
+    ...mapGetters(['creds']),
     ...mapState('mvpPrep', [
       'lock_fresh',
       'lock_dry',
@@ -68,43 +68,44 @@ export default {
     ]),
     status() {
       return this.order._source.prep_status
+    },
+    userName: function() {
+      return this.creds.user.firstname
     }
   },
+
   methods: {
+    // TODO finish la dialog
     async cardClick() {
       if (this.cardDisabled) {
-        this.$q.dialog({
-          title: 'Lock',
-          message: 'Commande déjà bloquée, voulez-vous continuer',
-          cancel: true,
-        }).onOk(() => {
-          console.log('OK')
-
-         
-        }).onCancel(() => {
-          console.log('Cancel')
-          
-        })
-      }
-      else {
-
+        this.$q
+          .dialog({
+            title: 'Lock',
+            message: `Commande bloquée par ${this.userName}, voulez-vous continuer`,
+            cancel: true
+          })
+          .onOk(() => {
+            console.log('OK')
+            this.$router.push({
+              query: { showOrder: this.order._id }
+            })
+          })
+          .onCancel(() => {
+            return
+          })
+      } else {
         console.log(this.cardDisabled)
         await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
         if (
           this.cardDisabled ||
           this.currentOrder._source.prep_status === 'started'
-        )
+        ) {
           return
+        }
         await this.$router.push({
           query: { showOrder: this.order._id }
         })
       }
-
-      
-
-      
-
-
     }
   }
 }

@@ -6,12 +6,15 @@
     <div v-else-if="urlOrderList">
       <div
         class=" flex flex-center"
-        style="min-height: 400px; padding-top: 185px;"
+        style="min-height: 400px; padding-top: 200px;"
       >
         <OrdersList />
       </div>
       <q-page-sticky expand position="top">
-        <div class="row full-width flex items-center bg-blue-grey-1" style="">
+        <div
+          class="row full-width flex items-center bg-blue-grey-1 q-pt-md"
+          style=""
+        >
           <div class="row col-xs-5 col-md-3 justify-center">
             <q-btn
               @click="goBackToDashboard"

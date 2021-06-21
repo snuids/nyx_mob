@@ -1,5 +1,5 @@
 <template>
-  <q-list class="q-pa-none" style="padding-bottom: 85px" separator>
+  <q-list class="q-pa-none q-ma-none" style="padding-bottom: 85px" separator>
     <OrderItem
       v-for="(item, idx) in sortedItemsList"
       :key="item._id + idx"
@@ -78,4 +78,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.q-list:last-child {
+  animation: none !important;
+}
+</style>

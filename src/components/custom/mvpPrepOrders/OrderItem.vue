@@ -1,8 +1,12 @@
 <template>
-  <transition leave-active-class="animated fadeOutDown" duration="250">
+  <transition
+    enter-active-class="animated fadeIn"
+    leave-active-class="animated fadeOutDown"
+    duration="200"
+  >
     <q-item
       clickable
-      :class="[`bg-${bgColor}-2`, 'item']"
+      :class="[`bg-${bgColor}-2`, 'item q-pa-none']"
       v-if="!prepa"
       @click="changeStatus(product, 'success')"
       dense
@@ -13,20 +17,20 @@
       >
         <img
           :src="product._source.smallImage"
-          style="width: 50px; height: 50px"
+          style="width: 60px; height: 60px"
         />
       </q-item-section>
       <q-item-section v-else style="max-width: 60px; ">
         <img
           src="https://via.placeholder.com/50"
-          style="width: 50px; height: 50px"
+          style="width: 60px; height: 60px"
         />
       </q-item-section>
       <div class="flex row col-xs-10">
         <div class="row col-xs-12 items-center">
           <div
             style="font-weight: bold; font-size: 15px; "
-            class="row col-xs-10 justify-start "
+            class="row col-xs-10 justify-start q-px-xs"
           >
             {{ product._source.name }}
           </div>
@@ -75,6 +79,8 @@
 import moment from 'moment'
 import { mapState } from 'vuex'
 
+// TODO gérer latence
+
 export default {
   name: 'OrderItem',
   props: ['product'],
@@ -86,17 +92,18 @@ export default {
   computed: {
     ...mapState('mvpPrep', [
       'itemsClicked',
+      'itemsClickedFresh',
+      'itemsClickedDry',
+      'modeFilter',
       'displayedItems',
       'currentOrderItems'
     ]),
     prepStatus() {
       return this.product._source.prep_status
     },
-
     isFrais() {
       return this.product._source.fresh
     },
-
     bgColor() {
       if (this.product._source.prep_status === 'remb') {
         return 'red'
@@ -106,7 +113,6 @@ export default {
         return 'green'
       }
     },
-
     history() {
       return this.product._source.history
     }
@@ -129,51 +135,16 @@ export default {
         ]
       }
     },
-
     changeStatus(product, status) {
-      console.log(status)
-
       this.prepa = true
       this.incrementClick(product)
       this.addToHistory(status)
       this.$set(this.product._source, 'prep_status', status)
-
-
-
-
       setTimeout(() => {
         this.putFirstItemLast(product)
         this.prepa = false
         this.$emit('prep', product)
       }, 300)
-
-    },
-
-    remb(product) {
-      this.prepa = true
-      this.incrementClick(product)
-      this.addToHistory('remb')
-      this.$set(this.product._source, 'prep_status', 'remb')
-      this.putFirstItemLast(product)
-      this.$emit('remb', product)
-    },
-
-    manq(product) {
-      this.prepa = true
-      this.decrementClick(product)
-      this.addToHistory('manq')
-      this.$set(this.product._source, 'prep_status', 'manq')
-      this.putFirstItemLast(product)
-      this.$emit('manq', product)
-    },
-
-    success(product) {
-      this.prepa = true
-      this.incrementClick(product)
-      this.addToHistory('success')
-      this.$set(this.product._source, 'prep_status', 'success')
-      this.putFirstItemLast(product)
-      this.$emit('success', product)
     },
 
     putFirstItemLast(product) {
@@ -181,23 +152,38 @@ export default {
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
 
       console.log(elementPos)
-      console.log(tmpDisplayedItems.length-1)
-
+      console.log(tmpDisplayedItems.length - 1)
 
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
-        this.$store.commit(
-          'mvpPrep/mutate_currentOrderItems',
-          tmpDisplayedItems
-        )
-      
+      this.$store.commit('mvpPrep/mutate_currentOrderItems', tmpDisplayedItems)
     },
 
     incrementClick(product) {
-      if (
-        product._source.prep_status === '' ||
-        product._source.prep_status === 'manq'
-      ) {
-        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked + 1)
+      if (product._source.prep_status === '') {
+        if (this.modeFilter === 'all') {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClicked',
+            this.itemsClicked + 1
+          )
+        } else if (this.modeFilter === 'fresh') {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClickedFresh',
+            this.itemsClickedFresh + 1
+          )
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClicked',
+            this.itemsClicked + 1
+          )
+        } else if (this.modeFilter === 'dry') {
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClickedDry',
+            this.itemsClickedDry + 1
+          )
+          this.$store.commit(
+            'mvpPrep/mutate_itemsClicked',
+            this.itemsClicked + 1
+          )
+        }
       }
     },
 
