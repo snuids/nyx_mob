@@ -1,7 +1,7 @@
 {
   "name": "mvp.nyxmobile",
   "displayName": "nyx_mob",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Apache Cordova Team",
   "license": "Apache-2.0",
   "devDependencies": {
-    "cordova-android": "^9.0.0",
+    "cordova-android": "^9.1.0",
     "cordova-plugin-whitelist": "^1.3.4"
   },
   "cordova": {

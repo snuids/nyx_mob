@@ -65,3 +65,5 @@ yarn.lock
 
 .idea/
 todos.md
+
+src-cordova/my-release-key.keystore
