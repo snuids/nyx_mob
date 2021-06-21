@@ -1,16 +1,12 @@
 <template>
   <q-page-container v-if="currentOrderItems">
-    <q-page style="padding-top: 160px;">
+    <q-page style="padding-top: 158px;">
       <div>
         <q-tab-panels animated v-model="tab">
-          <q-tab-panel
-            class="q-pa-none"
-            name="articles"
-            style="height: calc(100vh - 260px); overflow: scroll;"
-          >
+          <q-tab-panel class="q-pa-none" name="articles">
             <OrderItems :preparedProducts="preparedProducts" />
           </q-tab-panel>
-          <q-tab-panel name="resume" style="height: calc(100vh - 260px); overflow: scroll;">
+          <q-tab-panel name="resume">
             <OrderInfos style="padding-bottom: 80px" />
           </q-tab-panel>
           <q-tab-panel name="client">
@@ -48,13 +44,16 @@
               name="directions_bike"
               class="bg-dark"
               style="border-radius: 50px; padding: 10px; color: white; width: 40px;"
-            ></q-icon>&nbsp; &nbsp;
+            ></q-icon
+            >&nbsp; &nbsp;
             <div class="row flex text-dark">
               <div class="col-xs-12" style="font-weight: bold;">
                 #{{ orderId }}
                 <br />
               </div>
-              <div class="col-xs-12" style="font-weight: lighter">Livraison à vélo</div>
+              <div class="col-xs-12" style="font-weight: lighter">
+                Livraison à vélo
+              </div>
             </div>
           </div>
 
@@ -67,22 +66,32 @@
               size="40px"
               name="shopping_bag"
               style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
-            ></q-icon>&nbsp; &nbsp;
+            ></q-icon
+            >&nbsp; &nbsp;
             <div class="row flex">
               <div class="col-xs-12" style="font-weight: bold;">
                 #{{ orderId }}
                 <br />
               </div>
-              <div class="col-xs-12" style="font-weight: lighter">Commande à récupérer</div>
+              <div class="col-xs-12" style="font-weight: lighter">
+                Commande à récupérer
+              </div>
             </div>
           </div>
 
           <div class="col-4 row justify-end text-white">
-            <q-chip square size="xl" color="primary" text-color="white" class="q-ma-none q-py-lg q-px-sm" style="font-size:15px;font-weight:600;">
+            <q-chip
+              square
+              size="xl"
+              color="primary"
+              text-color="white"
+              class="q-ma-none q-py-lg q-px-sm"
+              style="font-size:15px;font-weight:600;"
+            >
               {{
-              currentOrder._source.tags
-              .split(',')
-              .filter(elt => elt.includes('-'))[0]
+                currentOrder._source.tags
+                  .split(',')
+                  .filter(elt => elt.includes('-'))[0]
               }}
             </q-chip>
           </div>
@@ -96,9 +105,21 @@
             class="row flex full-width justify-center items-center"
             indicator-color="white"
           >
-            <q-tab class="row col-xs-4 justify-center text-dark" name="articles" label="Articles" />
-            <q-tab class="row col-xs-4 justify-center text-dark" name="resume" label="Résumé" />
-            <q-tab class="row col-xs-4 justify-center text-dark" name="client" label="Client" />
+            <q-tab
+              class="row col-xs-4 justify-center text-dark"
+              name="articles"
+              label="Articles"
+            />
+            <q-tab
+              class="row col-xs-4 justify-center text-dark"
+              name="resume"
+              label="Résumé"
+            />
+            <q-tab
+              class="row col-xs-4 justify-center text-dark"
+              name="client"
+              label="Client"
+            />
           </q-tabs>
         </div>
       </q-page-sticky>
@@ -119,11 +140,13 @@
             class="q-ma-md float-right"
           >
             {{
-            Math.round((progress * 100) / filteredCurrentOrderItemsLength) || 0
+              Math.round((progress * 100) / filteredCurrentOrderItemsLength) ||
+                0
             }}%
           </q-circular-progress>
           <span class="q-mr-md" style="font-size:18px">
-            <b>{{ filteredCurrentOrderItemsLength - progress}}</b>&nbsp; produits restants <br>
+            <b>{{ filteredCurrentOrderItemsLength - progress }}</b
+            >&nbsp; produits restants <br />
           </span>
         </div>
       </q-page-sticky>
@@ -194,8 +217,7 @@ export default {
     ]),
 
     filteredCurrentOrderItemsLength: function() {
-      if (this.currentOrderItems == null)
-        return 0;
+      if (this.currentOrderItems == null) return 0
 
       return this.currentOrderItems.filter(element => {
         if (this.modeFilter === 'fresh') {
@@ -223,22 +245,26 @@ export default {
       }
 
       if (this.currentOrderItems == null || _.isEmpty(this.currentOrderItems))
-        return 0;
+        return 0
 
-      return this.currentOrderItems.filter(element => {
-        if (this.modeFilter === 'fresh') {
-          return element._source.fresh
-        } else if (this.modeFilter === 'dry') {
-          return !element._source.fresh
-        } else {
-          return true
-        }
-      }).filter(element => {
-        if (element._source.prep_status != null && element._source.prep_status != '')
-          return true
-        else
-          return false
-      }).length
+      return this.currentOrderItems
+        .filter(element => {
+          if (this.modeFilter === 'fresh') {
+            return element._source.fresh
+          } else if (this.modeFilter === 'dry') {
+            return !element._source.fresh
+          } else {
+            return true
+          }
+        })
+        .filter(element => {
+          if (
+            element._source.prep_status != null &&
+            element._source.prep_status != ''
+          )
+            return true
+          else return false
+        }).length
     },
 
     userName: function() {
@@ -611,10 +637,7 @@ export default {
 </script>
 
 <style scoped>
-.q-tab .q-tab__label {
-  font-weight: 300 !important;
-}
-.q-tab--active .q-tab__label {
-  font-weight: 600 !important;
+.q-tab-active__label {
+  font-weight: bold;
 }
 </style>

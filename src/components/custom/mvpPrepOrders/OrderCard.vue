@@ -3,7 +3,6 @@
     <q-card
       square
       flat
-      bordered
       v-if="order"
       v-ripple
       :class="[status, 'cursor-pointer q-hoverable bg-grey-11']"

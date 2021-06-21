@@ -6,48 +6,38 @@
     <div v-else-if="urlOrderList">
       <div
         class=" flex flex-center"
-        style="min-height: 400px; padding-top: 200px;"
+        style="min-height: 400px; padding-top: 160px;"
       >
         <OrdersList />
       </div>
-      <q-page-sticky expand position="top">
-        <div
-          class="row full-width flex items-center bg-blue-grey-1 q-pt-md"
-          style=""
-        >
-          <div class="row col-xs-5 col-md-3 justify-center">
+      <q-page-sticky expand position="top" class="bg-blue-grey-1 q-pt-md">
+        <div class="row full-width flex items-center q-px-lg">
+          <div class="col-4 justify-start items-center">
             <q-btn
               @click="goBackToDashboard"
               icon="arrow_back_ios"
-              style="margin-right: 60px; background-color: dimgrey; color: white"
-              size="15px"
+              size="md"
+              class="bg-dark text-white"
               unelevated
               round
             />
           </div>
-          <div
-            class="row col-md-3 col-xs-6 justify-center text-h6"
-            style="height: 50px"
-          >
-            {{ userName }}
+          <div class="row col-8 justify-end items-center">
+            <ItemsFilter />
           </div>
           <div
-            class="row col-md-3 col-xs-6 justify-center text-h6"
-            style="height: 50px"
+            class="row col-8 justify-start items-center q-mt-md text-h6 text-dark"
           >
             {{ ordersToDisplay.length }} commandes
           </div>
-          <div
-            class="row col-md-3 col-xs-6 justify-center"
-            style="margin-bottom: 15px"
-          >
-            <ItemsFilter />
+          <div class="row col-4 justify-end text-h6 text-dark q-mt-md">
+            {{ userName }}
           </div>
-          <StickyBanner
-            class="row items-center"
-            style="height: 50px"
-          ></StickyBanner>
         </div>
+        <StickyBanner
+          class="row full-width items-center q-pa-none"
+          style="height: 50px"
+        ></StickyBanner>
       </q-page-sticky>
       <q-page-container>
         <router-view />

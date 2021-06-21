@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Loading, LoadingBar } from 'quasar'
-import { createLogger } from 'vuex';
+import { createLogger } from 'vuex'
 
 export default {
   namespaced: true,

@@ -1,7 +1,7 @@
 <template>
   <div class="bg-brown-2 full-width flex row grey-banner">
     <div
-      class="text-black text-subtitle1 date-banner row col-xs-10 justify-center"
+      class="text-dark text-subtitle1 date-banner row col-xs-10 justify-center"
     >
       <div v-if="dateFromShort === dateToShort" class="text-center">
         Date : <b>{{ dateFrom | dateFrench }}</b>
