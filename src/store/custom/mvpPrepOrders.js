@@ -98,6 +98,17 @@ export default {
                   ],
                   minimum_should_match: 1
                 }
+              },
+              {
+                bool: {
+                  should: [
+                    {
+                      match: {
+                        isKit: false
+                      }
+                    }
+                  ]
+                }
               }
               /*
               {
@@ -117,15 +128,7 @@ export default {
         }
       }
       const indiceProducts = 'mvp_app_line_item'
-      /*
-      queryList2.query.bool.filter[1].range.date.gte = mvpStore.targetDate.dateFrom.format(
-        'YYYY/MM/DD'
-      )
-      queryList2.query.bool.filter[1].range.date.lte = mvpStore.targetDate.dateTo.format(
-        'YYYY/MM/DD'
-      )
 
-       */
       queryList2.query.bool.filter[0].bool.should[0].match.order =
         '#' + state.currentOrder._source.order_number.replace('#', '')
       url += 'generic_search/' + indiceProducts
