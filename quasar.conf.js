@@ -68,7 +68,7 @@ module.exports = function(ctx) {
       // Quasar plugins
       plugins: ['Notify', 'Dialog', 'Loading', 'AppFullscreen'],
       config: {
-        loading: { delay: 100 },
+        loading: { delay: 0 },
         capacitor: {
           backButtonExit: false,
           backButton: false
@@ -82,7 +82,7 @@ module.exports = function(ctx) {
           secondary: '#26A69A',
           accent: '#9C27B0',
 
-          dark: '#1d1d1d',
+          dark: '#465451',
 
           positive: '#67C23A',
           negative: 'orange',

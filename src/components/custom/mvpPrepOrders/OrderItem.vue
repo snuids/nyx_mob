@@ -32,7 +32,7 @@
             style="font-weight: bold; font-size: 15px; "
             class="row col-xs-10 justify-start q-px-xs"
           >
-            {{ product._source.name }}
+            <span class="overflow-ellipsis text-dark">{{ product._source.name }}</span>
           </div>
           <div class="row col-xs-2 justify-end">
             <q-badge
@@ -43,10 +43,12 @@
             </q-badge>
           </div>
         </div>
-        <div class="row full-width items-center">
+        <div class="row full-width items-center text-grey-6">
           <q-icon name="location_on" />
           <div class="row col-xs-6 col-md-9 justify-start">
-            LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
+            <span class="overflow-ellipsis">
+              LOC {{ product._source.loc }} | {{ product._source.clean_vendor }}
+            </span>
           </div>
           <div class="row col-xs-5 col-md-2 justify-end">
             <q-btn
@@ -219,6 +221,13 @@ export default {
 .sec {
   background-color: mediumseagreen;
 }
+
+.overflow-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 /*
 .item {

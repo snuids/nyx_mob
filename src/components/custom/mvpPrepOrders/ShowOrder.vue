@@ -1,114 +1,134 @@
 <template>
   <q-page-container v-if="currentOrderItems">
-    <q-page padding style="padding-top: 120px; padding-bottom: 75px;">
+    <q-page style="padding-top: 160px;">
       <div>
-        <OrderTabs :prepared="preparedProducts" />
+        <q-tab-panels animated v-model="tab">
+          <q-tab-panel
+            class="q-pa-none"
+            name="articles"
+            style="height: calc(100vh - 260px); overflow: scroll;"
+          >
+            <OrderItems :preparedProducts="preparedProducts" />
+          </q-tab-panel>
+          <q-tab-panel name="resume" style="height: calc(100vh - 260px); overflow: scroll;">
+            <OrderInfos style="padding-bottom: 80px" />
+          </q-tab-panel>
+          <q-tab-panel name="client">
+            <ClientInfos />
+          </q-tab-panel>
+        </q-tab-panels>
       </div>
-     
-      <q-page-sticky expand position="top">
-        <div class="row full-width flex bg-blue-grey-1 items-center">
-        <div class="row col-xs-5 col-md-2 justify-center">
-          <q-btn
-            @click="goBackToList"
-            icon="arrow_back_ios"
-            style="margin-right: 60px; background-color: dimgrey; color: white"
-            size="15px"
-            unelevated
-            round
-          />
-        </div>
 
-        <div class="row col-xs-7 col-md-4 justify-center items-center">
-          <ItemsFilter />
-        </div>
+      <q-page-sticky expand position="top" class="bg-blue-grey-1 q-pt-md">
+        <div class="row full-width flex  q-px-lg items-center">
+          <div class="col-4 justify-start items-center">
+            <q-btn
+              @click="goBackToList"
+              icon="arrow_back_ios"
+              size="md"
+              class="bg-dark text-white"
+              unelevated
+              round
+            />
+          </div>
 
-        <div
-          v-if="currentOrder._source.to_customer === 'delivery'"
-          class="col-xs-8 col-md-4 row justify-center items-center"
-          style="height: 100px;   "
-        >
-          <q-icon
-            size="40px"
-            name="directions_bike"
-            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px;"
-          ></q-icon
-          >&nbsp; &nbsp;
-          <div class="row flex">
-            <div class="col-xs-12" style="font-weight: bold;">
-              #{{ orderId }}
-              <br />
-            </div>
-            <div class="col-xs-12" style="font-weight: lighter">
-              Livraison à vélo
-            </div>
+          <div class=" col-8 row justify-end items-center">
+            <ItemsFilter />
           </div>
         </div>
 
-        <div
-          v-if="currentOrder._source.to_customer === 'pickup'"
-          class="col-xs-8 col-md-3 row justify-center items-center"
-          style="height: 100px;   "
-        >
-          <q-icon
-            size="40px"
-            name="shopping_bag"
-            style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
-          ></q-icon
-          >&nbsp; &nbsp;
-          <div class="row flex">
-            <div class="col-xs-12" style="font-weight: bold;">
-              #{{ orderId }}
-              <br />
-            </div>
-            <div class="col-xs-12" style="font-weight: lighter">
-              Commande à récupérer
+        <div class="row full-width flex items-center q-px-lg q-mt-sm">
+          <div
+            v-if="currentOrder._source.to_customer === 'delivery'"
+            class="col-8 row justify-start items-center text-dark"
+            style="height: 100px;   "
+          >
+            <q-icon
+              size="40px"
+              name="directions_bike"
+              class="bg-dark"
+              style="border-radius: 50px; padding: 10px; color: white; width: 40px;"
+            ></q-icon>&nbsp; &nbsp;
+            <div class="row flex text-dark">
+              <div class="col-xs-12" style="font-weight: bold;">
+                #{{ orderId }}
+                <br />
+              </div>
+              <div class="col-xs-12" style="font-weight: lighter">Livraison à vélo</div>
             </div>
           </div>
-        </div>
 
-        <div
-          class="row col-xs-3 col-md-2 justify-center items-center text-white"
-          style="border-radius: 10px;  height: 60px; background-color: #70B937; font-weight: bold"
-        >
-          {{
-            currentOrder._source.tags
+          <div
+            v-if="currentOrder._source.to_customer === 'pickup'"
+            class="col-8 row justify-start items-center"
+            style="height: 100px;   "
+          >
+            <q-icon
+              size="40px"
+              name="shopping_bag"
+              style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+            ></q-icon>&nbsp; &nbsp;
+            <div class="row flex">
+              <div class="col-xs-12" style="font-weight: bold;">
+                #{{ orderId }}
+                <br />
+              </div>
+              <div class="col-xs-12" style="font-weight: lighter">Commande à récupérer</div>
+            </div>
+          </div>
+
+          <div class="col-4 row justify-end text-white">
+            <q-chip square size="xl" color="primary" text-color="white" class="q-ma-none q-py-lg q-px-sm" style="font-size:15px;font-weight:600;">
+              {{
+              currentOrder._source.tags
               .split(',')
               .filter(elt => elt.includes('-'))[0]
-          }}
+              }}
+            </q-chip>
+          </div>
         </div>
 
-      </div>
+        <div class="row full-width flex">
+          <q-tabs
+            active-bg-color="white"
+            v-model="tab"
+            dense
+            class="row flex full-width justify-center items-center"
+            indicator-color="white"
+          >
+            <q-tab class="row col-xs-4 justify-center text-dark" name="articles" label="Articles" />
+            <q-tab class="row col-xs-4 justify-center text-dark" name="resume" label="Résumé" />
+            <q-tab class="row col-xs-4 justify-center text-dark" name="client" label="Client" />
+          </q-tabs>
+        </div>
       </q-page-sticky>
       <q-page-sticky expand position="bottom">
         <div
-          class="row full-width flex items-center text-white"
+          class="row full-width flex items-center text-white justify-center"
           style="box-shadow: 1px -3px 5px rgba(0, 0, 0, 0.2); background-color: #70B937"
         >
-          <div class="row col-xs-6 justify-end">
-            <q-circular-progress
-              show-value
-              font-size="12px"
-              :value="progress"
-              :max="this.currentOrderItems.length"
-              size="50px"
-              :thickness="0.15"
-              color="white"
-              track-color="grey-6"
-              class="q-ma-md float-right"
-            >
-              {{
-              Math.round((progress * 100) / currentOrderItems.length)
-              }}%
-            </q-circular-progress>
-          </div>
-          <div
-            class="row col-xs-6 justify-start"
-          >{{ this.currentOrderItems.length - progress }} produits restants</div>
+          <q-circular-progress
+            show-value
+            font-size="14px"
+            :value="progress"
+            :max="filteredCurrentOrderItemsLength"
+            size="50px"
+            :thickness="0.15"
+            color="white"
+            track-color="trackcolor"
+            class="q-ma-md float-right"
+          >
+            {{
+            Math.round((progress * 100) / filteredCurrentOrderItemsLength) || 0
+            }}%
+          </q-circular-progress>
+          <span class="q-mr-md" style="font-size:18px">
+            <b>{{ filteredCurrentOrderItemsLength - progress}}</b>&nbsp; produits restants <br>
+          </span>
         </div>
       </q-page-sticky>
     </q-page>
   </q-page-container>
-
 </template>
 
 <script>
@@ -121,11 +141,22 @@ import CallAction from './CallAction'
 import OrderItem from './OrderItem'
 import ItemsFilter from './ItemsFilter'
 import OrderTabs from './OrderTabs'
+import ClientInfos from './ClientInfos'
+import OrderInfos from './OrderInfos'
+import { Loading, LoadingBar } from 'quasar'
 import _ from 'lodash'
 
 export default {
   name: 'ShowOrder',
-  components: { ItemsFilter, CallAction, OrderItems, OrderItem, OrderTabs },
+  components: {
+    ItemsFilter,
+    CallAction,
+    OrderItems,
+    OrderItem,
+    OrderTabs,
+    ClientInfos,
+    OrderInfos
+  },
   data() {
     return {
       preparedProducts: [],
@@ -134,7 +165,8 @@ export default {
       isEditing: false,
       open: false,
       openFresh: false,
-      openDry: false
+      openDry: false,
+      tab: 'articles'
     }
   },
   computed: {
@@ -143,6 +175,7 @@ export default {
       'itemsClicked',
       'itemsClickedDry',
       'itemsClickedFresh',
+      'currentOrder',
       'displayedItems'
     ]),
     ...mapGetters(['creds']),
@@ -159,6 +192,22 @@ export default {
       'orders',
       'modeFilter'
     ]),
+
+    filteredCurrentOrderItemsLength: function() {
+      if (this.currentOrderItems == null)
+        return 0;
+
+      return this.currentOrderItems.filter(element => {
+        if (this.modeFilter === 'fresh') {
+          return element._source.fresh
+        } else if (this.modeFilter === 'dry') {
+          return !element._source.fresh
+        } else {
+          return true
+        }
+      }).length
+    },
+
     currentOrder: {
       get() {
         return this.$store.getters['mvpPrep/currentOrder']
@@ -172,42 +221,24 @@ export default {
       if (_.isEmpty(this.currentOrder)) {
         return 0
       }
-      let alreadyMadeProgress
-      if (this.modeFilter === 'all') {
-        alreadyMadeProgress =
-          this.preparedDry.length +
-          this.preparedFresh.length +
-          this.rembDry.length +
-          this.rembFresh.length +
-          this.missingFresh.length +
-          this.missingDry.length
-        return alreadyMadeProgress + this.itemsClicked
-      } else {
-        if (this.modeFilter === 'dry') {
-          alreadyMadeProgress =
-            this.preparedDry.length +
-            this.rembDry.length +
-            this.missingDry.length
-          return this.itemsClickedDry + alreadyMadeProgress
-        } else if (this.modeFilter === 'fresh') {
-          alreadyMadeProgress =
-            this.preparedFresh.length +
-            this.rembFresh.length +
-            this.missingFresh.length
-          return this.itemsClickedFresh + alreadyMadeProgress
+
+      if (this.currentOrderItems == null || _.isEmpty(this.currentOrderItems))
+        return 0;
+
+      return this.currentOrderItems.filter(element => {
+        if (this.modeFilter === 'fresh') {
+          return element._source.fresh
+        } else if (this.modeFilter === 'dry') {
+          return !element._source.fresh
+        } else {
+          return true
         }
-      }
-      console.log('this is already made progress ', alreadyMadeProgress)
-      console.log('these are the items clicked ', this.itemsClicked)
-      console.log('these are the dry items clicked ', this.itemsClickedDry)
-      console.log('these are the fresh items clicked ', this.itemsClickedFresh)
-      if (this.modeFilter === 'dry') {
-        return alreadyMadeProgress + this.itemsClickedDry
-      } else if (this.modeFilter === 'fresh') {
-        return alreadyMadeProgress + this.itemsClickedFresh
-      } else {
-        return alreadyMadeProgress + this.itemsClicked
-      }
+      }).filter(element => {
+        if (element._source.prep_status != null && element._source.prep_status != '')
+          return true
+        else
+          return false
+      }).length
     },
 
     userName: function() {
@@ -505,6 +536,7 @@ export default {
     },
 
     async prepareData() {
+      Loading.show()
       await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
       await this.updateOrderStatus()
       await this.$store.dispatch('mvpPrep/getOrderItems')
@@ -515,13 +547,7 @@ export default {
 
   watch: {
     async $route(to, from) {
-      this.$q.loading.show({
-        message: 'Fetching data'
-      })
       await this.prepareData()
-      setTimeout(() => {
-        this.$q.loading.hide()
-      }, 500)
     },
 
     progress: function(newValue) {
@@ -572,12 +598,8 @@ export default {
 
   beforeMount() {
     window.addEventListener('beforeunload', this.preventNav)
-    this.$q.loading.show({
-      message: 'Fetching data',
-      delay: 100
-    })
+
     this.prepareData()
-    this.$q.loading.hide()
   },
 
   destroyed() {
@@ -588,4 +610,11 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.q-tab .q-tab__label {
+  font-weight: 300 !important;
+}
+.q-tab--active .q-tab__label {
+  font-weight: 600 !important;
+}
+</style>

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Loading, LoadingBar } from 'quasar'
+import { createLogger } from 'vuex';
 
 export default {
   namespaced: true,
@@ -68,9 +69,7 @@ export default {
 
   actions: {
     getOrderItems({ state, commit, rootState }) {
-      Loading.show({
-        delay: 300
-      })
+      Loading.show()
       let mvpStore = rootState.mvp
       let url = rootState.apiurl
       let queryList2 = {
@@ -166,6 +165,7 @@ export default {
         })
         .catch(error => {
           Loading.hide()
+          createLogger.info(response)
           console.error(error)
         })
     },

@@ -1,9 +1,9 @@
 <template>
   <q-btn-toggle
     v-model="modeFilter"
-    class="my-custom-toggle"
     unelevated
-    style="border: 1px solid black; margin-right: 20px; margin-top: 10px; font-weight: lighter;"
+    style="border: 1px solid black; font-weight: lighter;"
+    size="sm"
     toggle-color="brown-4"
     color="white"
     text-color="black"
