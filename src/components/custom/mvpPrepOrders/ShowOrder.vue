@@ -598,7 +598,7 @@ export default {
         if (
           newValue ===
             this.currentOrderItems.filter(elt => elt._source.fresh).length &&
-          this.openFresh
+          this.itemsClickedFresh > 0
         ) {
           this.showNotif('center')
           setTimeout(() => {
@@ -610,7 +610,7 @@ export default {
         if (
           newValue ===
             this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
-          this.openDry
+          this.itemsClickedDry > 0
         ) {
           this.showNotif('center')
           setTimeout(() => {
@@ -619,7 +619,10 @@ export default {
         }
         this.openDry = true
       } else if (this.modeFilter === 'all') {
-        if (newValue === this.currentOrderItems.length && this.open) {
+        if (
+          newValue === this.currentOrderItems.length &&
+          this.itemsClicked > 0
+        ) {
           this.showNotif('center')
           setTimeout(() => {
             this.goBackToList()

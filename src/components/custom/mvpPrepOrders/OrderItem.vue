@@ -6,7 +6,7 @@
   >
     <q-item
       clickable
-      :class="[`bg-${bgColor}-2`, 'item']"
+      :class="[`bg-${bgColor}-2`, 'item q-pa-none']"
       v-if="!prepa"
       @click="changeStatus(product, 'success')"
       dense
@@ -17,20 +17,20 @@
       >
         <img
           :src="product._source.smallImage"
-          style="width: 50px; height: 50px"
+          style="width: 60px; height: 60px"
         />
       </q-item-section>
       <q-item-section v-else style="max-width: 60px; ">
         <img
           src="https://via.placeholder.com/50"
-          style="width: 50px; height: 50px"
+          style="width: 60px; height: 60px"
         />
       </q-item-section>
       <div class="flex row col-xs-10">
         <div class="row col-xs-12 items-center">
           <div
             style="font-weight: bold; font-size: 15px; "
-            class="row col-xs-10 justify-start "
+            class="row col-xs-10 justify-start q-px-xs"
           >
             {{ product._source.name }}
           </div>
