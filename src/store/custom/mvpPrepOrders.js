@@ -21,10 +21,14 @@ export default {
     modeFilter: 'all',
     currentOrderPreparedItems: null,
     updated_items: null,
-    displayedItems: []
+    displayedItems: [],
+    openFinishedOrders: false
   },
 
   mutations: {
+    mutate_openFinishedOrders(state, payload) {
+      state.openFinishedOrders = payload
+    },
     mutate_displayedItems(state, payload) {
       console.log(payload)
       state.displayedItems = payload

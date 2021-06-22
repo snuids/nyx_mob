@@ -9,7 +9,7 @@
     <q-list class=" row flex justify-center fullwidth">
       <q-item
         clickable
-        @click="goToOrdersList"
+        @click="goToOrdersList('all')"
         class="row col-xs-10 justify-center text-white"
         style="background-color: #EABD5A; padding-bottom: 30px; margin-bottom: 30px; border-radius: 20px"
       >
@@ -29,6 +29,8 @@
       <q-item
         class="row col-xs-10 justify-center text-white"
         style="background-color: seagreen; padding-bottom: 30px; border-radius: 20px"
+        clickable
+        @click="goToOrdersList('finished')"
       >
         <div
           class="row col-xs-10 justify-center text-h6"
@@ -65,20 +67,29 @@
 
 <script>
 import { mapState } from 'vuex'
+import mixin from './mixin'
 
 export default {
   name: 'OrdersDashboard',
 
+  mixins: ['mixin'],
   computed: {
     ...mapState('mvpPrep', ['orders'])
   },
   methods: {
-    goToOrdersList() {
+    goToOrdersList(statut) {
+      if (statut === 'finished') {
+        this.$store.commit('mvpPrep/mutate_openFinishedOrders', true)
+        console.log('print finished orders')
+      }
       console.log('go to orders list')
       this.$router.push({
         query: { path: 'ordersList' }
       })
     }
+  },
+  created() {
+    this.$store.commit('mvpPrep/mutate_openFinishedOrders', false)
   }
 }
 

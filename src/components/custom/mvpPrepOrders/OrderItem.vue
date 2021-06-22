@@ -2,7 +2,7 @@
   <transition
     enter-active-class="animated fadeIn"
     leave-active-class="animated fadeOutDown"
-    duration="200"
+    duration="100"
   >
     <q-item
       clickable
@@ -32,7 +32,9 @@
             style="font-weight: bold; font-size: 15px; "
             class="row col-xs-10 justify-start q-px-xs"
           >
-            <span class="overflow-ellipsis text-dark">{{ product._source.name }}</span>
+            <span class="overflow-ellipsis text-dark">{{
+              product._source.name
+            }}</span>
           </div>
           <div class="row col-xs-2 justify-end">
             <q-badge
@@ -227,7 +229,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 /*
 .item {

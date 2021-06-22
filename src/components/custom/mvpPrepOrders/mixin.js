@@ -9,6 +9,7 @@ export default {
         position: 'center'
       })
     })
+    console.log('bonjour mixin')
 
     window.addEventListener('online', function(e) {
       console.log('online')

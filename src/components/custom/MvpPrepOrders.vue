@@ -5,10 +5,10 @@
     </div>
     <div v-else-if="urlOrderList">
       <div
-        class=" flex flex-center"
+        class=" flex full-width"
         style="min-height: 400px; padding-top: 160px;"
       >
-        <OrdersList />
+        <OrdersList :ordersToShow="ordersToDisplay" />
       </div>
       <q-page-sticky expand position="top" class="bg-blue-grey-1 q-pt-md">
         <div class="row full-width flex items-center q-px-lg">
@@ -78,7 +78,7 @@ export default {
 
   computed: {
     ...mapGetters(['creds']),
-    ...mapState('mvpPrep', ['orders']),
+    ...mapState('mvpPrep', ['orders', 'openFinishedOrders']),
     urlOrderId() {
       console.log(this.$route.fullPath)
       let url = this.$route.fullPath
@@ -124,6 +124,14 @@ export default {
       } else if (this.modeFilter === 'fresh') {
         this.$store.commit('mvpPrep/mutate_lockFresh', true)
         orderList = this.orders.filter(order => order._source.has_frais)
+      }
+      let finished
+      if (this.openFinishedOrders) {
+        return orderList.filter(
+          elt =>
+            elt._source.prep_status === 'finished' ||
+            elt._source.prep_status === 'finishedWithRemb'
+        )
       }
       return orderList
     }

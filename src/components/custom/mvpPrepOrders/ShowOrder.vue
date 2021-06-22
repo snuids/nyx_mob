@@ -1,5 +1,5 @@
 <template>
-  <q-page-container v-if="currentOrderItems">
+  <q-page-container>
     <q-page style="padding-top: 158px;">
       <div>
         <q-tab-panels animated v-model="tab">
