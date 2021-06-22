@@ -47,7 +47,6 @@
           }}
         </li>
         <li v-else>
-          Préparation:
           <q-chip :color="orderColor" text-color="white">
             {{
               order._source.prep_status
