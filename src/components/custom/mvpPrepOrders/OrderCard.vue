@@ -30,7 +30,7 @@
         left
         v-if="order._source.prep_status === 'unfinished'"
         name="hourglass_bottom"
-        style="background-color:coral ; font-size: 3rem; color: white; border-radius: 40px"
+        style="background-color:orange ; font-size: 3rem; color: white; border-radius: 40px"
       />
     </q-item-section>
     <q-item-section class="text-subtitle1">
@@ -64,6 +64,21 @@
           </q-chip>
         </li>
       </ul>
+    </q-item-section>
+    <q-item-section>
+      <div class="col-4 row justify-end text-white">
+        <q-chip
+          size="xl"
+          color="primary"
+          text-color="white"
+          class="q-ma-none q-py-lg q-px-sm"
+          style="font-size:15px;font-weight:600;"
+        >
+          {{
+            order._source.tags.split(',').filter(elt => elt.includes('-'))[0]
+          }}
+        </q-chip>
+      </div>
     </q-item-section>
   </q-item>
 </template>
