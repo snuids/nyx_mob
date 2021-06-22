@@ -56,10 +56,11 @@ import OrdersList from './mvpPrepOrders/OrdersList'
 import ItemsFilter from './mvpPrepOrders/ItemsFilter'
 import { mapState, mapGetters } from 'vuex'
 import OrdersDashboard from './mvpPrepOrders/OrdersDashboard'
+import mixin from './mvpPrepOrders/mixin'
 
 export default {
   name: 'MvpPrepOrders',
-
+  mixins: [mixin],
   components: {
     OrdersDashboard,
     OrdersList,

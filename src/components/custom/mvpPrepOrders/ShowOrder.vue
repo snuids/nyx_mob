@@ -14,7 +14,6 @@
           </q-tab-panel>
         </q-tab-panels>
       </div>
-
       <q-page-sticky expand position="top" class="bg-blue-grey-1 q-pt-md">
         <div class="row full-width flex  q-px-lg items-center">
           <div class="col-4 justify-start items-center">
@@ -157,6 +156,7 @@
 <script>
 // TODO   <q-list-header>Files</q-list-header>
 
+// TODO show if the internet connexion is low or inexistant
 import OrderItems from './OrderItems'
 import moment from 'moment'
 import { mapState, mapGetters } from 'vuex'

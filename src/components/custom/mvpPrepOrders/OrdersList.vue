@@ -1,15 +1,17 @@
 <template>
-  <div class="row full-width">
-    <div
-      v-for="(order, idx) in ordersToDisplay.sort((a, b) => {
-        return a._id - b._id
-      })"
-      :key="idx"
-      class="col-xs-12 col-md-12 q-pb-xs q-ma-none"
-    >
-      <OrderCard :order="order" />
+  <q-pull-to-refresh @refresh="refresh">
+    <div class="row full-width">
+      <div
+        v-for="(order, idx) in ordersToDisplay.sort((a, b) => {
+          return a._id - b._id
+        })"
+        :key="idx"
+        class="col-xs-12 col-md-12 q-pb-xs q-ma-none"
+      >
+        <OrderCard :order="order" />
+      </div>
     </div>
-  </div>
+  </q-pull-to-refresh>
 </template>
 
 <script>
@@ -44,10 +46,16 @@ export default {
   },
   components: { OrderCard },
 
-  methods: {},
+  methods: {
+    refresh(done) {
+      console.log('starting getting orders')
+      this.$store.dispatch('mvpPrep/getOrders')
+      done()
+      console.log('finishing getting orders')
+    }
+  },
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
-
     this.interval = setInterval(
       async function() {
         await this.$store.dispatch('mvpPrep/getOrders')

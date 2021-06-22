@@ -74,7 +74,6 @@ export default {
   },
 
   methods: {
-    // TODO finish la dialog
     async cardClick() {
       if (this.cardDisabled) {
         this.$q
@@ -95,10 +94,7 @@ export default {
       } else {
         console.log(this.cardDisabled)
         await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
-        if (
-          this.cardDisabled ||
-          this.currentOrder._source.prep_status === 'started'
-        ) {
+        if (this.currentOrder._source.prep_status === 'started') {
           return
         }
         await this.$router.push({

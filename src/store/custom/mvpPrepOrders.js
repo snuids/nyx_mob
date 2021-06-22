@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Loading, LoadingBar } from 'quasar'
 import { createLogger } from 'vuex'
+import { Notify } from 'quasar'
 
 export default {
   namespaced: true,
@@ -167,9 +168,18 @@ export default {
           }
         })
         .catch(error => {
-          Loading.hide()
-          createLogger.info(response)
-          console.error(error)
+          if (error.response) {
+            // Request made and server responded
+            console.log(error.response.data)
+            console.log(error.response.status)
+            console.log(error.response.headers)
+          } else if (error.request) {
+            // The request was made but no response was received
+            console.log(error.request)
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error', error.message)
+          }
         })
     },
     requestOrder({ state, rootState }, id) {
@@ -277,7 +287,6 @@ export default {
         indiceOrders +
         '?token=' +
         rootState.creds.token
-
       axios
         .post(url, queryList1)
         .then(response => {
