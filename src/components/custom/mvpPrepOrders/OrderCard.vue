@@ -4,48 +4,64 @@
     clickable
     v-if="order"
     v-ripple
-    :class="[status, 'bg-grey-11 row flex col-12 q-pl-sm']"
+    :class="[status, 'bg-grey-11 row flex full-width q-pl-sm']"
     @click="cardClick"
-    style="margin-bottom: 2px"
+    style=" padding: 0; margin: 0 0 2px 0 "
   >
     <q-item-section
-      class="row flex col-2"
-      style="max-width: 60px"
-      v-if="order._source.prep_status !== undefined"
+      class="row flex col-2 items-center"
+      style="max-width: 60px; "
+      v-if="order._source.prep_status !== 'started'"
     >
       <q-icon
         left
         v-if="order._source.prep_status === 'finished'"
         name="done"
-        style="background-color: green; font-size: 3rem; color: white; border-radius: 40px"
+        style="background-color: green; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
       />
       <q-icon
         left
-        size="3rem"
         v-if="order._source.prep_status === 'finishedWithRemb'"
         name="close"
-        style="background-color:red; color: white; border-radius: 40px"
+        style="background-color:red; color: white; border-radius: 40px; font-size: 2.5rem; padding: 2px"
       />
       <q-icon
         left
         v-if="order._source.prep_status === 'unfinished'"
         name="hourglass_bottom"
-        style="background-color:orange ; font-size: 3rem; color: white; border-radius: 40px"
+        style="background-color:orange ; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
       />
     </q-item-section>
-    <q-item-section class="text-subtitle1">
+    <q-item-section
+      class="text-subtitle1 row col-7 justify-center"
+      style="margin: 0"
+    >
       <div style="font-weight: bold"># {{ order._source.order_number }}</div>
       <ul>
-        <li v-if="order._source.prep_status === 'started'">
-          En cours de preparation
-          {{
-            order._source.lock_type === 'dry'
-              ? 'Sec'
-              : order._source.lock_type === 'fresh'
-              ? 'Frais'
-              : ''
-          }}
+        <li
+          v-if="
+            order._source.intermediaryStatus &&
+              order._source.prep_status === 'unfinished'
+          "
+        >
+          <q-chip :color="orderColor" text-color="white">
+            Préparation {{ order._source.intermediaryStatus }} terminée
+          </q-chip>
         </li>
+
+        <li v-if="order._source.prep_status === 'started'">
+          <q-chip :color="orderColor" text-color="white">
+            En cours de preparation
+            {{
+              order._source.lock_type === 'dry'
+                ? 'Sec'
+                : order._source.lock_type === 'fresh'
+                ? 'Frais'
+                : ''
+            }}
+          </q-chip>
+        </li>
+
         <li v-else>
           <q-chip :color="orderColor" text-color="white">
             {{
@@ -65,14 +81,13 @@
         </li>
       </ul>
     </q-item-section>
-    <q-item-section>
-      <div class="col-4 row justify-end text-white">
+    <q-item-section class="col-3 row " style="margin: 0">
+      <div class="text-white justify-end">
         <q-chip
           size="xl"
-          color="primary"
-          text-color="white"
-          class="q-ma-none q-py-lg q-px-sm"
-          style="font-size:15px;font-weight:600;"
+          text-color="black"
+          class="q-ma-none "
+          style="font-size: 15px; position: relative; top: -20px; float: right"
         >
           {{
             order._source.tags.split(',').filter(elt => elt.includes('-'))[0]
@@ -110,7 +125,8 @@ export default {
       'lock_fresh',
       'lock_dry',
       'currentOrderItems',
-      'currentOrder'
+      'currentOrder',
+      'itemsClicked'
     ]),
     status() {
       return this.order._source.prep_status

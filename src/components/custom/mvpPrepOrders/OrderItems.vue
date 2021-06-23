@@ -30,6 +30,7 @@ export default {
     ]),
 
     sortedItemsList: function() {
+      if (this.currentOrderItems == null) return 0
       return this.currentOrderItems.filter(element => {
         if (this.modeFilter === 'fresh') {
           return element._source.fresh
@@ -74,6 +75,9 @@ export default {
         // this.sortedItemsList()
       }
     }
+  },
+  async beforeCreate() {
+    await this.$store.dispatch('mvpPrep/getOrderItems')
   }
 }
 </script>

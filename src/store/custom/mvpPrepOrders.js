@@ -74,7 +74,9 @@ export default {
 
   actions: {
     getOrderItems({ state, commit, rootState }) {
-      Loading.show()
+      Loading.show({
+        delay: 100
+      })
       let mvpStore = rootState.mvp
       let url = rootState.apiurl
       let queryList2 = {
@@ -106,10 +108,10 @@ export default {
               },
               {
                 bool: {
-                  should: [
+                  must_not: [
                     {
                       match: {
-                        isKit: false
+                        isKit: true
                       }
                     }
                   ]
@@ -144,9 +146,13 @@ export default {
           Loading.hide()
           if (response.data.error !== '') console.error('Get products error...')
           else {
-            response.data.records.sort((a, b) =>
-              a._source.loc > b._source.loc ? 1 : -1
-            )
+            response.data.records.sort((a, b) => {
+              if (a._source.loc > b._source.loc) return 1
+              if (a._source.loc < b._source.loc) return -1
+              if (a._source.name > b._source.name) return 1
+              if (a._source.name < b._source.name) return -1
+              return 0
+            })
             let products = response.data.records
             for (let i in products) {
               if (products[i]._source.prep_status === undefined) {
@@ -172,6 +178,7 @@ export default {
           }
         })
         .catch(error => {
+          Loading.hide()
           if (error.response) {
             // Request made and server responded
             console.log(error.response.data)

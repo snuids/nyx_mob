@@ -166,7 +166,7 @@ import ItemsFilter from './ItemsFilter'
 import OrderTabs from './OrderTabs'
 import ClientInfos from './ClientInfos'
 import OrderInfos from './OrderInfos'
-import { Loading, LoadingBar } from 'quasar'
+import { Loading } from 'quasar'
 import _ from 'lodash'
 
 export default {
@@ -430,8 +430,27 @@ export default {
         } else {
           this.currentOrder._source.prep_status = 'finished'
         }
-      } else {
+      } else if (
+        this.currentOrderItems.filter(elt => elt._source.prep_status !== '')
+          .length === 0
+      ) {
         // console.log('really wow you deceive me')
+        this.currentOrder._source.prep_status = ''
+      } else if (
+        this.currentOrder._source.rembDry.length +
+          this.currentOrder._source.preparedDry.length ===
+        this.dryItems.length
+      ) {
+        this.currentOrder._source.intermediaryStatus = 'sec'
+        this.currentOrder._source.prep_status = 'unfinished'
+      } else if (
+        this.currentOrder._source.rembFresh.length +
+          this.currentOrder._source.preparedFresh.length ===
+        this.freshItems.length
+      ) {
+        this.currentOrder._source.intermediaryStatus = 'frais'
+        this.currentOrder._source.prep_status = 'unfinished'
+      } else {
         this.currentOrder._source.prep_status = 'unfinished'
       }
       this.currentOrder._source.lock = false
@@ -562,10 +581,12 @@ export default {
     },
 
     async prepareData() {
-      Loading.show()
+      Loading.show({
+        delay: 100
+      })
       await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
       await this.updateOrderStatus()
-      await this.$store.dispatch('mvpPrep/getOrderItems')
+      Loading.hide()
       console.log('these are the items sent when the card was cliked')
       console.log(this.currentOrderItems)
     }
@@ -624,7 +645,6 @@ export default {
 
   beforeMount() {
     window.addEventListener('beforeunload', this.preventNav)
-
     this.prepareData()
   },
 
@@ -632,6 +652,8 @@ export default {
     console.log('wow')
     window.removeEventListener('beforeunload', this.preventNav)
     this.unlock()
+    this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
+    this.$store.commit('mvpPrep/mutate_currentOrder', undefined)
   }
 }
 </script>
