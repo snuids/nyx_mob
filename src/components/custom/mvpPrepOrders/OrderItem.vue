@@ -144,9 +144,10 @@ export default {
       this.incrementClick(product)
       this.addToHistory(status)
       this.$set(this.product._source, 'prep_status', status)
+
       setTimeout(() => {
-        this.putFirstItemLast(product)
         this.prepa = false
+        this.putFirstItemLast(product)
         this.$emit('prep', product)
       }, 300)
     },
@@ -155,8 +156,8 @@ export default {
       let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
 
-      console.log(elementPos)
-      console.log(tmpDisplayedItems.length - 1)
+      // console.log(elementPos)
+      // console.log(tmpDisplayedItems.length - 1)
 
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
       this.$store.commit('mvpPrep/mutate_currentOrderItems', tmpDisplayedItems)

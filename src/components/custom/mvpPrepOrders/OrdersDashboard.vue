@@ -80,9 +80,9 @@ export default {
     goToOrdersList(statut) {
       if (statut === 'finished') {
         this.$store.commit('mvpPrep/mutate_openFinishedOrders', true)
-        console.log('print finished orders')
+        // console.log('print finished orders')
       }
-      console.log('go to orders list')
+      // console.log('go to orders list')
       this.$router.push({
         query: { path: 'ordersList' }
       })

@@ -146,7 +146,7 @@ export default {
             cancel: true
           })
           .onOk(() => {
-            console.log('OK')
+            // console.log('OK')
             this.$router.push({
               query: { showOrder: this.order._id }
             })
@@ -155,7 +155,7 @@ export default {
             return
           })
       } else {
-        console.log(this.cardDisabled)
+        // console.log(this.cardDisabled)
         await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
         if (this.currentOrder._source.prep_status === 'started') {
           return

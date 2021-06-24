@@ -29,10 +29,10 @@ export default {
   components: { OrderCard },
   methods: {
     refresh(done) {
-      console.log('starting getting orders')
+      // console.log('starting getting orders')
       this.$store.dispatch('mvpPrep/getOrders')
       done()
-      console.log('finishing getting orders')
+      // console.log('finishing getting orders')
     }
   },
   mounted() {

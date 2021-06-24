@@ -250,6 +250,7 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
+      console.log('getOrders')
       Loading.show({
         delay: 2000
       })

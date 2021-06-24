@@ -80,7 +80,7 @@ export default {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders', 'openFinishedOrders']),
     urlOrderId() {
-      console.log(this.$route.fullPath)
+      // console.log(this.$route.fullPath)
       let url = this.$route.fullPath
       if (url.indexOf('showOrder=') > -1) {
         return url.split('showOrder=')[1]
@@ -141,7 +141,7 @@ export default {
     targetDate: {
       handler: function() {
         this.$store.dispatch('mvpPrep/getOrders').then(() => {
-          console.log(this.orders)
+          // console.log(this.orders)
         })
       },
       deep: true

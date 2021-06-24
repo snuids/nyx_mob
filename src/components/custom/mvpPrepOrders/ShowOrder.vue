@@ -239,7 +239,7 @@ export default {
       }
     },
     progress() {
-      console.log('you have entered progress computed')
+      // console.log('you have entered progress computed')
       if (_.isEmpty(this.currentOrder)) {
         return 0
       }
@@ -278,16 +278,27 @@ export default {
     },
 
     goBackToList() {
-      let query = Object.assign({}, this.$route.query)
-      delete query.showOrder
-      this.$router.replace({ query })
-      this.$router.push({
-        query: { path: 'ordersList' }
-      })
+      this.showNotif('center')
+
+
+      setTimeout(() => {
+        this.unlock()
+        setTimeout(() => {
+          let query = Object.assign({}, this.$route.query)
+          delete query.showOrder
+          this.$router.replace({ query })
+          this.$router.push({
+            query: { path: 'ordersList' }
+          })
+        }, 2500)
+      }, 350)
+
+
+
     },
 
     async unlock() {
-      console.log('I am in unlock so wowo that is amazing')
+      console.log('UNLOCK')
       let fresh = this.preparedProducts.filter(
         product =>
           product._source.fresh && product._source.prep_status === 'success'
@@ -412,18 +423,6 @@ export default {
     },
 
     async sendUnlockOrder() {
-      console.log('i am in sendunlockorder')
-
-      console.log(
-        'these are current order dry items length ',
-        this.dryItems.length
-      )
-
-      console.log(
-        'these are current Order fresh Items length ',
-        this.freshItems.length
-      )
-
       if (
         this.currentOrder._source.rembDry.length +
           this.currentOrder._source.rembFresh.length +
@@ -449,14 +448,14 @@ export default {
           this.currentOrder._source.preparedDry.length ===
         this.dryItems.length
       ) {
-        console.log(
-          'these are rembdry length ',
-          this.currentOrder._source.rembDry.length
-        )
-        console.log(
-          'these are okdry length ',
-          this.currentOrder._source.preparedDry.length
-        )
+        // console.log(
+        //   'these are rembdry length ',
+        //   this.currentOrder._source.rembDry.length
+        // )
+        // console.log(
+        //   'these are okdry length ',
+        //   this.currentOrder._source.preparedDry.length
+        // )
 
         this.currentOrder._source.intermediaryStatus = 'sec'
         this.currentOrder._source.prep_status = 'unfinished'
@@ -465,14 +464,14 @@ export default {
           this.currentOrder._source.preparedFresh.length ===
         this.freshItems.length
       ) {
-        console.log(
-          'these are rembFresh length ',
-          this.currentOrder._source.rembFresh.length
-        )
-        console.log(
-          'these are okFresh length ',
-          this.currentOrder._source.preparedFresh.length
-        )
+        // console.log(
+        //   'these are rembFresh length ',
+        //   this.currentOrder._source.rembFresh.length
+        // )
+        // console.log(
+        //   'these are okFresh length ',
+        //   this.currentOrder._source.preparedFresh.length
+        // )
 
         this.currentOrder._source.intermediaryStatus = 'frais'
         this.currentOrder._source.prep_status = 'unfinished'
@@ -480,10 +479,10 @@ export default {
         this.currentOrder._source.prep_status = 'unfinished'
       }
 
-      console.log(
-        'olé olé olé .... here is our master at work   ',
-        this.currentOrder._source.intermediaryStatus
-      )
+      // console.log(
+      //   'olé olé olé .... here is our master at work   ',
+      //   this.currentOrder._source.intermediaryStatus
+      // )
 
       this.currentOrder._source.lock = false
       this.currentOrder._source.updatedAt = moment().format(
@@ -494,6 +493,8 @@ export default {
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
       })
+
+      console.log('mvpPrep/updateOrder')
     },
 
     updateArrayPreparedItems(preparedArray, arrayToInsertIn) {
@@ -516,14 +517,14 @@ export default {
     addProductToPrepared(productsArray, arrayToInsertIn, product) {
       productsArray.forEach(products => {
         if (products === arrayToInsertIn) {
-          console.log('ok equality between the two arrays')
+          // console.log('ok equality between the two arrays')
           if (products.filter(item => item._id === product._id).length === 0) {
             arrayToInsertIn.push(product)
           }
         } else {
           if (products.filter(item => item._id === product._id).length > 0) {
             this.update(products, product)
-            console.log('element removed from ', products)
+            // console.log('element removed from ', products)
           }
         }
       })
@@ -577,7 +578,7 @@ export default {
         actions: [
           {
             handler: () => {
-              console.log('wooow')
+              // console.log('wooow')
             }
           }
         ],
@@ -611,8 +612,8 @@ export default {
       await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
       await this.updateOrderStatus()
       Loading.hide()
-      console.log('these are the items sent when the card was cliked')
-      console.log(this.currentOrderItems)
+      // console.log('these are the items sent when the card was cliked')
+      // console.log(this.currentOrderItems)
     }
   },
 
@@ -628,11 +629,8 @@ export default {
             this.currentOrderItems.filter(elt => elt._source.fresh).length &&
           this.itemsClickedFresh > 0
         ) {
-          this.showNotif('center')
-          this.unlock()
-          setTimeout(() => {
-            this.goBackToList()
-          }, 2500)
+          this.goBackToList()
+          
         }
         this.openFresh = true
       } else if (this.modeFilter === 'dry') {
@@ -641,11 +639,8 @@ export default {
             this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
           this.itemsClickedDry > 0
         ) {
-          this.showNotif('center')
-          this.unlock()
-          setTimeout(() => {
             this.goBackToList()
-          }, 2500)
+          
         }
         this.openDry = true
       } else if (this.modeFilter === 'all') {
@@ -653,11 +648,8 @@ export default {
           newValue === this.currentOrderItems.length &&
           this.itemsClicked > 0
         ) {
-          this.showNotif('center')
-          this.unlock()
-          setTimeout(() => {
             this.goBackToList()
-          }, 2500)
+          
         }
         this.open = true
       }
@@ -677,7 +669,7 @@ export default {
 
   destroyed() {
     window.removeEventListener('beforeunload', this.preventNav)
-    this.unlock()
+    // this.unlock()
   }
 }
 </script>
