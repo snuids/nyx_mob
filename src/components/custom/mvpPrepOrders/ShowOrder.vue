@@ -408,13 +408,23 @@ export default {
         })
       }
       await this.sendUnlockOrder()
+      this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
       await this.$store.dispatch('mvpPrep/getOrders')
-      // console.log(this.$store.state.mvpPrep.updated_items)
-      // console.log(this.$store.getters['mvpPrep/preparedItems'])
     },
 
     async sendUnlockOrder() {
       console.log('i am in sendunlockorder')
+
+      console.log(
+        'these are current order dry items length ',
+        this.dryItems.length
+      )
+
+      console.log(
+        'these are current Order fresh Items length ',
+        this.freshItems.length
+      )
+
       if (
         this.currentOrder._source.rembDry.length +
           this.currentOrder._source.rembFresh.length +
@@ -434,13 +444,21 @@ export default {
         this.currentOrderItems.filter(elt => elt._source.prep_status !== '')
           .length === 0
       ) {
-        // console.log('really wow you deceive me')
         this.currentOrder._source.prep_status = ''
       } else if (
         this.currentOrder._source.rembDry.length +
           this.currentOrder._source.preparedDry.length ===
         this.dryItems.length
       ) {
+        console.log(
+          'these are rembdry length ',
+          this.currentOrder._source.rembDry.length
+        )
+        console.log(
+          'these are okdry length ',
+          this.currentOrder._source.preparedDry.length
+        )
+
         this.currentOrder._source.intermediaryStatus = 'sec'
         this.currentOrder._source.prep_status = 'unfinished'
       } else if (
@@ -448,24 +466,35 @@ export default {
           this.currentOrder._source.preparedFresh.length ===
         this.freshItems.length
       ) {
+        console.log(
+          'these are rembFresh length ',
+          this.currentOrder._source.rembFresh.length
+        )
+        console.log(
+          'these are okFresh length ',
+          this.currentOrder._source.preparedFresh.length
+        )
+
         this.currentOrder._source.intermediaryStatus = 'frais'
         this.currentOrder._source.prep_status = 'unfinished'
       } else {
         this.currentOrder._source.prep_status = 'unfinished'
       }
+
+      console.log(
+        'olé olé olé .... here is our master at work   ',
+        this.currentOrder._source.intermediaryStatus
+      )
+
       this.currentOrder._source.lock = false
       this.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
 
-      // console.log('bouton retour cliqué')
-      /* UNCOMMENT TO COMMIT REAL UPDATE */
-      // send the update request
       await this.$store.dispatch({
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
       })
-      // console.log('sendunlockorder terminé')
     },
 
     updateArrayPreparedItems(preparedArray, arrayToInsertIn) {
@@ -507,7 +536,6 @@ export default {
     },
 
     preventNav(event) {
-      console.log('ENNNNNNNNNNDDDDDDDDD:::::::::::::::::::::::::')
       event.preventDefault()
       this.sendUnlockOrder()
       event.returnValue = ''
@@ -570,10 +598,7 @@ export default {
       this.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
-      console.log('lock type: ', this.currentOrder._source.lock_type)
-      console.log('this is the current order on which ive clicked')
-      /* UNCOMMENT TO COMMIT REAL UPDATE */
-      // send the update request
+
       this.$store.dispatch({
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
@@ -649,11 +674,8 @@ export default {
   },
 
   destroyed() {
-    console.log('wow')
     window.removeEventListener('beforeunload', this.preventNav)
     this.unlock()
-    this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
-    this.$store.commit('mvpPrep/mutate_currentOrder', undefined)
   }
 }
 </script>

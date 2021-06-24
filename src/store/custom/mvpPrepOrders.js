@@ -219,8 +219,6 @@ export default {
           if (order._source.dryItems === undefined) {
             order._source.preparedDry = []
             order._source.preparedFresh = []
-            order._source.dryItems = []
-            order._source.freshItems = []
             order._source.missingFresh = []
             order._source.missingDry = []
             order._source.rembDry = []
@@ -307,8 +305,6 @@ export default {
             if (orders[i]._source.dryItems === undefined) {
               orders[i]._source.preparedDry = []
               orders[i]._source.preparedFresh = []
-              orders[i]._source.dryItems = []
-              orders[i]._source.freshItems = []
               orders[i]._source.missingFresh = []
               orders[i]._source.missingDry = []
               orders[i]._source.rembDry = []
