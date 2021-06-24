@@ -163,7 +163,6 @@ import { mapState, mapGetters } from 'vuex'
 import CallAction from './CallAction'
 import OrderItem from './OrderItem'
 import ItemsFilter from './ItemsFilter'
-import OrderTabs from './OrderTabs'
 import ClientInfos from './ClientInfos'
 import OrderInfos from './OrderInfos'
 import { Loading } from 'quasar'
@@ -176,7 +175,6 @@ export default {
     CallAction,
     OrderItems,
     OrderItem,
-    OrderTabs,
     ClientInfos,
     OrderInfos
   },
