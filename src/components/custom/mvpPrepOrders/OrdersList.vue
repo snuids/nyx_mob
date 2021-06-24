@@ -37,12 +37,15 @@ export default {
   },
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
-    this.interval = setInterval(
-      async function() {
-        await this.$store.dispatch('mvpPrep/getOrders')
-      }.bind(this),
-      timer
-    )
+    setTimeout(() => {
+      this.$store.dispatch('mvpPrep/getOrders')
+      this.interval = setInterval(
+        async function() {
+          await this.$store.dispatch('mvpPrep/getOrders')
+        }.bind(this),
+        timer
+      )
+    }, 500)
   },
   beforeDestroy() {
     clearInterval(this.interval)

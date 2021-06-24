@@ -402,14 +402,13 @@ export default {
 
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
-        console.log('we are going to updateOrders on the server')
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
           line_items: this.preparedProducts
         })
       }
       await this.sendUnlockOrder()
-      this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
-      await this.$store.dispatch('mvpPrep/getOrders')
+      //this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
+      //await this.$store.dispatch('mvpPrep/getOrders')
     },
 
     async sendUnlockOrder() {
@@ -630,6 +629,7 @@ export default {
           this.itemsClickedFresh > 0
         ) {
           this.showNotif('center')
+          this.unlock()
           setTimeout(() => {
             this.goBackToList()
           }, 2500)
@@ -642,6 +642,7 @@ export default {
           this.itemsClickedDry > 0
         ) {
           this.showNotif('center')
+          this.unlock()
           setTimeout(() => {
             this.goBackToList()
           }, 2500)
@@ -653,6 +654,7 @@ export default {
           this.itemsClicked > 0
         ) {
           this.showNotif('center')
+          this.unlock()
           setTimeout(() => {
             this.goBackToList()
           }, 2500)
