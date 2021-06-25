@@ -45,7 +45,6 @@ export default {
   components: { OrderItem },
   methods: {
     addProductToPreparedItems(product) {
-      // console.log('prep')
       if (
         this.preparedProducts.filter(item => item._id === product._id).length >
         0
@@ -82,8 +81,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.q-list:last-child {
-  animation: none !important;
-}
-</style>
+<style scoped></style>

@@ -138,6 +138,11 @@ export default {
 
   methods: {
     async cardClick() {
+      console.log('is the card disabled ', this.cardDisabled)
+      console.log('this is the lock ', this.order._source.lock)
+
+      console.log('this is the order ', this.order)
+
       if (this.cardDisabled) {
         this.$q
           .dialog({
@@ -146,7 +151,6 @@ export default {
             cancel: true
           })
           .onOk(() => {
-            // console.log('OK')
             this.$router.push({
               query: { showOrder: this.order._id }
             })
@@ -155,9 +159,15 @@ export default {
             return
           })
       } else {
-        // console.log(this.cardDisabled)
         await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
+
+        console.log(
+          'this is the status ',
+          this.currentOrder._source.prep_status
+        )
+
         if (this.currentOrder._source.prep_status === 'started') {
+          alert('cette commande est en cours de préparation')
           return
         }
         await this.$router.push({

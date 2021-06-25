@@ -144,21 +144,17 @@ export default {
       this.incrementClick(product)
       this.addToHistory(status)
       this.$set(this.product._source, 'prep_status', status)
+      this.$emit('prep', product)
 
       setTimeout(() => {
         this.prepa = false
         this.putFirstItemLast(product)
-        this.$emit('prep', product)
       }, 300)
     },
 
     putFirstItemLast(product) {
       let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
-
-      // console.log(elementPos)
-      // console.log(tmpDisplayedItems.length - 1)
-
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
       this.$store.commit('mvpPrep/mutate_currentOrderItems', tmpDisplayedItems)
     },
@@ -189,15 +185,6 @@ export default {
             this.itemsClicked + 1
           )
         }
-      }
-    },
-
-    decrementClick(product) {
-      if (
-        product._source.prep_status === 'remb' ||
-        product._source.prep_status === 'success'
-      ) {
-        this.$store.commit('mvpPrep/mutate_itemsClicked', this.itemsClicked - 1)
       }
     }
   }
@@ -230,11 +217,4 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/*
-.item {
-  margin-bottom: 5px;
-}
-
- */
 </style>

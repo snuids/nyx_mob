@@ -302,17 +302,7 @@ export default {
         .then(response => {
           Loading.hide()
           let orders = response.data.records
-          for (let i in orders) {
-            if (orders[i]._source.dryItems === undefined) {
-              orders[i]._source.preparedDry = []
-              orders[i]._source.preparedFresh = []
-              orders[i]._source.missingFresh = []
-              orders[i]._source.missingDry = []
-              orders[i]._source.rembDry = []
-              orders[i]._source.rembFresh = []
-              orders[i]._source.lock = false
-            }
-          }
+
           commit('mutate_allOrders', orders)
         })
         .catch(error => {
@@ -354,48 +344,6 @@ export default {
     freshItems: state =>
       state.currentOrderItems.filter(item => item._source.fresh),
     dryItems: state =>
-      state.currentOrderItems.filter(item => !item._source.fresh),
-    preparedDry: state => {
-      if (state.currentOrder._source.preparedDry) {
-        return state.currentOrder._source.preparedDry
-      } else {
-        return []
-      }
-    },
-    preparedFresh: state => {
-      if (state.currentOrder._source.preparedFresh) {
-        return state.currentOrder._source.preparedFresh
-      } else {
-        return []
-      }
-    },
-    missingFresh: state => {
-      if (state.currentOrder._source.missingFresh) {
-        return state.currentOrder._source.missingFresh
-      } else {
-        return []
-      }
-    },
-    missingDry: state => {
-      if (state.currentOrder._source.missingDry) {
-        return state.currentOrder._source.missingDry
-      } else {
-        return []
-      }
-    },
-    rembFresh: state => {
-      if (state.currentOrder._source.rembFresh) {
-        return state.currentOrder._source.rembFresh
-      } else {
-        return []
-      }
-    },
-    rembDry: state => {
-      if (state.currentOrder._source.rembDry) {
-        return state.currentOrder._source.rembDry
-      } else {
-        return []
-      }
-    }
+      state.currentOrderItems.filter(item => !item._source.fresh)
   }
 }

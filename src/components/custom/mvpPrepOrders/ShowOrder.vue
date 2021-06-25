@@ -3,7 +3,7 @@
     <q-page style="padding-top: 158px;">
       <div>
         <q-tab-panels animated v-model="tab" :keep-alive="true">
-          <q-tab-panel class="q-pa-none" name="articles" >
+          <q-tab-panel class="q-pa-none" name="articles">
             <OrderItems :preparedProducts="preparedProducts" />
           </q-tab-panel>
           <q-tab-panel name="resume">
@@ -204,12 +204,6 @@ export default {
       'preparedItems',
       'freshItems',
       'dryItems',
-      'preparedFresh',
-      'preparedDry',
-      'missingDry',
-      'missingFresh',
-      'rembDry',
-      'rembFresh',
       'orders',
       'modeFilter'
     ]),
@@ -237,7 +231,6 @@ export default {
       }
     },
     progress() {
-      // console.log('you have entered progress computed')
       if (_.isEmpty(this.currentOrder)) {
         return 0
       }
@@ -276,9 +269,6 @@ export default {
     },
 
     goBackToList() {
-      this.showNotif('center')
-
-
       setTimeout(() => {
         this.unlock()
         setTimeout(() => {
@@ -288,127 +278,12 @@ export default {
           this.$router.push({
             query: { path: 'ordersList' }
           })
-        }, 2500)
-      }, 350)
-
-
-
+        }, 500)
+      }, 200)
     },
 
     async unlock() {
       console.log('UNLOCK')
-      let fresh = this.preparedProducts.filter(
-        product =>
-          product._source.fresh && product._source.prep_status === 'success'
-      )
-
-      let dry = this.preparedProducts.filter(
-        product =>
-          !product._source.fresh && product._source.prep_status === 'success'
-      )
-
-      let manqFresh = this.preparedProducts.filter(
-        product =>
-          product._source.fresh && product._source.prep_status === 'manq'
-      )
-
-      let manqDry = this.preparedProducts.filter(
-        product =>
-          !product._source.fresh && product._source.prep_status === 'manq'
-      )
-
-      let rembFresh = this.preparedProducts.filter(
-        product =>
-          product._source.fresh && product._source.prep_status === 'remb'
-      )
-
-      let rembDry = this.preparedProducts.filter(
-        product =>
-          !product._source.fresh && product._source.prep_status === 'remb'
-      )
-
-      this.currentOrder._source.freshItems = this.freshItems
-      this.currentOrder._source.dryItems = this.dryItems
-
-      if (this.preparedFresh.length === 0) {
-        this.currentOrder._source.preparedFresh = []
-        this.updateArrayPreparedItems(
-          fresh,
-          this.currentOrder._source.preparedFresh
-        )
-      } else {
-        this.updateArrayPreparedItems(
-          fresh,
-          this.currentOrder._source.preparedFresh
-        )
-      }
-
-      if (this.preparedDry.length === 0) {
-        this.currentOrder._source.preparedDry = []
-
-        this.updateArrayPreparedItems(
-          dry,
-          this.currentOrder._source.preparedDry
-        )
-      } else {
-        this.updateArrayPreparedItems(
-          dry,
-          this.currentOrder._source.preparedDry
-        )
-      }
-
-      if (this.missingFresh.length === 0) {
-        this.currentOrder._source.missingFresh = []
-        this.updateArrayPreparedItems(
-          manqFresh,
-          this.currentOrder._source.missingFresh
-        )
-      } else {
-        this.updateArrayPreparedItems(
-          manqFresh,
-          this.currentOrder._source.missingFresh
-        )
-      }
-
-      if (this.missingDry.length === 0) {
-        this.currentOrder._source.missingDry = []
-        this.updateArrayPreparedItems(
-          manqDry,
-          this.currentOrder._source.missingDry
-        )
-      } else {
-        this.updateArrayPreparedItems(
-          manqDry,
-          this.currentOrder._source.missingDry
-        )
-      }
-
-      if (this.rembFresh.length === 0) {
-        this.currentOrder._source.rembFresh = []
-        this.updateArrayPreparedItems(
-          rembFresh,
-          this.currentOrder._source.rembFresh
-        )
-      } else {
-        this.updateArrayPreparedItems(
-          rembFresh,
-          this.currentOrder._source.rembFresh
-        )
-      }
-
-      if (this.rembDry.length === 0) {
-        this.currentOrder._source.rembDry = []
-        this.updateArrayPreparedItems(
-          rembDry,
-          this.currentOrder._source.rembDry
-        )
-      } else {
-        this.updateArrayPreparedItems(
-          rembDry,
-          this.currentOrder._source.rembDry
-        )
-      }
-
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
@@ -421,17 +296,24 @@ export default {
     },
 
     async sendUnlockOrder() {
+      let rembDry = this.currentOrderItems.filter(
+        elt => !elt._source.fresh && elt._source.prep_status === 'remb'
+      ).length
+      let rembFresh = this.currentOrderItems.filter(
+        elt => elt._source.fresh && elt._source.prep_status === 'remb'
+      ).length
+      let preparedDry = this.currentOrderItems.filter(
+        elt => !elt._source.fresh && elt._source.prep_status === 'success'
+      ).length
+      let preparedFresh = this.currentOrderItems.filter(
+        elt => elt._source.fresh && elt._source.prep_status === 'success'
+      ).length
+
       if (
-        this.currentOrder._source.rembDry.length +
-          this.currentOrder._source.rembFresh.length +
-          this.currentOrder._source.preparedFresh.length +
-          this.currentOrder._source.preparedDry.length ===
+        rembDry + rembFresh + preparedFresh + preparedDry ===
         this.freshItems.length + this.dryItems.length
       ) {
-        if (
-          this.currentOrder._source.rembDry.length > 0 ||
-          this.currentOrder._source.rembFresh.length > 0
-        ) {
+        if (rembDry > 0 || rembFresh > 0) {
           this.currentOrder._source.prep_status = 'finishedWithRemb'
         } else {
           this.currentOrder._source.prep_status = 'finished'
@@ -441,46 +323,15 @@ export default {
           .length === 0
       ) {
         this.currentOrder._source.prep_status = ''
-      } else if (
-        this.currentOrder._source.rembDry.length +
-          this.currentOrder._source.preparedDry.length ===
-        this.dryItems.length
-      ) {
-        // console.log(
-        //   'these are rembdry length ',
-        //   this.currentOrder._source.rembDry.length
-        // )
-        // console.log(
-        //   'these are okdry length ',
-        //   this.currentOrder._source.preparedDry.length
-        // )
-
+      } else if (rembDry + preparedDry === this.dryItems.length) {
         this.currentOrder._source.intermediaryStatus = 'sec'
         this.currentOrder._source.prep_status = 'unfinished'
-      } else if (
-        this.currentOrder._source.rembFresh.length +
-          this.currentOrder._source.preparedFresh.length ===
-        this.freshItems.length
-      ) {
-        // console.log(
-        //   'these are rembFresh length ',
-        //   this.currentOrder._source.rembFresh.length
-        // )
-        // console.log(
-        //   'these are okFresh length ',
-        //   this.currentOrder._source.preparedFresh.length
-        // )
-
+      } else if (rembFresh + preparedFresh === this.freshItems.length) {
         this.currentOrder._source.intermediaryStatus = 'frais'
         this.currentOrder._source.prep_status = 'unfinished'
       } else {
         this.currentOrder._source.prep_status = 'unfinished'
       }
-
-      // console.log(
-      //   'olé olé olé .... here is our master at work   ',
-      //   this.currentOrder._source.intermediaryStatus
-      // )
 
       this.currentOrder._source.lock = false
       this.currentOrder._source.updatedAt = moment().format(
@@ -493,44 +344,6 @@ export default {
       })
 
       console.log('mvpPrep/updateOrder')
-    },
-
-    updateArrayPreparedItems(preparedArray, arrayToInsertIn) {
-      preparedArray.map(item =>
-        this.addProductToPrepared(
-          [
-            this.currentOrder._source.preparedDry,
-            this.currentOrder._source.missingDry,
-            this.currentOrder._source.rembDry,
-            this.currentOrder._source.preparedFresh,
-            this.currentOrder._source.missingFresh,
-            this.currentOrder._source.rembFresh
-          ],
-          arrayToInsertIn,
-          item
-        )
-      )
-    },
-
-    addProductToPrepared(productsArray, arrayToInsertIn, product) {
-      productsArray.forEach(products => {
-        if (products === arrayToInsertIn) {
-          // console.log('ok equality between the two arrays')
-          if (products.filter(item => item._id === product._id).length === 0) {
-            arrayToInsertIn.push(product)
-          }
-        } else {
-          if (products.filter(item => item._id === product._id).length > 0) {
-            this.update(products, product)
-            // console.log('element removed from ', products)
-          }
-        }
-      })
-    },
-
-    update(products, product) {
-      const eltIdx = products.findIndex(elt => elt._id === product._id)
-      products.splice(eltIdx, 1)
     },
 
     preventNav(event) {
@@ -580,7 +393,7 @@ export default {
             }
           }
         ],
-        timeout: 500
+        timeout: 300
       })
     },
 
@@ -601,6 +414,10 @@ export default {
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
       })
+      console.log(
+        'I have updated my order and this is its status ',
+        this.currentOrder._source.prep_status
+      )
     },
 
     async prepareData() {
@@ -610,8 +427,6 @@ export default {
       await this.$store.dispatch('mvpPrep/requestOrder', this.orderId)
       await this.updateOrderStatus()
       Loading.hide()
-      // console.log('these are the items sent when the card was cliked')
-      // console.log(this.currentOrderItems)
     }
   },
 
@@ -627,8 +442,10 @@ export default {
             this.currentOrderItems.filter(elt => elt._source.fresh).length &&
           this.itemsClickedFresh > 0
         ) {
-          this.goBackToList()
-          
+          this.showNotif('center')
+          setTimeout(() => {
+            this.goBackToList()
+          }, 1000)
         }
         this.openFresh = true
       } else if (this.modeFilter === 'dry') {
@@ -637,8 +454,10 @@ export default {
             this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
           this.itemsClickedDry > 0
         ) {
+          this.showNotif('center')
+          setTimeout(() => {
             this.goBackToList()
-          
+          }, 1000)
         }
         this.openDry = true
       } else if (this.modeFilter === 'all') {
@@ -646,8 +465,10 @@ export default {
           newValue === this.currentOrderItems.length &&
           this.itemsClicked > 0
         ) {
+          this.showNotif('center')
+          setTimeout(() => {
             this.goBackToList()
-          
+          }, 1000)
         }
         this.open = true
       }
@@ -667,6 +488,7 @@ export default {
 
   destroyed() {
     window.removeEventListener('beforeunload', this.preventNav)
+    this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
     // this.unlock()
   }
 }
