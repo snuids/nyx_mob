@@ -4,10 +4,7 @@
       <ShowOrder :orderId="urlOrderId"></ShowOrder>
     </div>
     <div v-else-if="urlOrderList">
-      <div
-        class=" flex full-width"
-        style="min-height: 400px; padding-top: 160px;"
-      >
+      <div style="min-height: 400px; padding-top: 160px;">
         <OrdersList :ordersToShow="ordersToDisplay" />
       </div>
       <q-page-sticky expand position="top" class="bg-blue-grey-1 q-pt-md">

@@ -86,7 +86,12 @@
               Préparés secs :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrder._source.preparedDry.length }}/{{
+              {{
+                currentOrderItems.filter(
+                  elt =>
+                    !elt._source.fresh && elt._source.prep_status === 'success'
+                ).length
+              }}/{{
                 currentOrderItems.filter(elt => !elt._source.fresh).length
               }}
             </q-item-section>
@@ -97,9 +102,12 @@
               Préparés frais :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrder._source.preparedFresh.length }}/{{
-                currentOrderItems.filter(elt => elt._source.fresh).length
-              }}
+              {{
+                currentOrderItems.filter(
+                  elt =>
+                    elt._source.fresh && elt._source.prep_status === 'success'
+                ).length
+              }}/{{ currentOrderItems.filter(elt => elt._source.fresh).length }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -112,7 +120,12 @@
               À rembourser secs :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrder._source.rembDry.length }}/{{
+              {{
+                currentOrderItems.filter(
+                  elt =>
+                    !elt._source.fresh && elt._source.prep_status === 'remb'
+                ).length
+              }}/{{
                 currentOrderItems.filter(elt => !elt._source.fresh).length
               }}
             </q-item-section>
@@ -124,9 +137,11 @@
             </q-item-section>
             <!--Ajouter le poids des produits ici-->
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrder._source.rembFresh.length }}/{{
-                currentOrderItems.filter(elt => elt._source.fresh).length
-              }}
+              {{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh && elt._source.prep_status === 'remb'
+                ).length
+              }}/{{ currentOrderItems.filter(elt => elt._source.fresh).length }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -138,7 +153,12 @@
               Manquants secs :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrder._source.missingDry.length }}/{{
+              {{
+                currentOrderItems.filter(
+                  elt =>
+                    !elt._source.fresh && elt._source.prep_status === 'manq'
+                ).length
+              }}/{{
                 currentOrderItems.filter(elt => !elt._source.fresh).length
               }}
             </q-item-section>
@@ -148,9 +168,11 @@
               Manquants frais :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrder._source.missingFresh.length }}/{{
-                currentOrderItems.filter(elt => elt._source.fresh).length
-              }}
+              {{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh && elt._source.prep_status === 'manq'
+                ).length
+              }}/{{ currentOrderItems.filter(elt => elt._source.fresh).length }}
             </q-item-section>
           </q-item>
         </q-list>
