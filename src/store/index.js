@@ -23,8 +23,8 @@ export default function(/* { ssrContext } */) {
     },
     state: {
       version: 'v1.0.3',
-      apiurl: '/api/v1/',
-      //apiurl: "https://app.nyx-mvp.ovh/api/v1/",
+      // apiurl: '/api/v1/',
+      apiurl: 'https://app.nyx-mvp.ovh/api/v1/',
       menus: [],
       apps: [],
       currentApps: null,
