@@ -151,20 +151,17 @@ export default {
             cancel: true
           })
           .onOk(() => {
-            this.$router.push({
-              query: { showOrder: this.order._id }
-            })
+            this.$store
+              .dispatch('mvpPrep/requestOrder', this.order._id)
+              .then(() => {
+                this.$router.push({
+                  query: { showOrder: this.order._id }
+                })
+              })
           })
-          .onCancel(() => {
-            return
-          })
+          .onCancel(() => {})
       } else {
         await this.$store.dispatch('mvpPrep/requestOrder', this.order._id)
-
-        console.log(
-          'this is the status ',
-          this.currentOrder._source.prep_status
-        )
 
         if (this.currentOrder._source.prep_status === 'started') {
           alert('cette commande est en cours de préparation')
