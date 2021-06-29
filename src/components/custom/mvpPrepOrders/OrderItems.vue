@@ -35,7 +35,8 @@ export default {
       if (this.currentOrderItems == null) return 0
       if (this.modeFilter === 'fresh') {
         return this.freshItems
-      } else if (this.modeFilter === 'dry') {
+      }
+      if (this.modeFilter === 'dry') {
         return this.dryItems
       }
       return this.currentOrderItems

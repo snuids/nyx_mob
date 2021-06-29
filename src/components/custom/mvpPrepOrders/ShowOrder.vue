@@ -213,7 +213,8 @@ export default {
 
       if (this.modeFilter === 'fresh') {
         return this.freshItems.length
-      } else if (this.modeFilter === 'dry') {
+      }
+      if (this.modeFilter === 'dry') {
         return this.dryItems.length
       }
       return this.currentOrderItems.length
