@@ -342,8 +342,12 @@ export default {
     preparedItems: state => state.currentOrderPreparedItems,
     lock: state => state.currentOrder._source.lock,
     freshItems: state =>
-      state.currentOrderItems.filter(item => item._source.fresh),
+      state.currentOrderItems.filter(
+        item => item._source.fresh || item._source.frais
+      ),
     dryItems: state =>
-      state.currentOrderItems.filter(item => !item._source.fresh)
+      state.currentOrderItems.filter(
+        item => !(item._source.fresh || item._source.frais)
+      )
   }
 }

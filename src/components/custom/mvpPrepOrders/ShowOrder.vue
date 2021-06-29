@@ -211,15 +211,12 @@ export default {
     filteredCurrentOrderItemsLength: function() {
       if (this.currentOrderItems == null) return 0
 
-      return this.currentOrderItems.filter(element => {
-        if (this.modeFilter === 'fresh') {
-          return element._source.fresh
-        } else if (this.modeFilter === 'dry') {
-          return !element._source.fresh
-        } else {
-          return true
-        }
-      }).length
+      if (this.modeFilter === 'fresh') {
+        return this.freshItems.length
+      } else if (this.modeFilter === 'dry') {
+        return this.dryItems.length
+      }
+      return this.currentOrderItems.length
     },
 
     currentOrder: {
@@ -490,6 +487,11 @@ export default {
     window.removeEventListener('beforeunload', this.preventNav)
     this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
     // this.unlock()
+  },
+
+  updated() {
+    console.log(this.freshItems.length)
+    console.log(this.dryItems.length)
   }
 }
 </script>
