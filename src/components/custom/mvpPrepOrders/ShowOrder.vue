@@ -395,6 +395,8 @@ export default {
       })
     },
 
+    // TODO deploy app to correct the name of the person who blocked the order
+
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
       this.currentOrder._source.preparateur = this.userName
