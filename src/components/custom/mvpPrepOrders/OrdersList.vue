@@ -2,9 +2,20 @@
   <q-pull-to-refresh @refresh="refresh">
     <q-list class="flex row">
       <OrderCard
-        v-for="(order, idx) in ordersToShow.sort((a, b) => {
-          return a._id - b._id
-        })"
+        v-for="(order, idx) in ordersToShow
+          .sort((a, b) => {
+            return a._id - b._id
+          })
+          .sort((a, b) => {
+            return (a._source.prep_status === '' ||
+              a._source.prep_status === undefined) &&
+              !(
+                b._source.prep_status === '' ||
+                b._source.prep_status === undefined
+              )
+              ? -1
+              : 1
+          })"
         :order="order"
         :key="idx"
       />

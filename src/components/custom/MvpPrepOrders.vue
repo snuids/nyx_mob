@@ -84,7 +84,6 @@ export default {
       }
       return null
     },
-
     urlOrderList() {
       let url = this.$route.fullPath
       if (url.indexOf('ordersList') > -1) {
@@ -92,7 +91,6 @@ export default {
       }
       return null
     },
-
     modeFilter: {
       get() {
         return this.$store.getters['mvpPrep/modeFilter']
@@ -122,7 +120,6 @@ export default {
         this.$store.commit('mvpPrep/mutate_lockFresh', true)
         orderList = this.orders.filter(order => order._source.has_frais)
       }
-      let finished
       if (this.openFinishedOrders) {
         return orderList.filter(
           elt =>
