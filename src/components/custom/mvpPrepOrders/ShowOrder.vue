@@ -397,6 +397,7 @@ export default {
 
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
+      this.currentOrder._source.preparateur = this.userName
       this.currentOrder._source.lock = true
       this.currentOrder._source.lock_type =
         this.modeFilter === 'fresh'

@@ -144,10 +144,11 @@ export default {
       console.log('this is the order ', this.order)
 
       if (this.cardDisabled) {
+        console.log(this.order)
         this.$q
           .dialog({
             title: 'Lock',
-            message: `Commande bloquée par ${this.userName}, voulez-vous continuer`,
+            message: `Commande bloquée par ${this.order._source.preparateur}, voulez-vous continuer`,
             cancel: true
           })
           .onOk(() => {
