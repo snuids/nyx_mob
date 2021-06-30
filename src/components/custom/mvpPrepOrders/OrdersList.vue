@@ -4,19 +4,24 @@
       <OrderCard
         v-for="(order, idx) in ordersToShow
           .sort((a, b) => {
-            return a._id - b._id
+            return a._id > b._id
+              ? -1
+              : a._source.tags.split(',').includes(' express') &&
+                !b._source.tags.split(',').includes(' express')
+              ? -1
+              : 1
           })
           .sort((a, b) => {
-            return (a._source.prep_status === '' ||
-              a._source.prep_status === undefined) &&
+            return (a._source.prep_status === 'unfinished' &&
+            (b._source.prep_status === 'finished' ||
+              b._source.prep_status === 'finishedWithRemb')
+              ? -1
+              : a._source.prep_status === '' ||
+                a._source.prep_status === undefined) &&
               !(
                 b._source.prep_status === '' ||
                 b._source.prep_status === undefined
               )
-              ? -1
-              : a._source.prep_status === 'unfinished' &&
-                (b._source.prep_status === 'finished' ||
-                  b._source.prep_status === 'finishedWithRemb')
               ? -1
               : 1
           })"

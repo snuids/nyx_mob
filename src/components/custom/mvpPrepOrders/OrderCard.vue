@@ -81,12 +81,12 @@
         </li>
       </ul>
     </q-item-section>
-    <q-item-section class="col-3 row " style="margin: 0">
+    <q-item-section class="col-1 row flex " style="margin: 0">
       <div class="text-white justify-end">
         <q-chip
           size="xl"
           text-color="black"
-          class="q-ma-none "
+          class=" q-ma-none"
           style="font-size: 15px; position: relative; top: -5px; float: right"
         >
           {{
@@ -94,7 +94,7 @@
           }}
         </q-chip>
         <q-chip
-          class="float-right"
+          class="float-right justify-end"
           v-if="order._source.tags.split(',').includes(' express')"
           color="blue"
           text-color="white"
