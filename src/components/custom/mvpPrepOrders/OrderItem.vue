@@ -106,7 +106,7 @@ export default {
       return this.product._source.prep_status
     },
     isFrais() {
-      return this.product._source.fresh
+      return this.product._source.fresh || this.product._source.frais
     },
     bgColor() {
       if (this.product._source.prep_status === 'remb') {

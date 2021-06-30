@@ -236,24 +236,24 @@ export default {
       if (this.currentOrderItems == null || _.isEmpty(this.currentOrderItems))
         return 0
 
-      return this.currentOrderItems
-        .filter(element => {
-          if (this.modeFilter === 'fresh') {
-            return element._source.fresh
-          } else if (this.modeFilter === 'dry') {
-            return !element._source.fresh
-          } else {
-            return true
-          }
-        })
-        .filter(element => {
-          if (
-            element._source.prep_status != null &&
-            element._source.prep_status != ''
-          )
-            return true
-          else return false
-        }).length
+      let listOfItems
+      if (this.modeFilter === 'fresh') {
+        listOfItems = this.freshItems
+      } else if (this.modeFilter === 'dry') {
+        listOfItems = this.dryItems
+      } else {
+        listOfItems = this.currentOrderItems
+      }
+      return listOfItems.filter(element => {
+        if (
+          element._source.prep_status != null &&
+          element._source.prep_status != ''
+        )
+          return true
+        else {
+          return false
+        }
+      }).length
     },
 
     userName: function() {
