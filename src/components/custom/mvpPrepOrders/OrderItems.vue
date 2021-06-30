@@ -32,7 +32,6 @@ export default {
     ...mapGetters('mvpPrep', ['freshItems', 'dryItems']),
 
     sortedItemsList: function() {
-      if (this.currentOrderItems == null) return 0
       if (this.modeFilter === 'fresh') {
         return this.freshItems
       }

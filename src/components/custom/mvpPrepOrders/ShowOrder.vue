@@ -209,8 +209,6 @@ export default {
     ]),
 
     filteredCurrentOrderItemsLength: function() {
-      if (this.currentOrderItems == null) return 0
-
       if (this.modeFilter === 'fresh') {
         return this.freshItems.length
       }
@@ -233,7 +231,7 @@ export default {
         return 0
       }
 
-      if (this.currentOrderItems == null || _.isEmpty(this.currentOrderItems))
+      if (this.currentOrderItems == [] || _.isEmpty(this.currentOrderItems))
         return 0
 
       let listOfItems

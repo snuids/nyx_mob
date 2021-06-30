@@ -17,7 +17,7 @@ export default {
     itemsClickedDry: 0,
     currentOrder: {},
     currentItem: {},
-    currentOrderItems: null,
+    currentOrderItems: [],
     modeFilter: 'all',
     currentOrderPreparedItems: null,
     updated_items: null,

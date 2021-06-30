@@ -87,11 +87,19 @@
           size="xl"
           text-color="black"
           class="q-ma-none "
-          style="font-size: 15px; position: relative; top: -20px; float: right"
+          style="font-size: 15px; position: relative; top: -5px; float: right"
         >
           {{
             order._source.tags.split(',').filter(elt => elt.includes('-'))[0]
           }}
+        </q-chip>
+        <q-chip
+          class="float-right"
+          v-if="order._source.tags.split(',').includes(' express')"
+          color="blue"
+          text-color="white"
+        >
+          {{ 'express' }}
         </q-chip>
       </div>
     </q-item-section>

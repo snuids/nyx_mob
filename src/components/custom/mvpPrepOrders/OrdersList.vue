@@ -14,6 +14,10 @@
                 b._source.prep_status === undefined
               )
               ? -1
+              : a._source.prep_status === 'unfinished' &&
+                (b._source.prep_status === 'finished' ||
+                  b._source.prep_status === 'finishedWithRemb')
+              ? -1
               : 1
           })"
         :order="order"
