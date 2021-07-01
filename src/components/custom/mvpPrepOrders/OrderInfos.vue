@@ -177,6 +177,18 @@
           </q-item>
         </q-list>
       </div>
+      <div class="col-xs-12 col-sm-6 q-pa-sm">
+        <q-list bordered separator>
+          <q-item>
+            <q-item-section>
+              Préparateur :
+            </q-item-section>
+            <q-item-section avatar class="text-weight-medium">
+              {{ currentOrder._source.preparateur }}
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
     </div>
   </div>
 </template>
