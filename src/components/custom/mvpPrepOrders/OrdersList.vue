@@ -55,6 +55,9 @@ export default {
       // console.log('finishing getting orders')
     }
   },
+
+  //TODO trier order list by delivery hour
+
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
     setTimeout(() => {
