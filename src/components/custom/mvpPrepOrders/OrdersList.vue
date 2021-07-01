@@ -35,6 +35,9 @@
 <script>
 import OrderCard from './OrderCard'
 import { mapState } from 'vuex'
+
+// TODO trier order list by delivery hour
+
 export default {
   name: 'OrdersList',
   props: ['ordersToShow'],
@@ -55,8 +58,6 @@ export default {
       // console.log('finishing getting orders')
     }
   },
-
-  //TODO trier order list by delivery hour
 
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
