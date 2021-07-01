@@ -4,7 +4,7 @@
       <OrderCard
         v-for="(order, idx) in ordersToShow
           .sort((a, b) => {
-            return a._id > b._id
+            return a._id < b._id
               ? -1
               : a._source.tags.split(',').includes(' express') &&
                 !b._source.tags.split(',').includes(' express')
