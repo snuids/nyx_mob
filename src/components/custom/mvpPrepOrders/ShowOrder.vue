@@ -294,7 +294,7 @@ export default {
     async sendUnlockOrder() {
       let rembDry = this.currentOrderItems.filter(
         elt =>
-          (!elt._source.fresh || !elt._source.frais) &&
+          !(elt._source.fresh || elt._source.frais) &&
           elt._source.prep_status === 'remb'
       ).length
       let rembFresh = this.currentOrderItems.filter(
@@ -304,7 +304,7 @@ export default {
       ).length
       let preparedDry = this.currentOrderItems.filter(
         elt =>
-          (!elt._source.fresh || !elt._source.frais) &&
+          !(elt._source.fresh || elt._source.frais) &&
           elt._source.prep_status === 'success'
       ).length
       let preparedFresh = this.currentOrderItems.filter(
