@@ -344,10 +344,13 @@ export default {
           .length === 0
       ) {
         this.currentOrder._source.prep_status = ''
-      } else if (rembDry + preparedDry === this.dryItems.length) {
+      } else if (replacedDry + rembDry + preparedDry === this.dryItems.length) {
         this.currentOrder._source.intermediaryStatus = 'sec'
         this.currentOrder._source.prep_status = 'unfinished'
-      } else if (rembFresh + preparedFresh === this.freshItems.length) {
+      } else if (
+        replacedFresh + rembFresh + preparedFresh ===
+        this.freshItems.length
+      ) {
         this.currentOrder._source.intermediaryStatus = 'frais'
         this.currentOrder._source.prep_status = 'unfinished'
       } else {
@@ -422,6 +425,7 @@ export default {
 
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
+      this.currentOrder._source.blocker = this.userName
       if (this.itemsClicked > 0) {
         this.currentOrder._source.preparateur = this.userName
       }

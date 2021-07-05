@@ -149,6 +149,9 @@ export default {
     },
     userName: function() {
       return this.creds.user.firstname
+    },
+    blocker() {
+      return this.order._source.blocker
     }
   },
 
@@ -164,7 +167,7 @@ export default {
         this.$q
           .dialog({
             title: 'Lock',
-            message: `Commande bloquée par ${this.order._source.preparateur}, voulez-vous continuer`,
+            message: `Commande bloquée par ${this.blocker}, voulez-vous continuer`,
             cancel: true
           })
           .onOk(() => {
