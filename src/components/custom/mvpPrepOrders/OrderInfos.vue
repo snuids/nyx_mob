@@ -89,10 +89,13 @@
               {{
                 currentOrderItems.filter(
                   elt =>
-                    !elt._source.fresh && elt._source.prep_status === 'success'
+                    !(elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'success'
                 ).length
               }}/{{
-                currentOrderItems.filter(elt => !elt._source.fresh).length
+                currentOrderItems.filter(
+                  elt => !(elt._source.fresh || elt._source.frais)
+                ).length
               }}
             </q-item-section>
           </q-item>
@@ -105,9 +108,14 @@
               {{
                 currentOrderItems.filter(
                   elt =>
-                    elt._source.fresh && elt._source.prep_status === 'success'
+                    (elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'success'
                 ).length
-              }}/{{ currentOrderItems.filter(elt => elt._source.fresh).length }}
+              }}/{{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh || elt._source.frais
+                ).length
+              }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -123,10 +131,13 @@
               {{
                 currentOrderItems.filter(
                   elt =>
-                    !elt._source.fresh && elt._source.prep_status === 'remb'
+                    !(elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'remb'
                 ).length
               }}/{{
-                currentOrderItems.filter(elt => !elt._source.fresh).length
+                currentOrderItems.filter(
+                  elt => !(elt._source.fresh || elt._source.frais)
+                ).length
               }}
             </q-item-section>
           </q-item>
@@ -139,9 +150,15 @@
             <q-item-section avatar class="text-weight-medium">
               {{
                 currentOrderItems.filter(
-                  elt => elt._source.fresh && elt._source.prep_status === 'remb'
+                  elt =>
+                    (elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'remb'
                 ).length
-              }}/{{ currentOrderItems.filter(elt => elt._source.fresh).length }}
+              }}/{{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh || elt._source.frais
+                ).length
+              }}
             </q-item-section>
           </q-item>
         </q-list>
@@ -156,10 +173,13 @@
               {{
                 currentOrderItems.filter(
                   elt =>
-                    !elt._source.fresh && elt._source.prep_status === 'manq'
+                    !(elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'manq'
                 ).length
               }}/{{
-                currentOrderItems.filter(elt => !elt._source.fresh).length
+                currentOrderItems.filter(
+                  elt => !(elt._source.fresh || elt._source.frais)
+                ).length
               }}
             </q-item-section>
           </q-item>
@@ -170,13 +190,78 @@
             <q-item-section avatar class="text-weight-medium">
               {{
                 currentOrderItems.filter(
-                  elt => elt._source.fresh && elt._source.prep_status === 'manq'
+                  elt =>
+                    (elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'manq'
                 ).length
-              }}/{{ currentOrderItems.filter(elt => elt._source.fresh).length }}
+              }}/{{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh || elt._source.frais
+                ).length
+              }}
             </q-item-section>
           </q-item>
         </q-list>
       </div>
+
+      <div class="col-xs-12 col-sm-6 q-pa-sm">
+        <q-list bordered separator>
+          <q-item>
+            <q-item-section>
+              Remplacés secs :
+            </q-item-section>
+            <q-item-section avatar class="text-weight-medium">
+              {{
+                currentOrderItems.filter(
+                  elt =>
+                    !(elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'replaced'
+                ).length
+              }}/{{
+                currentOrderItems.filter(
+                  elt => !(elt._source.fresh || elt._source.frais)
+                ).length
+              }}
+            </q-item-section>
+          </q-item>
+          <q-item v-for="(item, idx) in replacedDry" :key="item._id + idx">
+            <q-item-section> {{ item._source.name }}</q-item-section>
+            <q-item-section>
+              {{ `Remplacé par : ${item._source.replacement}` }}</q-item-section
+            >
+          </q-item>
+        </q-list>
+      </div>
+
+      <div class="col-xs-12 col-sm-6 q-pa-sm">
+        <q-list bordered separator>
+          <q-item>
+            <q-item-section>
+              Remplacés frais :
+            </q-item-section>
+            <q-item-section avatar class="text-weight-medium">
+              {{
+                currentOrderItems.filter(
+                  elt =>
+                    (elt._source.fresh || elt._source.frais) &&
+                    elt._source.prep_status === 'replaced'
+                ).length
+              }}/{{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh || elt._source.frais
+                ).length
+              }}
+            </q-item-section>
+          </q-item>
+          <q-item v-for="(item, idx) in replacedFresh" :key="item._id + idx">
+            <q-item-section> {{ item._source.name }}</q-item-section>
+            <q-item-section>
+              {{ `Remplacé par : ${item._source.replacement}` }}</q-item-section
+            >
+          </q-item>
+        </q-list>
+      </div>
+
       <div class="col-xs-12 col-sm-6 q-pa-sm">
         <q-list bordered separator>
           <q-item>
@@ -198,7 +283,21 @@ import { mapState } from 'vuex'
 export default {
   name: 'OrderInfos',
   computed: {
-    ...mapState('mvpPrep', ['currentOrder', 'currentOrderItems'])
+    ...mapState('mvpPrep', ['currentOrder', 'currentOrderItems']),
+    replacedFresh() {
+      return this.currentOrderItems.filter(
+        elt =>
+          (elt._source.fresh || elt._source.frais) &&
+          elt._source.prep_status === 'replaced'
+      )
+    },
+    replacedDry() {
+      return this.currentOrderItems.filter(
+        elt =>
+          !(elt._source.fresh || elt._source.frais) &&
+          elt._source.prep_status === 'replaced'
+      )
+    }
   }
 }
 </script>

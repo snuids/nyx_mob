@@ -31,6 +31,12 @@
         name="hourglass_bottom"
         style="background-color:orange ; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
       />
+      <q-icon
+        left
+        v-if="order._source.prep_status === 'finishedWithReplaced'"
+        name="published_with_changes"
+        style="background-color:dodgerblue ; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
+      />
     </q-item-section>
     <q-item-section
       class="text-subtitle1 row col-7 justify-center"
@@ -74,6 +80,8 @@
                   ? 'Commencé'
                   : order._source.prep_status === 'finishedWithRemb'
                   ? 'Finie avec produits à rembourser'
+                  : order._source.prep_status === 'finishedWithReplaced'
+                  ? 'Finie avec produits remplacés'
                   : ''
                 : 'Non préparé'
             }}

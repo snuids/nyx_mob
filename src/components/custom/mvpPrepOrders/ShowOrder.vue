@@ -312,13 +312,30 @@ export default {
           (elt._source.fresh || elt._source.frais) &&
           elt._source.prep_status === 'success'
       ).length
+      let replacedFresh = this.currentOrderItems.filter(
+        elt =>
+          (elt._source.fresh || elt._source.frais) &&
+          elt._source.prep_status === 'replaced'
+      ).length
+      let replacedDry = this.currentOrderItems.filter(
+        elt =>
+          !(elt._source.fresh || elt._source.frais) &&
+          elt._source.prep_status === 'replaced'
+      ).length
 
       if (
-        rembDry + rembFresh + preparedFresh + preparedDry ===
+        replacedDry +
+          replacedFresh +
+          rembDry +
+          rembFresh +
+          preparedFresh +
+          preparedDry ===
         this.freshItems.length + this.dryItems.length
       ) {
         if (rembDry > 0 || rembFresh > 0) {
           this.currentOrder._source.prep_status = 'finishedWithRemb'
+        } else if (replacedDry > 0 || replacedFresh > 0) {
+          this.currentOrder._source.prep_status = 'finishedWithReplaced'
         } else {
           this.currentOrder._source.prep_status = 'finished'
         }

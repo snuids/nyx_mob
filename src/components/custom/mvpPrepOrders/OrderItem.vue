@@ -9,6 +9,7 @@
       :class="[`bg-${bgColor}-2`, 'item q-pa-none']"
       v-if="!prepa"
       @click="changeStatus(product, 'success')"
+      v-touch-hold:300.mouse="() => (replace = true)"
       dense
     >
       <q-item-section
@@ -75,6 +76,34 @@
           </div>
         </div>
       </div>
+
+      <q-dialog v-model="replace" full-width>
+        <q-card class="q-pa-xs">
+          <q-card-section class="row items-center">
+            <div class="dialog-box-title">
+              Indiquer le produit de remplacement
+            </div>
+          </q-card-section>
+          <q-card-section class="row flex-center">
+            <q-input
+              v-model="message"
+              filled
+              type="textarea"
+              class="full-width"
+            />
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="Annuler" color="primary" v-close-popup />
+            <q-btn
+              flat
+              label="Valider"
+              @click="replaceItem(product)"
+              color="primary"
+              v-close-popup
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-item>
   </transition>
 </template>
@@ -90,7 +119,9 @@ export default {
   props: ['product'],
   data() {
     return {
-      prepa: false
+      prepa: false,
+      replace: false,
+      message: ''
     }
   },
   computed: {
@@ -115,6 +146,8 @@ export default {
         return 'orange'
       } else if (this.product._source.prep_status === 'success') {
         return 'green'
+      } else if (this.product._source.prep_status === 'replaced') {
+        return 'blue'
       }
     },
     history() {
@@ -122,6 +155,10 @@ export default {
     }
   },
   methods: {
+    replaceItem(product) {
+      product._source.replacement = this.message
+      this.changeStatus(product, 'replaced')
+    },
     addToHistory(itemStatus) {
       if (this.history) {
         this.product._source.history.push({
@@ -140,6 +177,7 @@ export default {
       }
     },
     changeStatus(product, status) {
+      console.log('on click was made')
       this.prepa = true
       this.incrementClick(product)
       this.addToHistory(status)
@@ -151,14 +189,12 @@ export default {
         this.putFirstItemLast(product)
       }, 300)
     },
-
     putFirstItemLast(product) {
       let tmpDisplayedItems = JSON.parse(JSON.stringify(this.currentOrderItems))
       let elementPos = tmpDisplayedItems.map(x => x._id).indexOf(product._id)
       tmpDisplayedItems.push(tmpDisplayedItems.splice(elementPos, 1)[0])
       this.$store.commit('mvpPrep/mutate_currentOrderItems', tmpDisplayedItems)
     },
-
     incrementClick(product) {
       if (product._source.prep_status === '') {
         if (this.modeFilter === 'all') {

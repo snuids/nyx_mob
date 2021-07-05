@@ -64,7 +64,7 @@ module.exports = function(ctx) {
         'QCardSection',
         'QSeparator'
       ],
-      directives: ['Ripple'],
+      directives: ['Ripple', 'TouchHold', 'TouchSwipe'],
       // Quasar plugins
       plugins: ['Notify', 'Dialog', 'Loading', 'AppFullscreen'],
       config: {

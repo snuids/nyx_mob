@@ -14,7 +14,8 @@
           .sort((a, b) => {
             return (a._source.prep_status === 'unfinished' &&
             (b._source.prep_status === 'finished' ||
-              b._source.prep_status === 'finishedWithRemb')
+              b._source.prep_status === 'finishedWithRemb' ||
+              b._source.prep_status === 'finishedWithReplaced')
               ? -1
               : a._source.prep_status === '' ||
                 a._source.prep_status === undefined) &&
