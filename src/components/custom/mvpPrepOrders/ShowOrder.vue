@@ -102,7 +102,7 @@
             v-model="tab"
             dense
             class="row flex full-width justify-center items-center"
-            indicator-color="white"
+            indicator-color="grey-4"
           >
             <q-tab
               class="row col-xs-4 justify-center text-dark"
