@@ -460,6 +460,8 @@ export default {
     }
   },
 
+  // TODO nom de l'article pouvoir scroller horizontalement pour voir le nom complet
+
   watch: {
     async $route(to, from) {
       await this.prepareData()
@@ -473,11 +475,14 @@ export default {
           this.itemsClickedFresh > 0
         ) {
           this.showNotif('center')
+          /*
           setTimeout(() => {
             this.goBackToList()
           }, 1000)
+
+           */
         }
-        this.openFresh = true
+        // this.openFresh = true
       } else if (this.modeFilter === 'dry') {
         if (
           newValue ===
@@ -485,22 +490,28 @@ export default {
           this.itemsClickedDry > 0
         ) {
           this.showNotif('center')
+          /*
           setTimeout(() => {
             this.goBackToList()
           }, 1000)
+
+           */
         }
-        this.openDry = true
+        // this.openDry = true
       } else if (this.modeFilter === 'all') {
         if (
           newValue === this.currentOrderItems.length &&
           this.itemsClicked > 0
         ) {
           this.showNotif('center')
+          /*
           setTimeout(() => {
             this.goBackToList()
           }, 1000)
+
+           */
         }
-        this.open = true
+        // this.open = true
       }
     }
   },

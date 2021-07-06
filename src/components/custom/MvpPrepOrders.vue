@@ -124,7 +124,8 @@ export default {
         return orderList.filter(
           elt =>
             elt._source.prep_status === 'finished' ||
-            elt._source.prep_status === 'finishedWithRemb'
+            elt._source.prep_status === 'finishedWithRemb' ||
+            elt._source.prep_status === 'finishedWithReplaced'
         )
       }
       return orderList

@@ -46,7 +46,8 @@
                 if (elt._source.prep_status !== undefined) {
                   return (
                     elt._source.prep_status === 'finished' ||
-                    elt._source.prep_status === 'finishedWithRemb'
+                    elt._source.prep_status === 'finishedWithRemb' ||
+                    elt._source.prep_status === 'finishedWithReplaced'
                   )
                 }
                 return false
