@@ -357,6 +357,9 @@ export default {
         this.currentOrder._source.prep_status = 'unfinished'
       }
 
+      if (this.itemsClicked > 0) {
+        this.currentOrder._source.preparateur = this.userName
+      }
       this.currentOrder._source.lock = false
       this.currentOrder._source.updatedAt = moment().format(
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
@@ -426,9 +429,7 @@ export default {
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
       this.currentOrder._source.blocker = this.userName
-      if (this.itemsClicked > 0) {
-        this.currentOrder._source.preparateur = this.userName
-      }
+
       this.currentOrder._source.lock = true
       this.currentOrder._source.lock_type =
         this.modeFilter === 'fresh'
