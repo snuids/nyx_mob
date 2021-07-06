@@ -11,7 +11,11 @@
               Produits frais :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrderItems.filter(elt => elt._source.fresh).length }}
+              {{
+                currentOrderItems.filter(
+                  elt => elt._source.fresh || elt._source.frais
+                ).length
+              }}
             </q-item-section>
           </q-item>
 
@@ -20,7 +24,11 @@
               Produits secs :
             </q-item-section>
             <q-item-section avatar class="text-weight-medium">
-              {{ currentOrderItems.filter(elt => !elt._source.fresh).length }}
+              {{
+                currentOrderItems.filter(
+                  elt => !(elt._source.fresh || elt._source.frais)
+                ).length
+              }}
             </q-item-section>
           </q-item>
 

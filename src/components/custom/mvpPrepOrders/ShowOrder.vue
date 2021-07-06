@@ -184,9 +184,6 @@ export default {
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
       isEditing: false,
-      open: false,
-      openFresh: false,
-      openDry: false,
       tab: 'articles'
     }
   },
@@ -261,7 +258,7 @@ export default {
   props: ['orderId'],
   methods: {
     isFrais(item) {
-      return item._source.fresh
+      return item._source.fresh || item._source.frais
     },
 
     goBackToList() {
@@ -472,7 +469,9 @@ export default {
       if (this.modeFilter === 'fresh') {
         if (
           newValue ===
-            this.currentOrderItems.filter(elt => elt._source.fresh).length &&
+            this.currentOrderItems.filter(
+              elt => elt._source.fresh || elt._source.frais
+            ).length &&
           this.itemsClickedFresh > 0
         ) {
           this.showNotif('center')
@@ -487,7 +486,9 @@ export default {
       } else if (this.modeFilter === 'dry') {
         if (
           newValue ===
-            this.currentOrderItems.filter(elt => !elt._source.fresh).length &&
+            this.currentOrderItems.filter(
+              elt => !(elt._source.fresh || elt._source.frais)
+            ).length &&
           this.itemsClickedDry > 0
         ) {
           this.showNotif('center')
