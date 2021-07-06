@@ -56,6 +56,8 @@ import OrdersDashboard from './mvpPrepOrders/OrdersDashboard'
 import mixin from './mvpPrepOrders/mixin'
 
 export default {
+  // TODO prendre en compte dans le listing la tournée des livreurs
+
   name: 'MvpPrepOrders',
   mixins: [mixin],
   components: {

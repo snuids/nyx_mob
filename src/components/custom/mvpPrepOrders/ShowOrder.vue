@@ -102,7 +102,7 @@
             v-model="tab"
             dense
             class="row flex full-width justify-center items-center"
-            indicator-color="grey-4"
+            indicator-color="white"
           >
             <q-tab
               class="row col-xs-4 justify-center text-dark"
@@ -341,12 +341,15 @@ export default {
           .length === 0
       ) {
         this.currentOrder._source.prep_status = ''
-      } else if (replacedDry + rembDry + preparedDry === this.dryItems.length) {
+      } else if (
+        replacedDry + rembDry + preparedDry === this.dryItems.length &&
+        this.dryItems.length !== 0
+      ) {
         this.currentOrder._source.intermediaryStatus = 'sec'
         this.currentOrder._source.prep_status = 'unfinished'
       } else if (
-        replacedFresh + rembFresh + preparedFresh ===
-        this.freshItems.length
+        replacedFresh + rembFresh + preparedFresh === this.freshItems.length &&
+        this.freshItems.length !== 0
       ) {
         this.currentOrder._source.intermediaryStatus = 'frais'
         this.currentOrder._source.prep_status = 'unfinished'
@@ -475,14 +478,7 @@ export default {
           this.itemsClickedFresh > 0
         ) {
           this.showNotif('center')
-          /*
-          setTimeout(() => {
-            this.goBackToList()
-          }, 1000)
-
-           */
         }
-        // this.openFresh = true
       } else if (this.modeFilter === 'dry') {
         if (
           newValue ===
@@ -492,14 +488,7 @@ export default {
           this.itemsClickedDry > 0
         ) {
           this.showNotif('center')
-          /*
-          setTimeout(() => {
-            this.goBackToList()
-          }, 1000)
-
-           */
         }
-        // this.openDry = true
       } else if (this.modeFilter === 'all') {
         if (
           newValue === this.currentOrderItems.length &&
@@ -513,7 +502,6 @@ export default {
 
            */
         }
-        // this.open = true
       }
     }
   },

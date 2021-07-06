@@ -4,20 +4,25 @@
     clickable
     v-if="order"
     v-ripple
-    :class="[status, 'bg-grey-11 row flex full-width q-pl-sm']"
+    :class="[status, 'bg-grey-11 row flex full-width ']"
     @click="cardClick"
     style=" padding: 0; margin: 0 0 2px 0 "
   >
     <q-item-section
-      class="row flex col-2 items-center"
+      class="row flex col-xs-2 items-center"
       style="max-width: 60px; "
-      v-if="order._source.prep_status !== 'started'"
     >
       <q-icon
         left
         v-if="order._source.prep_status === 'finished'"
         name="done"
         style="background-color: green; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
+      />
+      <q-icon
+        left
+        v-if="order._source.prep_status === 'started'"
+        name="pending"
+        style="background-color: deepskyblue; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
       />
       <q-icon
         left
@@ -39,75 +44,69 @@
       />
     </q-item-section>
     <q-item-section
-      class="text-subtitle1 row col-7 justify-center"
+      class="text-subtitle1 row col-xs-10 justify-center"
       style="margin: 0"
     >
-      <div style="font-weight: bold"># {{ order._source.order_number }}</div>
-      <ul>
-        <li
-          v-if="
-            order._source.intermediaryStatus &&
-              order._source.prep_status === 'unfinished'
-          "
-        >
-          <q-chip :color="orderColor" text-color="white">
-            Préparation {{ order._source.intermediaryStatus }} terminée
-          </q-chip>
-        </li>
+      <div class="full-width">
+        <b># {{ order._source.order_number }}</b>
 
-        <li v-if="order._source.prep_status === 'started'">
-          <q-chip :color="orderColor" text-color="white">
-            En cours de preparation
-            {{
-              order._source.lock_type === 'dry'
-                ? 'Sec'
-                : order._source.lock_type === 'fresh'
-                ? 'Frais'
-                : ''
-            }}
-          </q-chip>
-        </li>
-
-        <li v-else>
-          <q-chip :color="orderColor" text-color="white">
-            {{
-              order._source.prep_status
-                ? order._source.prep_status === 'finished'
-                  ? 'Finie'
-                  : order._source.prep_status === 'unfinished'
-                  ? 'Non finie'
-                  : order._source.prep_status === 'started'
-                  ? 'Commencé'
-                  : order._source.prep_status === 'finishedWithRemb'
-                  ? 'Finie avec produits à rembourser'
-                  : order._source.prep_status === 'finishedWithReplaced'
-                  ? 'Finie avec produits remplacés'
-                  : ''
-                : 'Non préparé'
-            }}
-          </q-chip>
-        </li>
-      </ul>
-    </q-item-section>
-    <q-item-section class="col-1 row flex " style="margin: 0">
-      <div class="text-white justify-end">
-        <q-chip
-          size="xl"
-          text-color="black"
-          class=" q-ma-none"
-          style="font-size: 15px; position: relative; top: -5px; float: right"
-        >
+        <q-chip text-color="black" class="float-right">
           {{
             order._source.tags.split(',').filter(elt => elt.includes('-'))[0]
           }}
         </q-chip>
         <q-chip
-          class="float-right justify-end"
+          class="float-right"
           v-if="order._source.tags.split(',').includes(' express')"
           color="blue"
           text-color="white"
         >
           {{ 'express' }}
+        </q-chip>
+      </div>
+      <div>
+        <q-chip
+          v-if="
+            order._source.intermediaryStatus &&
+              order._source.prep_status === 'unfinished'
+          "
+          :color="orderColor"
+          text-color="white"
+        >
+          Préparation {{ order._source.intermediaryStatus }} terminée
+        </q-chip>
+
+        <q-chip
+          v-if="order._source.prep_status === 'started'"
+          :color="orderColor"
+          text-color="white"
+        >
+          En cours de preparation
+          {{
+            order._source.lock_type === 'dry'
+              ? 'Sec'
+              : order._source.lock_type === 'fresh'
+              ? 'Frais'
+              : ''
+          }}
+        </q-chip>
+
+        <q-chip v-else :color="orderColor" text-color="white">
+          {{
+            order._source.prep_status
+              ? order._source.prep_status === 'finished'
+                ? 'Finie'
+                : order._source.prep_status === 'unfinished'
+                ? 'Non finie'
+                : order._source.prep_status === 'started'
+                ? 'Commencé'
+                : order._source.prep_status === 'finishedWithRemb'
+                ? 'Finie avec produits à rembourser'
+                : order._source.prep_status === 'finishedWithReplaced'
+                ? 'Finie avec produits remplacés'
+                : ''
+              : 'Non préparé'
+          }}
         </q-chip>
       </div>
     </q-item-section>
@@ -203,8 +202,7 @@ export default {
 }
 
 .started {
-  border-left: 40px solid cornflowerblue;
-  color: green;
+  color: mediumseagreen;
 }
 
 .myCard {
