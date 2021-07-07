@@ -68,7 +68,7 @@
             ></q-icon
             >&nbsp; &nbsp;
             <div class="row flex">
-              <div class="col-xs-12" style="font-weight: bold;">
+              <div class="col-xs-12 text-h6" style="font-weight: bold;">
                 #{{ orderId }}
                 <br />
               </div>
