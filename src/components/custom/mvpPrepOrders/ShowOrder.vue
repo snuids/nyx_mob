@@ -62,9 +62,9 @@
             style="height: 100px;   "
           >
             <q-icon
-              size="40px"
+              size="30px"
               name="shopping_bag"
-              style="background-color: black; border-radius: 50px; padding: 10px; color: white; width: 40px"
+              style="background-color: black; border-radius: 60px; padding: 10px; color: white; width: 30px"
             ></q-icon
             >&nbsp; &nbsp;
             <div class="row flex">
