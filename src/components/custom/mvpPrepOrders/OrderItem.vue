@@ -175,7 +175,6 @@ export default {
       }
     },
     changeStatus(product, status) {
-      console.log('on click was made')
       this.prepa = true
       this.incrementClick(product)
       this.addToHistory(status)

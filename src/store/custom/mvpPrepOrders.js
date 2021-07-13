@@ -210,9 +210,6 @@ export default {
         .get(url)
         .then(response => {
           Loading.hide()
-          // saving original order for later comparison,
-          // and current order to work with
-          console.log(response.data)
           let order = response.data.data
           state.currentOrder = order
 

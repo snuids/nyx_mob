@@ -445,10 +445,6 @@ export default {
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
       })
-      console.log(
-        'I have updated my order and this is its status ',
-        this.currentOrder._source.prep_status
-      )
     },
 
     async prepareData() {
@@ -523,10 +519,7 @@ export default {
     // this.unlock()
   },
 
-  updated() {
-    console.log(this.freshItems.length)
-    console.log(this.dryItems.length)
-  }
+  updated() {}
 }
 </script>
 
