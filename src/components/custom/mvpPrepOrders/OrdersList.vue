@@ -68,14 +68,14 @@ export default {
     },
     nextOrder(order) {
       for (let i = 0; i < this.ordersSorted.length - 1; i++) {
-        let nextOrder = this.ordersSorted[i + 1]
+        let nextOrder = this.ordersSorted[i]
         if (
           !(
             nextOrder._source.prep_status === 'finished' ||
             nextOrder._source.prep_status === 'finishedWithReplaced' ||
             nextOrder._source.prep_status === 'finishedWithRemb'
           ) &&
-          nextOrder._id > order._id
+          nextOrder._id >= order._id
         ) {
           return nextOrder
         }
