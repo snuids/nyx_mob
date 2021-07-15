@@ -61,10 +61,8 @@ export default {
   components: { OrderCard },
   methods: {
     refresh(done) {
-      // console.log('starting getting orders')
       this.$store.dispatch('mvpPrep/getOrders')
       done()
-      // console.log('finishing getting orders')
     },
     nextOrder(order) {
       for (let i = 0; i < this.ordersSorted.length - 1; i++) {
@@ -87,7 +85,7 @@ export default {
     if (this.currentOrder !== undefined) {
       let nextItem = this.nextOrder(this.currentOrder)
       let element = document.getElementById(`${nextItem._id}`)
-      element.scrollIntoView({ behavior: 'instant', block: 'center' })
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   },
   mounted() {
@@ -102,6 +100,7 @@ export default {
       )
     }, 500)
   },
+
   beforeDestroy() {
     clearInterval(this.interval)
   }

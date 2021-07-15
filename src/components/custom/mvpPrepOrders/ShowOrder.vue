@@ -284,8 +284,7 @@ export default {
         })
       }
       await this.sendUnlockOrder()
-      //this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
-      //await this.$store.dispatch('mvpPrep/getOrders')
+      await this.$store.dispatch('mvpPrep/getOrders')
     },
 
     async sendUnlockOrder() {
@@ -517,9 +516,7 @@ export default {
     window.removeEventListener('beforeunload', this.preventNav)
     this.$store.commit('mvpPrep/mutate_currentOrderItems', [])
     // this.unlock()
-  },
-
-  updated() {}
+  }
 }
 </script>
 
