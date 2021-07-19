@@ -56,8 +56,6 @@ import OrdersDashboard from './mvpPrepOrders/OrdersDashboard'
 import mixin from './mvpPrepOrders/mixin'
 
 export default {
-  // TODO prendre en compte dans le listing la tournée des livreurs
-
   name: 'MvpPrepOrders',
   mixins: [mixin],
   components: {
@@ -79,7 +77,6 @@ export default {
     ...mapGetters(['creds']),
     ...mapState('mvpPrep', ['orders', 'openFinishedOrders']),
     urlOrderId() {
-      // console.log(this.$route.fullPath)
       let url = this.$route.fullPath
       if (url.indexOf('showOrder=') > -1) {
         return url.split('showOrder=')[1]
@@ -137,9 +134,7 @@ export default {
   watch: {
     targetDate: {
       handler: function() {
-        this.$store.dispatch('mvpPrep/getOrders').then(() => {
-          // console.log(this.orders)
-        })
+        this.$store.dispatch('mvpPrep/getOrders').then(() => {})
       },
       deep: true
     }

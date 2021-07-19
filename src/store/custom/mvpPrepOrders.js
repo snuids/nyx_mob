@@ -15,7 +15,7 @@ export default {
     itemsClicked: 0,
     itemsClickedFresh: 0,
     itemsClickedDry: 0,
-    currentOrder: {},
+    currentOrder: null,
     currentItem: {},
     currentOrderItems: [],
     modeFilter: 'all',
@@ -30,7 +30,6 @@ export default {
       state.openFinishedOrders = payload
     },
     mutate_displayedItems(state, payload) {
-      console.log(payload)
       state.displayedItems = payload
     },
     mutate_itemsClicked: function(state, payload) {
@@ -231,7 +230,6 @@ export default {
         delay: 300
       })
       const url = state.serverUrl + state.apiUrl + '?apikey=' + state.apiKey
-      console.log(url)
       //payload:  {line_items: []}
       axios
         .post(url, payload)
@@ -247,7 +245,6 @@ export default {
         })
     },
     getOrders({ state, rootState, commit }, dateObj = null) {
-      console.log('getOrders')
       Loading.show({
         delay: 2000
       })
@@ -304,7 +301,6 @@ export default {
         })
         .catch(error => {
           Loading.hide()
-          console.error(error)
         })
     },
     updateOrder({ state, rootState }, payload) {

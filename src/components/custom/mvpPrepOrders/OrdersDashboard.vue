@@ -93,11 +93,6 @@ export default {
     this.$store.commit('mvpPrep/mutate_openFinishedOrders', false)
   }
 }
-
-/* TODO: - commandes à préparer
-       - commandes terminés à être expédier
-
- */
 </script>
 
 <style scoped></style>

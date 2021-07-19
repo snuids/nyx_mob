@@ -19,12 +19,15 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'OrdersList',
+
   props: ['ordersToShow'],
+
   data() {
     return {
       interval: null
     }
   },
+
   computed: {
     ...mapState('mvpPrep', [
       'modeFilter',
@@ -58,12 +61,15 @@ export default {
         })
     }
   },
+
   components: { OrderCard },
+
   methods: {
     refresh(done) {
       this.$store.dispatch('mvpPrep/getOrders')
       done()
     },
+
     nextOrder(order) {
       for (let i = 0; i < this.ordersSorted.length - 1; i++) {
         let nextOrder = this.ordersSorted[i]
@@ -73,21 +79,24 @@ export default {
             nextOrder._source.prep_status === 'finishedWithReplaced' ||
             nextOrder._source.prep_status === 'finishedWithRemb'
           ) &&
-          nextOrder._id >= order._id
+          nextOrder._id > order._id &&
+          !nextOrder._source.tags.split(',').includes(' express')
         ) {
           return nextOrder
         }
       }
-      return order
+      return this.ordersSorted[0]
     }
   },
+
   updated() {
-    if (this.currentOrder !== undefined) {
+    if (this.currentOrder !== null) {
       let nextItem = this.nextOrder(this.currentOrder)
       let element = document.getElementById(`${nextItem._id}`)
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   },
+
   mounted() {
     const timer = this.$store.getters['mvp/timer'] * 1000
     setTimeout(() => {

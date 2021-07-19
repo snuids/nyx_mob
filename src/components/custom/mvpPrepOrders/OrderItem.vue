@@ -110,8 +110,6 @@
 import moment from 'moment'
 import { mapState } from 'vuex'
 
-// TODO gérer latence
-
 export default {
   name: 'OrderItem',
   props: ['product'],

@@ -154,9 +154,6 @@
 </template>
 
 <script>
-// TODO   <q-list-header>Files</q-list-header>
-
-// TODO show if the internet connexion is low or inexistant
 import OrderItems from './OrderItems'
 import moment from 'moment'
 import { mapState, mapGetters } from 'vuex'
@@ -275,8 +272,10 @@ export default {
       }, 200)
     },
 
+    // TODO send messages on slack
+    // TODO sort orders for tournées
+
     async unlock() {
-      console.log('UNLOCK')
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
@@ -368,8 +367,6 @@ export default {
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
       })
-
-      console.log('mvpPrep/updateOrder')
     },
 
     preventNav(event) {
@@ -414,16 +411,12 @@ export default {
         multiLine,
         actions: [
           {
-            handler: () => {
-              // console.log('wooow')
-            }
+            handler: () => {}
           }
         ],
         timeout: 300
       })
     },
-
-    // TODO deploy app to correct the name of the person who blocked the order
 
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
@@ -455,8 +448,6 @@ export default {
       Loading.hide()
     }
   },
-
-  // TODO nom de l'article pouvoir scroller horizontalement pour voir le nom complet
 
   watch: {
     async $route(to, from) {
