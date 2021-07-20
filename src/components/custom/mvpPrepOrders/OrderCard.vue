@@ -4,9 +4,9 @@
     clickable
     v-if="order"
     v-ripple
-    :class="[status, 'bg-grey-11 row flex full-width ']"
+    :class="[status, 'bg-grey-11 row flex full-width']"
     @click="cardClick"
-    style=" padding: 0; margin: 0 0 2px 0 "
+    style=" padding: 10px; margin: 0 0 10px 0;"
   >
     <q-item-section
       class="row flex col-xs-2 items-center"

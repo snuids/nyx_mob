@@ -89,8 +89,10 @@ export default {
     if (this.currentOrder !== null && this.scrollView) {
       let nextItem = this.nextOrder(this.currentOrder)
       let element = document.getElementById(`${nextItem._id}`)
+      element.classList.add('highlight')
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       this.$store.commit('mvpPrep/mutate_scrollView', false)
+      setTimeout(() => element.classList.remove('highlight'), 3000)
     }
   },
 
@@ -113,4 +115,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.highlight {
+  color: deepskyblue;
+}
+</style>
