@@ -36,7 +36,7 @@ export default {
       'scrollView'
     ]),
     ordersSorted() {
-      return this.ordersToShow
+      let sortedOrders = this.ordersToShow
         .sort((a, b) => {
           return a._id - b._id
         })
@@ -46,24 +46,12 @@ export default {
             ? -1
             : 1
         )
-      /*
-        .sort((a, b) => {
-          return (a._source.prep_status === 'unfinished' &&
-          (b._source.prep_status === 'finished' ||
-            b._source.prep_status === 'finishedWithRemb' ||
-            b._source.prep_status === 'finishedWithReplaced')
-            ? -1
-            : a._source.prep_status === '' ||
-              a._source.prep_status === undefined) &&
-            !(
-              b._source.prep_status === '' ||
-              b._source.prep_status === undefined
-            )
-            ? -1
-            : 1
-        })
-
-         */
+      if (this.modeFilter === 'fresh') {
+        return sortedOrders.sort(
+          (a, b) => a._source.courier_index - b._source.courier_index
+        )
+      }
+      return sortedOrders
     }
   },
 

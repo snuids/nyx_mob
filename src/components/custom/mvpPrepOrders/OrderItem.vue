@@ -56,7 +56,7 @@
               @click.stop="changeStatus(product, 'remb')"
               icon="close"
               color="red-4"
-              style="color: white; max-width: 40px"
+              style="color: white; max-width: 40px; margin-bottom: 5px"
               size="15px"
               unelevated
               rounded
@@ -66,7 +66,7 @@
               @click.stop="changeStatus(product, 'manq')"
               icon="hourglass_bottom"
               color="orange-4"
-              style="color: white; max-width: 40px; margin-left: 20px"
+              style="color: white; max-width: 40px; margin-left: 20px; margin-bottom: 5px"
               size="15px"
               unelevated
               rounded

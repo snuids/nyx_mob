@@ -16,31 +16,31 @@
         left
         v-if="order._source.prep_status === 'finished'"
         name="done"
-        style="background-color: green; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
+        style="background-color: white; font-size: 2.5rem; color: green; border-radius: 40px; padding: 2px"
       />
       <q-icon
         left
         v-if="order._source.prep_status === 'started'"
         name="pending"
-        style="background-color: deepskyblue; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
+        style="background-color: white; font-size: 2.5rem; color: deepskyblue; border-radius: 40px; padding: 2px"
       />
       <q-icon
         left
         v-if="order._source.prep_status === 'finishedWithRemb'"
         name="close"
-        style="background-color:red; color: white; border-radius: 40px; font-size: 2.5rem; padding: 2px"
+        style="background-color:white; color: red; border-radius: 40px; font-size: 2.5rem; padding: 2px"
       />
       <q-icon
         left
         v-if="order._source.prep_status === 'unfinished'"
         name="hourglass_bottom"
-        style="background-color:orange ; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
+        style="background-color:white ; font-size: 2.5rem; color: orange; border-radius: 40px; padding: 2px"
       />
       <q-icon
         left
         v-if="order._source.prep_status === 'finishedWithReplaced'"
         name="published_with_changes"
-        style="background-color:dodgerblue ; font-size: 2.5rem; color: white; border-radius: 40px; padding: 2px"
+        style="background-color:white ; font-size: 2.5rem; color: dodgerblue; border-radius: 40px; padding: 2px"
       />
     </q-item-section>
     <q-item-section
@@ -50,22 +50,24 @@
       <div class="full-width">
         <b># {{ order._source.order_number }}</b>
 
-        <q-chip text-color="black" class="float-right">
+        <q-chip text-color="black" class="float-right" square>
           {{
             order._source.tags.split(',').filter(elt => elt.includes('-'))[0]
           }}
         </q-chip>
         <q-chip
+          square
           class="float-right"
           v-if="order._source.tags.split(',').includes(' express')"
           color="blue"
           text-color="white"
         >
-          {{ 'express' }}
+          express
         </q-chip>
       </div>
       <div>
         <q-chip
+          square
           v-if="
             order._source.intermediaryStatus &&
               order._source.prep_status === 'unfinished'
@@ -77,6 +79,7 @@
         </q-chip>
 
         <q-chip
+          square
           v-if="order._source.prep_status === 'started'"
           :color="orderColor"
           text-color="white"
@@ -91,7 +94,7 @@
           }}
         </q-chip>
 
-        <q-chip v-else :color="orderColor" text-color="white">
+        <q-chip square v-else :color="orderColor" text-color="white">
           {{
             order._source.prep_status
               ? order._source.prep_status === 'finished'
@@ -107,6 +110,15 @@
                 : ''
               : 'Non préparé'
           }}
+        </q-chip>
+
+        <q-chip
+          square
+          v-if="order._source.courier_index !== -1"
+          color="blue"
+          text-color="white"
+        >
+          {{ order._source.courier.toLowerCase() }}
         </q-chip>
       </div>
     </q-item-section>

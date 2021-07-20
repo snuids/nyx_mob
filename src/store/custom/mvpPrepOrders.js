@@ -217,12 +217,6 @@ export default {
           state.currentOrder = order
 
           if (order._source.dryItems === undefined) {
-            order._source.preparedDry = []
-            order._source.preparedFresh = []
-            order._source.missingFresh = []
-            order._source.missingDry = []
-            order._source.rembDry = []
-            order._source.rembFresh = []
             order._source.lock = false
             order._source.prep_status = ''
           }
@@ -300,6 +294,11 @@ export default {
         .then(response => {
           Loading.hide()
           let orders = response.data.records
+          for (let i in orders) {
+            if (orders[i]._source.courier == undefined) {
+              orders[i]._source.courier_index = -1
+            }
+          }
 
           commit('mutate_allOrders', orders)
         })
