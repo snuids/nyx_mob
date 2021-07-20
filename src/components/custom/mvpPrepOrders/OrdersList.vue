@@ -32,18 +32,21 @@ export default {
     ...mapState('mvpPrep', [
       'modeFilter',
       'openFinishedOrders',
-      'currentOrder'
+      'currentOrder',
+      'scrollView'
     ]),
     ordersSorted() {
       return this.ordersToShow
         .sort((a, b) => {
-          return a._id < b._id
-            ? -1
-            : a._source.tags.split(',').includes(' express') &&
-              !b._source.tags.split(',').includes(' express')
+          return a._id - b._id
+        })
+        .sort((a, b) =>
+          a._source.tags.split(',').includes(' express') &&
+          !b._source.tags.split(',').includes(' express')
             ? -1
             : 1
-        })
+        )
+      /*
         .sort((a, b) => {
           return (a._source.prep_status === 'unfinished' &&
           (b._source.prep_status === 'finished' ||
@@ -59,6 +62,8 @@ export default {
             ? -1
             : 1
         })
+
+         */
     }
   },
 
@@ -71,29 +76,21 @@ export default {
     },
 
     nextOrder(order) {
-      for (let i = 0; i < this.ordersSorted.length - 1; i++) {
-        let nextOrder = this.ordersSorted[i]
-        if (
-          !(
-            nextOrder._source.prep_status === 'finished' ||
-            nextOrder._source.prep_status === 'finishedWithReplaced' ||
-            nextOrder._source.prep_status === 'finishedWithRemb'
-          ) &&
-          nextOrder._id > order._id &&
-          !nextOrder._source.tags.split(',').includes(' express')
-        ) {
-          return nextOrder
-        }
+      let orderIndex = this.ordersSorted.findIndex(elt => elt._id === order._id)
+      if (orderIndex < this.ordersSorted.length - 1) {
+        return this.ordersSorted[orderIndex + 1]
+      } else {
+        return this.ordersSorted[0]
       }
-      return this.ordersSorted[0]
     }
   },
 
   updated() {
-    if (this.currentOrder !== null) {
+    if (this.currentOrder !== null && this.scrollView) {
       let nextItem = this.nextOrder(this.currentOrder)
       let element = document.getElementById(`${nextItem._id}`)
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      this.$store.commit('mvpPrep/mutate_scrollView', false)
     }
   },
 

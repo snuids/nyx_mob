@@ -282,6 +282,7 @@ export default {
           line_items: this.preparedProducts
         })
       }
+      this.$store.commit('mvpPrep/mutate_scrollView', true)
       await this.sendUnlockOrder()
       await this.$store.dispatch('mvpPrep/getOrders')
     },

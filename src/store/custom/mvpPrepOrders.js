@@ -22,10 +22,14 @@ export default {
     currentOrderPreparedItems: null,
     updated_items: null,
     displayedItems: [],
-    openFinishedOrders: false
+    openFinishedOrders: false,
+    scrollView: false
   },
 
   mutations: {
+    mutate_scrollView(state, payload) {
+      state.scrollView = payload
+    },
     mutate_openFinishedOrders(state, payload) {
       state.openFinishedOrders = payload
     },
