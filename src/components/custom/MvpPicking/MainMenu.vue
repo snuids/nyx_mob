@@ -143,7 +143,7 @@ export default {
       slackObject.type = 'direct'
 
       try {
-        await this.$store.dispatch('sendMessageToSlack', slackObject)
+        await this.$store.dispatch('mvp/sendMessageToSlack', slackObject)
         this.$q.notify({
           message: 'Message envoyé !',
           timeout: 5000,

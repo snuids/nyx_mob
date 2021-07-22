@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Loading, LoadingBar } from 'quasar'
 import { createLogger } from 'vuex'
 import { Notify } from 'quasar'
+import moment from 'moment'
 
 export default {
   namespaced: true,
@@ -327,6 +328,66 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    async sendMessageToSlack({ commit }, payload) {
+      let firstLine = ''
+      let mentionned = ''
+      let title = ''
+      let channel = ''
+
+      // mentionned users string preparation
+      let slack = process.env.SLACK_MENTION
+      let mentionned_UserList = []
+
+      mentionned_UserList.push({
+        user: slack.split(':')[0],
+        id: slack.split(':')[1]
+      })
+
+      for (let i = 0; i < mentionned_UserList.length; i++) {
+        if (i === mentionned_UserList.length - 1) {
+          mentionned += mentionned_UserList[i].id
+        } else {
+          mentionned += mentionned_UserList[i].id + ' '
+        }
+      }
+      // message building by type
+      let poType = null
+      if (payload.poType !== 'PO-NYX') poType = payload.poType
+
+      if (payload.type === 'direct') {
+        // building direct slack message
+        channel = '#prepa'
+        title = 'Message de ' + payload.user
+        firstLine =
+          'Commande *#' +
+          payload.order +
+          '* (' +
+          payload.user +
+          ') ' +
+          ' \n' +
+          payload.msg
+      }
+
+      let msg2send = [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: firstLine
+          }
+        }
+      ]
+      msg2send.push({ type: 'divider' })
+
+      let slackObject = {
+        channel: channel,
+        blocks: msg2send
+      }
+      let slackUrl =
+        payload.apiUrl + process.env.SLACK_URL + '?apikey=' + payload.apiKey
+
+      return axios.post(slackUrl, slackObject)
     }
   },
 

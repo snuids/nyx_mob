@@ -289,7 +289,7 @@ export default {
     },
     async sendToSlack(data) {
       try {
-        await this.$store.dispatch('sendMessageToSlack', data)
+        await this.$store.dispatch('mvp/sendMessageToSlack', data)
         this.$q.notify({
           message: 'Message envoyé !',
           timeout: 5000,

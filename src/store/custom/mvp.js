@@ -39,23 +39,21 @@ export default {
   },
   actions: {
     async sendMessageToSlack({ commit }, payload) {
-      var firstLine = ''
-      var mentionned = ''
-      var title = ''
-      var channel = ''
+      let firstLine = ''
+      let mentionned = ''
+      let title = ''
+      let channel = ''
 
       // mentionned users string preparation
-      var slack = process.env.SLACK_MENTION
-      var mentionned_UserList = []
+      let slack = process.env.SLACK_MENTION
+      let mentionned_UserList = []
 
-      for (var i in slack) {
-        mentionned_UserList.push({
-          user: slack[i].split(':')[0],
-          id: slack[i].split(':')[1]
-        })
-      }
+      mentionned_UserList.push({
+        user: slack.split(':')[0],
+        id: slack.split(':')[1]
+      })
 
-      for (var i = 0; i < mentionned_UserList.length; i++) {
+      for (let i = 0; i < mentionned_UserList.length; i++) {
         if (i === mentionned_UserList.length - 1) {
           mentionned += mentionned_UserList[i].id
         } else {
@@ -63,11 +61,12 @@ export default {
         }
       }
       // message building by type
-      var poType = null
+      let poType = null
       if (payload.poType !== 'PO-NYX') poType = payload.poType
 
       if (payload.type === 'direct') {
         // building direct slack message
+        //channel = "#prepa"
         channel = '#appro'
         title = 'Message de ' + payload.user
         firstLine =
@@ -98,7 +97,7 @@ export default {
         firstLine += moment(payload.date).format('DD/MM/YYYY') + ' ]'
       }
 
-      var msg2send = [
+      let msg2send = [
         {
           type: 'header',
           text: {
@@ -110,7 +109,8 @@ export default {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: mentionned
+            //change from string
+            text: 'mentionned'
           }
         },
         {
@@ -129,7 +129,7 @@ export default {
         if (payload.problems.less.length > 0) {
           // add header text
           msg2send.push({ type: 'divider' })
-          var head = {
+          let head = {
             type: 'section',
             text: {
               type: 'mrkdwn',
@@ -139,16 +139,19 @@ export default {
           msg2send.push(head)
 
           // then add all items
-          for (var i = 0; i < payload.problems.less.length; i++) {
-            var toAdd = {
+          for (let i = 0; i < payload.problems.less.length; i++) {
+            let toAdd = {
               type: 'section',
               text: {
                 type: 'mrkdwn',
                 text:
                   '*Produit :* ' +
                   payload.problems.less[i].title +
+                  /*
                   '\n*SKU :* ' +
                   payload.problems.less[i].sku +
+
+                   */
                   '\n*Quantité reçue :* ' +
                   payload.problems.less[i].received +
                   ' / ' +
@@ -163,7 +166,7 @@ export default {
         if (payload.problems.more.length > 0) {
           // add header text
           msg2send.push({ type: 'divider' })
-          var head = {
+          let head = {
             type: 'section',
             text: {
               type: 'mrkdwn',
@@ -173,16 +176,19 @@ export default {
           msg2send.push(head)
 
           // then add all items
-          for (var i = 0; i < payload.problems.more.length; i++) {
-            var toAdd = {
+          for (let i = 0; i < payload.problems.more.length; i++) {
+            let toAdd = {
               type: 'section',
               text: {
                 type: 'mrkdwn',
                 text:
                   '*Produit :* ' +
                   payload.problems.more[i].title +
+                  /*
                   '\n*SKU :* ' +
                   payload.problems.more[i].sku +
+
+                   */
                   '\n*Quantité reçue :* ' +
                   payload.problems.more[i].received +
                   ' / ' +
@@ -197,7 +203,7 @@ export default {
         if (payload.problems.new.length > 0) {
           // add header text
           msg2send.push({ type: 'divider' })
-          var head = {
+          let head = {
             type: 'section',
             text: {
               type: 'mrkdwn',
@@ -207,8 +213,8 @@ export default {
           msg2send.push(head)
 
           // then add all items
-          for (var i = 0; i < payload.problems.new.length; i++) {
-            var toAdd = {
+          for (let i = 0; i < payload.problems.new.length; i++) {
+            let toAdd = {
               type: 'section',
               text: {
                 type: 'mrkdwn',
@@ -228,11 +234,11 @@ export default {
         msg2send.push({ type: 'divider' })
       }
 
-      var slackObject = {
+      let slackObject = {
         channel: channel,
         blocks: msg2send
       }
-      var slackUrl =
+      let slackUrl =
         payload.apiUrl + process.env.SLACK_URL + '?apikey=' + payload.apiKey
 
       return axios.post(slackUrl, slackObject)

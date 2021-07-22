@@ -1,6 +1,6 @@
 {
   "name": "nyx_mob",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "A Quasar Framework app",
   "productName": "nyx_mob",
   "cordovaId": "",
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@quasar/quasar-app-extension-dotenv": "^1.0.5",
     "babel-eslint": "^8.2.1",
-    "eslint": "^4.18.2",
+    "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^2.0.0",

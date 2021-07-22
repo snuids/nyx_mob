@@ -181,7 +181,11 @@ export default {
       filterHasSec: 'Sec',
       filterHasFrais: 'Frais',
       isEditing: false,
-      tab: 'articles'
+      tab: 'articles',
+      reportRemb: false,
+      reportReplaced: false,
+      slackReport: '',
+      report: false
     }
   },
   computed: {
@@ -257,7 +261,6 @@ export default {
     isFrais(item) {
       return item._source.fresh || item._source.frais
     },
-
     goBackToList() {
       setTimeout(() => {
         this.unlock()
@@ -271,13 +274,18 @@ export default {
         }, 500)
       }, 200)
     },
-
     // TODO send messages on slack
-    // TODO sort orders for tournées
-
     async unlock() {
       this.$store.commit('mvpPrep/mutate_preparedItems', this.preparedProducts)
       if (this.preparedProducts.length > 0) {
+        const replacedOrRemb = elt => elt === 'replaced' || elt === 'remb'
+        if (
+          this.preparedProducts
+            .map(elt => elt._source.prep_status)
+            .some(replacedOrRemb)
+        ) {
+          this.report = true
+        }
         await this.$store.dispatch('mvpPrep/updateOrderItems', {
           line_items: this.preparedProducts
         })
@@ -286,7 +294,6 @@ export default {
       await this.sendUnlockOrder()
       await this.$store.dispatch('mvpPrep/getOrders')
     },
-
     async sendUnlockOrder() {
       let rembDry = this.currentOrderItems.filter(
         elt =>
@@ -364,18 +371,76 @@ export default {
         'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'
       )
 
+      if (rembDry + rembFresh > 0 && this.report) {
+        this.reportRemb = true
+      }
+      if (replacedDry + replacedFresh > 0 && this.report) {
+        this.reportReplaced = true
+      }
+
+      this.productsReportedToSlack()
+
       await this.$store.dispatch({
         type: 'mvpPrep/updateOrder',
         data: this.currentOrder
       })
     },
+    productsReportedToSlack() {
+      if (this.reportReplaced || this.reportRemb) {
+        let o = {}
+        o.msg = ''
+        o.date = moment()
+        o.user = this.$store.getters.creds.user.firstname
+        if (this.reportRemb) {
+          o.msg = '*Produits remboursés :* \n'
+          this.currentOrderItems
+            .filter(elt => elt._source.prep_status === 'remb')
+            .forEach(item => {
+              o.msg += `- ${item._source.name} \n`
+            })
+        }
 
+        o.msg += '\n'
+        if (this.reportReplaced) {
+          o.msg += '*Produits remplacés :* \n'
+          this.currentOrderItems
+            .filter(elt => elt._source.prep_status === 'replaced')
+            .forEach(item => {
+              o.msg += `- ${item._source.name} => ${item._source.replacement} \n`
+            })
+        }
+
+        o.apiUrl = this.$store.getters.apiurl
+        o.apiKey = this.$store.getters.activeApp.config.restApiKey
+        // o.apiKey = process.env.API_KEY
+        o.type = 'direct'
+
+        o.order = this.currentOrder._id
+
+        this.sendToSlack(o)
+      }
+    },
+    async sendToSlack(data) {
+      try {
+        await this.$store.dispatch('mvpPrep/sendMessageToSlack', data)
+        this.$q.notify({
+          message: 'Message envoyé dans slack !',
+          timeout: 2000,
+          color: 'green'
+        })
+      } catch (ex) {
+        this.$q.notify({
+          message: 'Un problème est survenu, veuillez re-essayer plus tard.',
+          timeout: 2000,
+          color: 'red'
+        })
+      }
+    },
     preventNav(event) {
       event.preventDefault()
       this.sendUnlockOrder()
       event.returnValue = ''
     },
-
     showNotif(position) {
       const alerts = [
         {
@@ -418,7 +483,6 @@ export default {
         timeout: 300
       })
     },
-
     updateOrderStatus() {
       this.currentOrder._source.prep_status = 'started'
       this.currentOrder._source.blocker = this.userName
@@ -439,7 +503,6 @@ export default {
         data: this.currentOrder
       })
     },
-
     async prepareData() {
       Loading.show({
         delay: 100

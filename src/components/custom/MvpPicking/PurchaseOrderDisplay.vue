@@ -277,7 +277,6 @@ export default {
         _source: this.currentOrder,
         _id: this.$store.state.mvpPicking.currentOrder.meta.id
       }
-      console.log(updatedPurchaseOrder)
 
       /* UNCOMMENT TO COMMIT REAL UPDATE */
       // send the update request
@@ -528,8 +527,8 @@ export default {
           this.reportObject.less.push({
             title: this.allItems[i].full_title,
             quantity: this.allItems[i].quantity,
-            received: this.allItems[i].received,
-            sku_code: this.allItems[i].sku
+            received: this.allItems[i].received
+            // sku_code: this.allItems[i].sku
           })
           needReport = true
         }
@@ -543,8 +542,8 @@ export default {
             this.reportObject.more.push({
               title: this.allItems[i].full_title,
               quantity: this.allItems[i].quantity,
-              received: this.allItems[i].received,
-              sku_code: this.allItems[i].sku
+              received: this.allItems[i].received
+              // sku_code: this.allItems[i].sku
             })
             needReport = true
           }
@@ -569,6 +568,7 @@ export default {
       // return result
       return needReport
     },
+
     prepareForSlack() {
       var o = {}
       o.date = moment()
