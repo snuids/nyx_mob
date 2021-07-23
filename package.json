@@ -1,6 +1,6 @@
 {
   "name": "nyx_mob",
-  "version": "0.0.1",
+  "version": "1.2.7",
   "description": "A Quasar Framework app",
   "productName": "nyx_mob",
   "cordovaId": "",
@@ -12,17 +12,21 @@
   },
   "dependencies": {
     "@quasar/app": "^2.1.6",
+    "@quasar/cli": "^1.2.0",
     "@quasar/extras": "^1.9.10",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "moment": "^2.23.0",
     "quasar": "^1.14.3",
     "vue-browser-geolocation": "^1.5.0",
     "vue-i18n": "^7.3.3",
-    "vuelidate": "^0.7.4"
+    "vue-offline": "^2.0.8",
+    "vuelidate": "^0.7.4",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@quasar/quasar-app-extension-dotenv": "^1.0.5",
     "babel-eslint": "^8.2.1",
-    "eslint": "^4.18.2",
+    "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^2.0.0",

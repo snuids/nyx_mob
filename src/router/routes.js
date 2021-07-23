@@ -1,7 +1,8 @@
 import Login from '../pages/Login.vue'
 import Main from '../pages/Main.vue'
 import GenericComponent from '../components/GenericComponent.vue'
-
+import MvpPrepOrders from '../components/custom/MvpPrepOrders'
+import ShowOrder from '../components/custom/mvpPrepOrders/ShowOrder'
 
 const routes = [
   {
@@ -18,7 +19,18 @@ const routes = [
         path: ':recid',
         name: 'GenericComponent',
         component: GenericComponent
-      }
+      },
+      // {
+      //   path: ':recid/orders',
+      //   name: 'orders',
+      //   component: MvpPrepOrders
+      // },
+      // {
+      //   path: ':recid/orders/:orderId',
+      //   name: 'order-display',
+      //   component: ShowOrder,
+      //   props: true
+      // }
     ]
   }
 ]
